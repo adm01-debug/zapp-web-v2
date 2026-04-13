@@ -52,7 +52,9 @@ serve(async (req) => {
     }
 
     if (event === 'messages.upsert') {
-      for (const entry of toEventRecords(data, ['messages'])) {
+      const entries = toEventRecords(data, ['messages']);
+      console.log(`[MSG_UPSERT] Processing ${entries.length} entries for instance ${instance}`);
+      for (const entry of entries) {
         const keySource = isRecord(entry.key) ? entry.key : isRecord(baseData.key) ? baseData.key : null;
         const externalId =
           (typeof entry.id === 'string' && entry.id) ||
@@ -61,7 +63,7 @@ serve(async (req) => {
           null;
 
         if (!externalId) {
-          console.log('messages.upsert ignored: missing message id', { instance, entry });
+          console.log('[MSG_UPSERT] Ignored: missing message id', { instance, entryKeys: Object.keys(entry) });
           continue;
         }
 
@@ -91,15 +93,20 @@ serve(async (req) => {
             (typeof keySource?.participantAlt === 'string' ? keySource.participantAlt : undefined),
         };
 
+        console.log(`[MSG_UPSERT] id=${externalId} fromMe=${key.fromMe} remoteJid=${key.remoteJid} hasReaction=${!!(entry.message as Record<string,unknown>)?.reactionMessage || !!(baseData.message as Record<string,unknown>)?.reactionMessage}`);
+
         const msg = (entry.message || baseData.message) as Record<string, unknown> | undefined;
         if (msg?.reactionMessage) {
+          console.log(`[MSG_UPSERT] Processing reaction for ${externalId}`);
           await handleReactionEvent(supabase, msg.reactionMessage as Record<string, unknown>, !!key.fromMe);
           continue;
         }
 
         if (!key.fromMe) {
+          console.log(`[MSG_UPSERT] -> handleIncomingMessage for ${externalId}`);
           await handleIncomingMessage(supabase, instance, { ...baseData, ...entry }, key, supabaseUrl, supabaseServiceKey);
         } else {
+          console.log(`[MSG_UPSERT] -> handleOutgoingWhatsAppMessage for ${externalId}`);
           await handleOutgoingWhatsAppMessage(supabase, instance, { ...baseData, ...entry }, key);
         }
       }
