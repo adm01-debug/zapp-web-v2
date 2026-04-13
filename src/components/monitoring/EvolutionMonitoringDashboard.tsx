@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Activity, Wifi, Webhook, RefreshCw, Loader2, Stethoscope, Timer, Bell, BellOff, CalendarDays, BarChart3 } from 'lucide-react';
+import { Activity, Wifi, Webhook, RefreshCw, Stethoscope, Timer, Bell, BellOff, CalendarDays, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEvolutionMonitoring } from './hooks/useEvolutionMonitoring';
 import type { TimePeriod } from './hooks/useEvolutionMonitoring';
@@ -17,6 +17,7 @@ import { MonitoringDiagnosticPanel } from './MonitoringDiagnosticPanel';
 import { MonitoringEventTimeline } from './MonitoringEventTimeline';
 import { MonitoringAvailabilityHeatmap } from './MonitoringAvailabilityHeatmap';
 import { MonitoringSLAPanel } from './MonitoringSLAPanel';
+import { DashboardSkeleton } from './MonitoringSkeletons';
 
 const PERIODS: { value: TimePeriod; label: string }[] = [
   { value: '1h', label: '1h' },
@@ -72,11 +73,7 @@ export function EvolutionMonitoringDashboard() {
   }, [handleKeyDown]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
