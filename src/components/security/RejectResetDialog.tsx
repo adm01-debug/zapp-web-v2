@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -18,7 +19,7 @@ export function RejectResetDialog({ open, email, processing, onClose, onReject }
   const handleReject = () => { onReject(reason); setReason(''); };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Rejeitar Solicitação</DialogTitle>
@@ -42,5 +43,3 @@ export function RejectResetDialog({ open, email, processing, onClose, onReject }
     </Dialog>
   );
 }
-
-import { useState } from 'react';
