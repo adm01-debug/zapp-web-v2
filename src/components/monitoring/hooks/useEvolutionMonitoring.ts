@@ -15,7 +15,7 @@ export function useEvolutionMonitoring() {
   const periodRef = useRef(period);
   periodRef.current = period;
 
-  const { notificationsEnabled, requestNotifications, checkDisconnections } = useMonitoringNotifications();
+  const { notificationsEnabled, soundEnabled, setSoundEnabled, requestNotifications, checkDisconnections } = useMonitoringNotifications();
   const { connections, healthLogs, loading, messageStats, uptime, sparklines, instanceUptimes, fetchData: rawFetch } = useMonitoringData(checkDisconnections);
 
   const fetchData = useCallback(async (p?: TimePeriod) => {
