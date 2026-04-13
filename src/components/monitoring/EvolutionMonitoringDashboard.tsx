@@ -64,7 +64,7 @@ export function EvolutionMonitoringDashboard() {
   const {
     connections, healthLogs, loading, refreshing, webhookTest, webhookConfig,
     messageStats, reconfiguring, diagnostic, diagnosing, uptime,
-    sparklines, instanceUptimes, notificationsEnabled, requestNotifications,
+    sparklines, instanceUptimes, notificationsEnabled, soundEnabled, setSoundEnabled, requestNotifications,
     period, changePeriod, autoRefresh, setAutoRefresh, countdown,
     runHealthCheck, testWebhookDelivery, checkWebhookConfig, reconfigureWebhook,
     runDiagnostic,
@@ -142,6 +142,27 @@ export function EvolutionMonitoringDashboard() {
               )}
             </div>
           </div>
+
+          {/* Sound Alert */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                aria-label={soundEnabled ? 'Desativar som de alerta' : 'Ativar som de alerta'}
+              >
+                {soundEnabled
+                  ? <Volume2 className="w-4 h-4 text-primary" />
+                  : <VolumeX className="w-4 h-4 text-muted-foreground" />
+                }
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="text-xs">
+              {soundEnabled ? 'Som de alerta ativado' : 'Ativar som de alerta'}
+            </TooltipContent>
+          </Tooltip>
 
           {/* Notifications */}
           <Tooltip>
