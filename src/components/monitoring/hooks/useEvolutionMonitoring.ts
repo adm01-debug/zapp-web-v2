@@ -76,6 +76,21 @@ export interface UptimeInfo {
   lastDowntime: string | null;
 }
 
+export interface SparklineData {
+  messages: number[];
+  latency: number[];
+  uptime: number[];
+}
+
+export interface InstanceUptime {
+  instanceId: string;
+  percentage: number;
+  totalChecks: number;
+  healthyChecks: number;
+  avgLatency: number;
+  lastError: string | null;
+}
+
 export function useEvolutionMonitoring() {
   const [connections, setConnections] = useState<ConnectionInfo[]>([]);
   const [healthLogs, setHealthLogs] = useState<HealthLog[]>([]);
@@ -91,7 +106,36 @@ export function useEvolutionMonitoring() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [countdown, setCountdown] = useState(30);
   const [uptime, setUptime] = useState<UptimeInfo>({ percentage: 0, totalChecks: 0, healthyChecks: 0, lastDowntime: null });
+  const [sparklines, setSparklines] = useState<SparklineData>({ messages: [], latency: [], uptime: [] });
+  const [instanceUptimes, setInstanceUptimes] = useState<InstanceUptime[]>([]);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const countdownRef = useRef(30);
+  const prevConnectionsRef = useRef<ConnectionInfo[]>([]);
+
+  // Request notification permission
+  const requestNotifications = useCallback(async () => {
+    if (!('Notification' in window)) return;
+    const perm = await Notification.requestPermission();
+    setNotificationsEnabled(perm === 'granted');
+  }, []);
+
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      setNotificationsEnabled(true);
+    }
+  }, []);
+
+  // Send disconnect notification
+  const notifyDisconnect = useCallback((instanceId: string) => {
+    if (!notificationsEnabled) return;
+    try {
+      new Notification('⚠️ Conexão Perdida', {
+        body: `A instância ${instanceId} foi desconectada.`,
+        icon: '/favicon.ico',
+        tag: `disconnect-${instanceId}`,
+      });
+    } catch { /* silent */ }
+  }, [notificationsEnabled]);
 
   const fetchData = useCallback(async (selectedPeriod?: TimePeriod) => {
     try {
@@ -101,15 +145,28 @@ export function useEvolutionMonitoring() {
 
       const [connRes, logsRes, msgRes] = await Promise.all([
         supabase.from('whatsapp_connections').select('id, instance_id, phone_number, status, health_status, health_response_ms, last_health_check, updated_at'),
-        supabase.from('connection_health_logs').select('*').order('checked_at', { ascending: false }).limit(200),
+        supabase.from('connection_health_logs').select('*').order('checked_at', { ascending: false }).limit(500),
         supabase.from('messages').select('sender, created_at').gte('created_at', since.toISOString()).order('created_at', { ascending: true }),
       ]);
 
-      if (connRes.data) setConnections(connRes.data);
+      if (connRes.data) {
+        // Detect disconnections for notifications
+        const prev = prevConnectionsRef.current;
+        if (prev.length > 0) {
+          connRes.data.forEach(conn => {
+            const prevConn = prev.find(p => p.id === conn.id);
+            if (prevConn && prevConn.status === 'connected' && conn.status !== 'connected') {
+              notifyDisconnect(conn.instance_id);
+            }
+          });
+        }
+        prevConnectionsRef.current = connRes.data;
+        setConnections(connRes.data);
+      }
+
       if (logsRes.data) {
         setHealthLogs(logsRes.data);
 
-        // Calculate uptime from health logs (24h)
         const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
         const recentLogs = logsRes.data.filter(l => new Date(l.checked_at) >= dayAgo);
         const healthyStatuses = ['connected', 'healthy'];
@@ -122,6 +179,59 @@ export function useEvolutionMonitoring() {
           healthyChecks: healthy.length,
           lastDowntime: lastFail?.checked_at || null,
         });
+
+        // Per-instance uptime
+        const instanceMap = new Map<string, HealthLog[]>();
+        recentLogs.forEach(l => {
+          const arr = instanceMap.get(l.instance_id) || [];
+          arr.push(l);
+          instanceMap.set(l.instance_id, arr);
+        });
+
+        const uptimes: InstanceUptime[] = Array.from(instanceMap.entries()).map(([instanceId, logs]) => {
+          const h = logs.filter(l => healthyStatuses.includes(l.status));
+          const latencies = logs.filter(l => l.response_time_ms != null).map(l => l.response_time_ms!);
+          const lastErr = logs.find(l => !healthyStatuses.includes(l.status));
+          return {
+            instanceId,
+            percentage: logs.length > 0 ? Math.round((h.length / logs.length) * 1000) / 10 : 100,
+            totalChecks: logs.length,
+            healthyChecks: h.length,
+            avgLatency: latencies.length > 0 ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) : 0,
+            lastError: lastErr?.error_message || null,
+          };
+        });
+        setInstanceUptimes(uptimes);
+
+        // Sparkline: uptime per hour (last 8 hours)
+        const uptimeSparkline: number[] = [];
+        for (let i = 7; i >= 0; i--) {
+          const hourStart = new Date(now.getTime() - (i + 1) * 60 * 60 * 1000);
+          const hourEnd = new Date(now.getTime() - i * 60 * 60 * 1000);
+          const hourLogs = logsRes.data.filter(l => {
+            const t = new Date(l.checked_at);
+            return t >= hourStart && t < hourEnd;
+          });
+          const hourHealthy = hourLogs.filter(l => healthyStatuses.includes(l.status));
+          uptimeSparkline.push(hourLogs.length > 0 ? Math.round((hourHealthy.length / hourLogs.length) * 100) : 100);
+        }
+
+        // Sparkline: latency per hour
+        const latencySparkline: number[] = [];
+        for (let i = 7; i >= 0; i--) {
+          const hourStart = new Date(now.getTime() - (i + 1) * 60 * 60 * 1000);
+          const hourEnd = new Date(now.getTime() - i * 60 * 60 * 1000);
+          const hourLogs = logsRes.data.filter(l => {
+            const t = new Date(l.checked_at);
+            return t >= hourStart && t < hourEnd && l.response_time_ms != null;
+          });
+          const avg = hourLogs.length > 0
+            ? Math.round(hourLogs.reduce((s, l) => s + (l.response_time_ms || 0), 0) / hourLogs.length)
+            : 0;
+          latencySparkline.push(avg);
+        }
+
+        setSparklines(prev => ({ ...prev, uptime: uptimeSparkline, latency: latencySparkline }));
       }
 
       if (msgRes.data) {
@@ -145,16 +255,12 @@ export function useEvolutionMonitoring() {
 
         msgRes.data.forEach(m => {
           const mTime = new Date(m.created_at);
-          // Find which bucket
-          const bucketKeys = Object.keys(buckets);
           let targetKey: string | null = null;
-
           if (p === '7d') {
             targetKey = `${mTime.getDate().toString().padStart(2, '0')}/${(mTime.getMonth() + 1).toString().padStart(2, '0')}`;
           } else {
             targetKey = `${mTime.getHours().toString().padStart(2, '0')}:00`;
           }
-
           if (targetKey && buckets[targetKey]) {
             if (m.sender === 'contact') buckets[targetKey].incoming++;
             else buckets[targetKey].outgoing++;
@@ -163,20 +269,32 @@ export function useEvolutionMonitoring() {
 
         const hourlyData = Object.entries(buckets).map(([hour, data]) => ({ hour, ...data }));
         setMessageStats({ incoming, outgoing, total: msgRes.data.length, hourlyData });
+
+        // Sparkline: messages per hour (last 8 hours)
+        const msgSparkline: number[] = [];
+        for (let i = 7; i >= 0; i--) {
+          const hourStart = new Date(now.getTime() - (i + 1) * 60 * 60 * 1000);
+          const hourEnd = new Date(now.getTime() - i * 60 * 60 * 1000);
+          const count = msgRes.data.filter(m => {
+            const t = new Date(m.created_at);
+            return t >= hourStart && t < hourEnd;
+          }).length;
+          msgSparkline.push(count);
+        }
+        setSparklines(prev => ({ ...prev, messages: msgSparkline }));
       }
     } catch (err) {
       console.error('Monitoring fetch error:', err);
     } finally {
       setLoading(false);
     }
-  }, [period]);
+  }, [period, notifyDisconnect]);
 
   // Countdown timer
   useEffect(() => {
     if (!autoRefresh) return;
     countdownRef.current = 30;
     setCountdown(30);
-
     const tick = setInterval(() => {
       countdownRef.current -= 1;
       setCountdown(countdownRef.current);
@@ -186,27 +304,18 @@ export function useEvolutionMonitoring() {
         fetchData();
       }
     }, 1000);
-
     return () => clearInterval(tick);
   }, [autoRefresh, fetchData]);
 
-  // Initial fetch
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   // Realtime subscription
   useEffect(() => {
     const channel = supabase
       .channel('monitoring-connections')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'whatsapp_connections' }, () => {
-        fetchData();
-      })
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => {
-        fetchData();
-      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'whatsapp_connections' }, () => fetchData())
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => fetchData())
       .subscribe();
-
     return () => { supabase.removeChannel(channel); };
   }, [fetchData]);
 
@@ -249,11 +358,9 @@ export function useEvolutionMonitoring() {
       });
       const latency = Math.round(performance.now() - start);
       if (error) throw error;
-
       await new Promise(r => setTimeout(r, 1000));
       const { data: msg } = await supabase.from('messages').select('id').eq('external_id', testId).maybeSingle();
       if (msg) await supabase.from('messages').delete().eq('id', msg.id);
-
       setWebhookTest({
         status: msg ? 'success' : 'error',
         message: msg ? `Webhook processou e persistiu em ${latency}ms` : 'Webhook respondeu OK mas mensagem não foi persistida',
@@ -288,7 +395,6 @@ export function useEvolutionMonitoring() {
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const webhookUrl = `${supabaseUrl}/functions/v1/evolution-webhook`;
-
       const { error } = await supabase.functions.invoke('evolution-api/set-webhook', {
         method: 'POST',
         body: {
@@ -343,6 +449,7 @@ export function useEvolutionMonitoring() {
   return {
     connections, healthLogs, loading, refreshing, webhookTest, webhookConfig,
     messageStats, reconfiguring, diagnostic, diagnosing, uptime,
+    sparklines, instanceUptimes, notificationsEnabled, requestNotifications,
     period, changePeriod, autoRefresh, setAutoRefresh, countdown,
     runHealthCheck, testWebhookDelivery, checkWebhookConfig, reconfigureWebhook,
     runDiagnostic, refetch: fetchData,

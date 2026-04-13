@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Activity, Wifi, Webhook, RefreshCw, Loader2, Stethoscope, Timer } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Activity, Wifi, Webhook, RefreshCw, Loader2, Stethoscope, Timer, Bell, BellOff, CalendarDays, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEvolutionMonitoring } from './hooks/useEvolutionMonitoring';
 import type { TimePeriod } from './hooks/useEvolutionMonitoring';
@@ -14,6 +15,8 @@ import { MonitoringWebhookPanel } from './MonitoringWebhookPanel';
 import { MonitoringHealthLogs } from './MonitoringHealthLogs';
 import { MonitoringDiagnosticPanel } from './MonitoringDiagnosticPanel';
 import { MonitoringEventTimeline } from './MonitoringEventTimeline';
+import { MonitoringAvailabilityHeatmap } from './MonitoringAvailabilityHeatmap';
+import { MonitoringSLAPanel } from './MonitoringSLAPanel';
 
 const PERIODS: { value: TimePeriod; label: string }[] = [
   { value: '1h', label: '1h' },
@@ -27,12 +30,18 @@ function StatusSemaphore({ connections }: { connections: { status: string }[] })
   const all = connections.length;
   const active = connections.filter(c => c.status === 'connected').length;
   const color = active === all && all > 0 ? 'bg-emerald-500' : active > 0 ? 'bg-amber-500' : 'bg-destructive';
+  const label = active === all && all > 0 ? 'Todas conectadas' : active > 0 ? 'Parcialmente conectado' : 'Sem conexões';
 
   return (
-    <span className="relative flex h-3 w-3">
-      <span className={cn('animate-ping absolute inline-flex h-full w-full rounded-full opacity-50', color)} />
-      <span className={cn('relative inline-flex rounded-full h-3 w-3', color)} />
-    </span>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="relative flex h-3 w-3 cursor-default">
+          <span className={cn('animate-ping absolute inline-flex h-full w-full rounded-full opacity-50', color)} />
+          <span className={cn('relative inline-flex rounded-full h-3 w-3', color)} />
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" className="text-xs">{label} ({active}/{all})</TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -40,10 +49,27 @@ export function EvolutionMonitoringDashboard() {
   const {
     connections, healthLogs, loading, refreshing, webhookTest, webhookConfig,
     messageStats, reconfiguring, diagnostic, diagnosing, uptime,
+    sparklines, instanceUptimes, notificationsEnabled, requestNotifications,
     period, changePeriod, autoRefresh, setAutoRefresh, countdown,
     runHealthCheck, testWebhookDelivery, checkWebhookConfig, reconfigureWebhook,
     runDiagnostic,
   } = useEvolutionMonitoring();
+
+  // Keyboard shortcuts
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    if (e.key === 'r' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); runHealthCheck(); }
+    if (e.key === '1') changePeriod('1h');
+    if (e.key === '2') changePeriod('6h');
+    if (e.key === '3') changePeriod('12h');
+    if (e.key === '4') changePeriod('24h');
+    if (e.key === '5') changePeriod('7d');
+  }, [runHealthCheck, changePeriod]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   if (loading) {
     return (
@@ -66,7 +92,10 @@ export function EvolutionMonitoringDashboard() {
               <h1 className="text-2xl font-bold">Monitor Evolution</h1>
               <StatusSemaphore connections={connections} />
             </div>
-            <p className="text-sm text-muted-foreground">Status, webhook e health checks em tempo real</p>
+            <p className="text-sm text-muted-foreground">
+              Status, webhook e health checks em tempo real
+              <span className="hidden sm:inline text-[10px] ml-2 text-muted-foreground/60">[R] health check · [1-5] período</span>
+            </p>
           </div>
         </div>
 
@@ -99,6 +128,26 @@ export function EvolutionMonitoringDashboard() {
             </div>
           </div>
 
+          {/* Notifications */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={requestNotifications}
+              >
+                {notificationsEnabled
+                  ? <Bell className="w-4 h-4 text-emerald-500" />
+                  : <BellOff className="w-4 h-4 text-muted-foreground" />
+                }
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="text-xs">
+              {notificationsEnabled ? 'Notificações ativadas' : 'Ativar notificações de desconexão'}
+            </TooltipContent>
+          </Tooltip>
+
           <Button onClick={runHealthCheck} disabled={refreshing} variant="outline" size="sm">
             <RefreshCw className={cn('w-4 h-4 mr-2', refreshing && 'animate-spin')} />
             {refreshing ? 'Verificando...' : 'Health Check'}
@@ -106,7 +155,7 @@ export function EvolutionMonitoringDashboard() {
         </div>
       </div>
 
-      <MonitoringStatsCards connections={connections} messageStats={messageStats} uptime={uptime} />
+      <MonitoringStatsCards connections={connections} messageStats={messageStats} uptime={uptime} sparklines={sparklines} />
 
       {/* Chart + Timeline */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -117,11 +166,13 @@ export function EvolutionMonitoringDashboard() {
       </div>
 
       <Tabs defaultValue="connections" className="space-y-4">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="connections"><Wifi className="w-4 h-4 mr-1.5" />Conexões</TabsTrigger>
           <TabsTrigger value="webhook"><Webhook className="w-4 h-4 mr-1.5" />Webhook</TabsTrigger>
           <TabsTrigger value="diagnostic"><Stethoscope className="w-4 h-4 mr-1.5" />Diagnóstico</TabsTrigger>
-          <TabsTrigger value="health-logs"><Activity className="w-4 h-4 mr-1.5" />Health Logs</TabsTrigger>
+          <TabsTrigger value="sla"><BarChart3 className="w-4 h-4 mr-1.5" />SLA</TabsTrigger>
+          <TabsTrigger value="heatmap"><CalendarDays className="w-4 h-4 mr-1.5" />Heatmap</TabsTrigger>
+          <TabsTrigger value="health-logs"><Activity className="w-4 h-4 mr-1.5" />Logs</TabsTrigger>
         </TabsList>
 
         <TabsContent value="connections">
@@ -153,6 +204,14 @@ export function EvolutionMonitoringDashboard() {
             onReconfigureWebhook={reconfigureWebhook}
             reconfiguring={reconfiguring}
           />
+        </TabsContent>
+
+        <TabsContent value="sla">
+          <MonitoringSLAPanel uptime={uptime} instanceUptimes={instanceUptimes} />
+        </TabsContent>
+
+        <TabsContent value="heatmap">
+          <MonitoringAvailabilityHeatmap healthLogs={healthLogs} />
         </TabsContent>
 
         <TabsContent value="health-logs">
