@@ -1,12 +1,13 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { Wifi, MessageSquare, Zap, ArrowUpDown } from 'lucide-react';
+import { Wifi, MessageSquare, Zap, ArrowUpDown, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import type { ConnectionInfo, MessageStats } from './hooks/useEvolutionMonitoring';
+import type { ConnectionInfo, MessageStats, UptimeInfo } from './hooks/useEvolutionMonitoring';
 
 interface Props {
   connections: ConnectionInfo[];
   messageStats: MessageStats;
+  uptime: UptimeInfo;
 }
 
 function PulseDot({ active }: { active: boolean }) {
@@ -23,7 +24,7 @@ function PulseDot({ active }: { active: boolean }) {
   );
 }
 
-export function MonitoringStatsCards({ connections, messageStats }: Props) {
+export function MonitoringStatsCards({ connections, messageStats, uptime }: Props) {
   const activeCount = connections.filter(c => c.status === 'connected').length;
   const connWithLatency = connections.filter(c => c.health_response_ms);
   const avgLatency = connWithLatency.length > 0
@@ -44,10 +45,19 @@ export function MonitoringStatsCards({ connections, messageStats }: Props) {
       pulse: allOnline,
     },
     {
+      icon: Shield,
+      iconColor: uptime.percentage >= 99 ? 'text-emerald-500' : uptime.percentage >= 95 ? 'text-amber-500' : 'text-destructive',
+      bgColor: uptime.percentage >= 99 ? 'bg-emerald-500/10' : uptime.percentage >= 95 ? 'bg-amber-500/10' : 'bg-destructive/10',
+      label: 'Uptime 24h',
+      value: `${uptime.percentage}%`,
+      subtitle: uptime.totalChecks > 0 ? `${uptime.healthyChecks}/${uptime.totalChecks} checks OK` : 'Sem dados',
+      pulse: uptime.percentage >= 99,
+    },
+    {
       icon: MessageSquare,
       iconColor: 'text-primary',
       bgColor: 'bg-primary/10',
-      label: 'Msgs (12h)',
+      label: 'Mensagens',
       value: messageStats.total.toLocaleString('pt-BR'),
       subtitle: `↓${messageStats.incoming} ↑${messageStats.outgoing}`,
       pulse: false,
@@ -65,7 +75,7 @@ export function MonitoringStatsCards({ connections, messageStats }: Props) {
       icon: ArrowUpDown,
       iconColor: hasIncoming ? 'text-emerald-500' : 'text-destructive',
       bgColor: hasIncoming ? 'bg-emerald-500/10' : 'bg-destructive/10',
-      label: 'Webhook Status',
+      label: 'Webhook',
       value: hasIncoming ? 'Operacional' : 'Sem Incoming',
       subtitle: hasIncoming ? `${messageStats.incoming} recebidas` : 'Verificar config',
       pulse: hasIncoming,
@@ -73,29 +83,25 @@ export function MonitoringStatsCards({ connections, messageStats }: Props) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
       {stats.map(({ icon: Icon, iconColor, bgColor, label, value, subtitle, pulse }, i) => (
         <motion.div
           key={label}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.06, duration: 0.3 }}
+          transition={{ delay: i * 0.05, duration: 0.25 }}
         >
-          <Card className="hover:shadow-md transition-shadow border-border/60">
-            <CardContent className="pt-5 pb-4">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={cn('p-2.5 rounded-xl', bgColor)}>
-                    <Icon className={cn('w-5 h-5', iconColor)} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">{label}</p>
-                    <p className="text-xl font-bold truncate mt-0.5">{value}</p>
-                    <p className="text-xs text-muted-foreground">{subtitle}</p>
-                  </div>
+          <Card className="hover:shadow-md transition-shadow border-border/60 h-full">
+            <CardContent className="pt-4 pb-3 px-4">
+              <div className="flex items-start justify-between mb-2">
+                <div className={cn('p-2 rounded-lg', bgColor)}>
+                  <Icon className={cn('w-4 h-4', iconColor)} />
                 </div>
                 {pulse && <PulseDot active />}
               </div>
+              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{label}</p>
+              <p className="text-lg font-bold truncate mt-0.5">{value}</p>
+              <p className="text-[11px] text-muted-foreground">{subtitle}</p>
             </CardContent>
           </Card>
         </motion.div>
