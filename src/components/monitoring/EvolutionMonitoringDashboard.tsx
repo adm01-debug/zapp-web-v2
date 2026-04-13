@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Activity, Wifi, Webhook, RefreshCw, Loader2, Stethoscope, Timer, Bell, BellOff, CalendarDays, BarChart3 } from 'lucide-react';
+import { Activity, Wifi, Webhook, RefreshCw, Stethoscope, Timer, Bell, BellOff, CalendarDays, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEvolutionMonitoring } from './hooks/useEvolutionMonitoring';
 import type { TimePeriod } from './hooks/useEvolutionMonitoring';
@@ -17,6 +17,7 @@ import { MonitoringDiagnosticPanel } from './MonitoringDiagnosticPanel';
 import { MonitoringEventTimeline } from './MonitoringEventTimeline';
 import { MonitoringAvailabilityHeatmap } from './MonitoringAvailabilityHeatmap';
 import { MonitoringSLAPanel } from './MonitoringSLAPanel';
+import { DashboardSkeleton } from './MonitoringSkeletons';
 
 const PERIODS: { value: TimePeriod; label: string }[] = [
   { value: '1h', label: '1h' },
@@ -72,17 +73,13 @@ export function EvolutionMonitoringDashboard() {
   }, [handleKeyDown]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" role="main" aria-label="Painel de monitoramento Evolution API">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
             <Activity className="w-5 h-5 text-primary" />
@@ -99,9 +96,9 @@ export function EvolutionMonitoringDashboard() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
           {/* Period Selector */}
-          <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-0.5">
+          <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-0.5" role="radiogroup" aria-label="Período de tempo">
             {PERIODS.map(p => (
               <Button
                 key={p.value}
@@ -116,7 +113,7 @@ export function EvolutionMonitoringDashboard() {
           </div>
 
           {/* Auto-refresh */}
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground" aria-live="polite" aria-label="Auto-refresh">
             <Switch checked={autoRefresh} onCheckedChange={setAutoRefresh} className="scale-75" />
             <div className="flex items-center gap-1">
               <Timer className="w-3 h-3" />
