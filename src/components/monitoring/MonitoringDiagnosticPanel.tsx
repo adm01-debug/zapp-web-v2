@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Stethoscope, CheckCircle2, XCircle, AlertTriangle, Loader2, Wrench, Clock, TrendingUp } from 'lucide-react';
+import { Stethoscope, CheckCircle2, XCircle, AlertTriangle, Loader2, Wrench, Clock, TrendingUp, Radio } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import type { DiagnosticResult } from './hooks/useEvolutionMonitoring';
@@ -11,6 +11,8 @@ interface Props {
   diagnostic: DiagnosticResult | null;
   diagnosing: boolean;
   onRunDiagnostic: (autoFix?: boolean) => void;
+  onReconfigureWebhook: (instanceId: string) => void;
+  reconfiguring: boolean;
 }
 
 const severityConfig: Record<string, { icon: typeof CheckCircle2; color: string; label: string; bg: string }> = {
@@ -49,7 +51,64 @@ function ScoreGauge({ score }: { score: number }) {
   );
 }
 
-export function MonitoringDiagnosticPanel({ diagnostic, diagnosing, onRunDiagnostic }: Props) {
+interface CheckItem {
+  label: string;
+  status: 'ok' | 'warning' | 'error';
+  detail: string;
+  action?: { label: string; onClick: () => void };
+}
+
+export function MonitoringDiagnosticPanel({ diagnostic, diagnosing, onRunDiagnostic, onReconfigureWebhook, reconfiguring }: Props) {
+  // Build checklist from diagnostic
+  const buildChecklist = (): CheckItem[] => {
+    if (!diagnostic) return [];
+    const items: CheckItem[] = [];
+
+    diagnostic.diagnostics.forEach(d => {
+      // Connection check
+      items.push({
+        label: `Conexão ${d.instance}`,
+        status: d.connectionState === 'open' ? 'ok' : 'error',
+        detail: d.connectionState === 'open' ? 'Conectado e operacional' : `Estado: ${d.connectionState}`,
+      });
+
+      // Webhook URL check
+      if (d.webhook) {
+        items.push({
+          label: `Webhook URL (${d.instance})`,
+          status: d.webhook.urlCorrect ? 'ok' : 'error',
+          detail: d.webhook.urlCorrect ? 'URL correta' : 'URL incorreta ou ausente',
+          action: !d.webhook.urlCorrect ? { label: 'Corrigir', onClick: () => onReconfigureWebhook(d.instance) } : undefined,
+        });
+
+        // Webhook events check
+        const missing = d.webhook.missingCritical?.length || 0;
+        items.push({
+          label: `Eventos (${d.instance})`,
+          status: missing === 0 ? 'ok' : missing <= 2 ? 'warning' : 'error',
+          detail: missing === 0 ? `${d.webhook.eventsCount} eventos configurados` : `${missing} eventos críticos ausentes`,
+          action: missing > 0 ? { label: 'Reconfigurar', onClick: () => onReconfigureWebhook(d.instance) } : undefined,
+        });
+      }
+
+      // Message flow check
+      if (d.messageFlow) {
+        items.push({
+          label: `Fluxo de Mensagens`,
+          status: d.messageFlow.flowHealth === 'healthy' ? 'ok' : d.messageFlow.flowHealth === 'outbound-only' ? 'warning' : 'error',
+          detail: d.messageFlow.flowHealth === 'healthy'
+            ? `↓${d.messageFlow.lastHour.incoming} ↑${d.messageFlow.lastHour.outgoing}`
+            : d.messageFlow.flowHealth === 'outbound-only' ? 'Apenas enviando, sem recebimento' : 'Sem tráfego na última hora',
+        });
+      }
+    });
+
+    return items;
+  };
+
+  const checklist = buildChecklist();
+  const okCount = checklist.filter(c => c.status === 'ok').length;
+
   return (
     <div className="space-y-4">
       {/* Actions */}
@@ -71,105 +130,100 @@ export function MonitoringDiagnosticPanel({ diagnostic, diagnosing, onRunDiagnos
       </div>
 
       {diagnostic && (
-        <>
-          {/* Overall Health */}
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-            <Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Score + Checklist */}
+          <div className="space-y-4">
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Saúde Geral</CardTitle>
+                  <CardDescription>Score baseado em conexão, webhook e fluxo</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ScoreGauge score={diagnostic.overallHealth.score} />
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Per-instance details */}
+            {diagnostic.diagnostics.map((d, i) => {
+              const sev = severityConfig[d.webhookSeverity] || severityConfig.error;
+              const SevIcon = sev.icon;
+              return (
+                <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (i + 1) * 0.08 }}>
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        {d.instance}
+                        <Badge variant={d.connectionState === 'open' ? 'default' : 'destructive'} className="text-xs">{d.connectionState}</Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className={cn('flex items-center gap-2 p-2.5 rounded-lg', sev.bg)}>
+                        <SevIcon className={cn('w-4 h-4', sev.color)} />
+                        <span className="text-sm font-medium">Webhook: {sev.label}</span>
+                        {d.webhookIssue && <span className="text-xs text-muted-foreground">— {d.webhookIssue}</span>}
+                      </div>
+                      {d.autoFix && (
+                        <div className={cn('p-3 rounded-lg text-xs font-medium', d.autoFix.applied ? 'bg-emerald-500/10 text-emerald-600' : 'bg-destructive/10 text-destructive')}>
+                          {d.autoFix.applied ? '✅ Auto-fix aplicado com sucesso' : '❌ Auto-fix falhou'}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* Checklist */}
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <Card className="h-fit">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">Saúde Geral do Sistema</CardTitle>
-                <CardDescription>Score baseado em conexão, webhook e fluxo de mensagens</CardDescription>
+                <CardTitle className="text-base flex items-center gap-2">
+                  Checklist de Saúde
+                  <Badge variant="outline" className="text-[10px] ml-auto">{okCount}/{checklist.length} OK</Badge>
+                </CardTitle>
+                <CardDescription>Verificações com ações diretas</CardDescription>
               </CardHeader>
               <CardContent>
-                <ScoreGauge score={diagnostic.overallHealth.score} />
+                <div className="space-y-2">
+                  {checklist.map((item, i) => {
+                    const statusIcons = {
+                      ok: <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />,
+                      warning: <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />,
+                      error: <XCircle className="w-4 h-4 text-destructive shrink-0" />,
+                    };
+                    return (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.04 }}
+                        className={cn(
+                          'flex items-center gap-3 p-2.5 rounded-lg',
+                          item.status === 'ok' ? 'bg-emerald-500/5' : item.status === 'warning' ? 'bg-amber-500/5' : 'bg-destructive/5'
+                        )}
+                      >
+                        {statusIcons[item.status]}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium">{item.label}</p>
+                          <p className="text-[11px] text-muted-foreground">{item.detail}</p>
+                        </div>
+                        {item.action && (
+                          <Button size="sm" variant="outline" className="text-[10px] h-7 shrink-0" onClick={item.action.onClick} disabled={reconfiguring}>
+                            {reconfiguring ? <Loader2 className="w-3 h-3 animate-spin" /> : <Radio className="w-3 h-3 mr-1" />}
+                            {item.action.label}
+                          </Button>
+                        )}
+                      </motion.div>
+                    );
+                  })}
+                </div>
               </CardContent>
             </Card>
           </motion.div>
-
-          {/* Per-instance diagnostics */}
-          {diagnostic.diagnostics.map((d, i) => {
-            const sev = severityConfig[d.webhookSeverity] || severityConfig.error;
-            const SevIcon = sev.icon;
-
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: (i + 1) * 0.08 }}
-              >
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      {d.instance}
-                      <Badge variant={d.connectionState === 'open' ? 'default' : 'destructive'} className="text-xs">
-                        {d.connectionState}
-                      </Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {/* Webhook Status */}
-                    <div className={cn('flex items-center gap-2 p-2.5 rounded-lg', sev.bg)}>
-                      <SevIcon className={cn('w-4 h-4', sev.color)} />
-                      <span className="text-sm font-medium">Webhook: {sev.label}</span>
-                      {d.webhookIssue && <span className="text-xs text-muted-foreground">— {d.webhookIssue}</span>}
-                    </div>
-
-                    {d.webhook && (
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="p-2.5 rounded-lg bg-muted/50">
-                          <span className="text-muted-foreground">URL Correta:</span>{' '}
-                          <span className={d.webhook.urlCorrect ? 'text-emerald-500 font-medium' : 'text-destructive font-medium'}>
-                            {d.webhook.urlCorrect ? 'Sim ✓' : 'Não ✗'}
-                          </span>
-                        </div>
-                        <div className="p-2.5 rounded-lg bg-muted/50">
-                          <span className="text-muted-foreground">Eventos:</span>{' '}
-                          <span className="font-medium">{d.webhook.eventsCount}</span>
-                        </div>
-                      </div>
-                    )}
-
-                    {d.webhook?.missingCritical && d.webhook.missingCritical.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        <span className="text-xs text-muted-foreground mr-1">Ausentes:</span>
-                        {d.webhook.missingCritical.map(e => (
-                          <Badge key={e} variant="destructive" className="text-[10px]">{e}</Badge>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Message Flow */}
-                    {d.messageFlow && (
-                      <div className="flex items-center gap-4 text-xs">
-                        <Badge variant="outline" className={cn(
-                          'border',
-                          d.messageFlow.flowHealth === 'healthy' ? 'border-emerald-500/30 text-emerald-600' : 'border-destructive/30 text-destructive'
-                        )}>
-                          Fluxo: {d.messageFlow.flowHealth === 'healthy' ? '✓ Saudável' : d.messageFlow.flowHealth}
-                        </Badge>
-                        <span className="text-muted-foreground">↓{d.messageFlow.lastHour.incoming} ↑{d.messageFlow.lastHour.outgoing}</span>
-                      </div>
-                    )}
-
-                    {/* Auto-fix result */}
-                    {d.autoFix && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className={cn(
-                          'p-3 rounded-lg text-xs font-medium',
-                          d.autoFix.applied ? 'bg-emerald-500/10 text-emerald-600' : 'bg-destructive/10 text-destructive'
-                        )}
-                      >
-                        {d.autoFix.applied ? '✅ Auto-fix aplicado com sucesso' : '❌ Auto-fix falhou'}
-                      </motion.div>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </>
+        </div>
       )}
 
       {!diagnostic && !diagnosing && (
