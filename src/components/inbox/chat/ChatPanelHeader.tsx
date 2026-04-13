@@ -1,56 +1,19 @@
 import { cn } from '@/lib/utils';
-import { VisionIcon } from '../ai-tools/VisionIcon';
 import { Conversation } from '@/types/chat';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { TypingIndicatorCompact } from '../TypingIndicator';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SLAIndicator } from '../SLAIndicator';
-
-
+import { ChatHeaderToolbar } from './ChatHeaderToolbar';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import {
-  MoreVertical,
-  Video,
-  Tag,
-  Archive,
-  CheckCircle,
-  Clock,
-  ArrowRight,
-  ArrowLeft,
-  PhoneCall,
-  Search,
-  
-  Info,
-  ExternalLink,
-  FileText,
-  Loader2,
-  XCircle,
-  Radar,
-  GraduationCap,
-} from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { MoreVertical, Tag, Archive, CheckCircle, Clock, ArrowRight, ArrowLeft, ExternalLink, XCircle } from 'lucide-react';
 import { openChatPopup } from '@/lib/popupManager';
 
-
-interface ChatMessage {
-  id: string;
-  content: string;
-  sender: string;
-  timestamp: string;
-}
-
+interface ChatMessage { id: string; content: string; sender: string; timestamp: string; }
 type ActiveTool = 'chatSearch' | 'objections' | 'university' | 'aiAssistant' | 'summary' | null;
 
 interface ChatPanelHeaderProps {
@@ -82,46 +45,17 @@ interface ChatPanelHeaderProps {
 }
 
 export function ChatPanelHeader({
-  conversation,
-  isContactTyping,
-  showAIAssistant,
-  showDetails,
-  showSummaryPanel,
-  voiceId,
-  speed,
-  onToggleAIAssistant,
-  onToggleDetails,
-  onStartCall,
-  onOpenSearch,
-  onOpenTransfer,
-  onOpenSchedule,
-  onVoiceChange,
-  onSpeedChange,
-  onBack,
-  onGenerateSummary,
-  isSummaryLoading,
-  canGenerateSummary,
-  onCloseConversation,
-  lastMessages = [],
-  allMessages = [],
-  onSelectSuggestion,
-  activeTool,
-  onSetActiveTool,
+  conversation, isContactTyping, showAIAssistant, showDetails, showSummaryPanel,
+  onToggleAIAssistant, onToggleDetails, onOpenSearch, onOpenTransfer, onOpenSchedule,
+  onBack, onGenerateSummary, isSummaryLoading, onCloseConversation, activeTool, onSetActiveTool,
 }: ChatPanelHeaderProps) {
   const isMobile = useIsMobile();
-  
+
   return (
     <div className="flex items-center justify-between px-3 md:px-5 h-[56px] md:h-[65px] border-b border-border bg-card shrink-0">
       <div className="flex items-center gap-2 md:gap-3 min-w-0">
-        {/* Back button on mobile */}
         {isMobile && onBack && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-8 h-8 rounded-xl shrink-0 touch-manipulation"
-            onClick={onBack}
-            aria-label="Voltar"
-          >
+          <Button variant="ghost" size="icon" className="w-8 h-8 rounded-xl shrink-0 touch-manipulation" onClick={onBack} aria-label="Voltar">
             <ArrowLeft className="w-5 h-5" />
           </Button>
         )}
@@ -132,14 +66,11 @@ export function ChatPanelHeader({
               {conversation.contact.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
             </AvatarFallback>
           </Avatar>
-          {/* Online status dot */}
           <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[hsl(var(--online))] border-2 border-card" />
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-foreground text-[15px]">
-              {conversation.contact.name}
-            </h3>
+            <h3 className="font-semibold text-foreground text-[15px]">{conversation.contact.name}</h3>
             <SLAIndicator
               firstMessageAt={conversation.createdAt}
               firstResponseAt={conversation.status === 'resolved' ? conversation.updatedAt : null}
@@ -149,181 +80,44 @@ export function ChatPanelHeader({
             />
           </div>
           <p className="text-xs text-muted-foreground">
-            {isContactTyping ? (
-              <TypingIndicatorCompact isVisible={true} />
-            ) : (
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--online))]" />
-                Online
-              </span>
+            {isContactTyping ? <TypingIndicatorCompact isVisible={true} /> : (
+              <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--online))]" />Online</span>
             )}
           </p>
         </div>
       </div>
 
       <div className="flex items-center gap-0.5">
-        {/* Action buttons with standardized tooltips */}
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="w-9 h-9 text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary ring-1 ring-primary/20"
-              onClick={onOpenSearch}
-              aria-label="Buscar na conversa"
-            >
-              <Search className="w-[18px] h-[18px]" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">Buscar na conversa (Ctrl+F)</TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "w-9 h-9 text-muted-foreground hover:text-foreground hover:bg-muted",
-                activeTool === 'objections' && "text-primary bg-primary/10"
-              )}
-              onClick={() => onSetActiveTool?.('objections')}
-              aria-label="Monitoramento de Objeções"
-            >
-              <Radar className="w-[18px] h-[18px]" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">Monitoramento de Objeções</TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "w-9 h-9 text-muted-foreground hover:text-foreground hover:bg-muted",
-                activeTool === 'university' && "text-primary bg-primary/10"
-              )}
-              onClick={() => onSetActiveTool?.('university')}
-              aria-label="Ajuda dos Universitários"
-            >
-              <GraduationCap className="w-[18px] h-[18px]" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">Ajuda dos Universitários</TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className={cn(
-                "w-9 h-9 text-muted-foreground hover:text-foreground hover:bg-muted",
-                showAIAssistant && "text-primary bg-primary/10"
-              )}
-              onClick={onToggleAIAssistant}
-              aria-label="Visão"
-            >
-              <VisionIcon className="w-[18px] h-[18px]" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">Visão</TooltipContent>
-        </Tooltip>
-
-        {onGenerateSummary && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className={cn(
-                  "w-9 h-9 text-muted-foreground hover:text-foreground hover:bg-muted",
-                  showSummaryPanel && "text-primary bg-primary/10"
-                )}
-                onClick={onGenerateSummary}
-                disabled={isSummaryLoading}
-                aria-label="Abrir painel de resumo da conversa"
-              >
-                {isSummaryLoading ? (
-                  <Loader2 className="w-[18px] h-[18px] animate-spin" />
-                ) : (
-                  <FileText className="w-[18px] h-[18px]" />
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">Resumo da conversa</TooltipContent>
-          </Tooltip>
-        )}
-
-        {onToggleDetails && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className={cn(
-                  "w-9 h-9 text-muted-foreground hover:text-foreground hover:bg-muted relative",
-                  showDetails && "text-primary bg-primary/10"
-                )}
-                onClick={onToggleDetails}
-                aria-label="Detalhes do contato">
-                <Info className="w-[18px] h-[18px]" />
-                {!showDetails && (
-                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary animate-pulse" />
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">Detalhes do contato</TooltipContent>
-          </Tooltip>
-        )}
-
-
+        <ChatHeaderToolbar
+          activeTool={activeTool} showAIAssistant={showAIAssistant} showDetails={showDetails}
+          showSummaryPanel={showSummaryPanel} isSummaryLoading={isSummaryLoading}
+          onOpenSearch={onOpenSearch} onSetActiveTool={onSetActiveTool}
+          onToggleAIAssistant={onToggleAIAssistant} onToggleDetails={onToggleDetails}
+          onGenerateSummary={onGenerateSummary}
+        />
 
         <DropdownMenu>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="w-9 h-9 text-muted-foreground hover:text-foreground hover:bg-muted" aria-label="Mais ações">
-                  <MoreVertical className="w-[18px] h-[18px]" />
-                </Button>
-              </DropdownMenuTrigger>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">Mais ações</TooltipContent>
-          </Tooltip>
+          <Tooltip><TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="w-9 h-9 text-muted-foreground hover:text-foreground hover:bg-muted" aria-label="Mais ações">
+                <MoreVertical className="w-[18px] h-[18px]" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger><TooltipContent side="bottom">Mais ações</TooltipContent></Tooltip>
           <DropdownMenuContent align="end" className="w-48 bg-popover border-border">
             <DropdownMenuItem onClick={() => openChatPopup(conversation.contact.id, conversation.contact.name)}>
-              <ExternalLink className="w-4 h-4 mr-2" />
-              Abrir em popup
+              <ExternalLink className="w-4 h-4 mr-2" />Abrir em popup
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Tag className="w-4 h-4 mr-2" />
-              Adicionar tag
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onOpenTransfer}>
-              <ArrowRight className="w-4 h-4 mr-2" />
-              Transferir
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onOpenSchedule}>
-              <Clock className="w-4 h-4 mr-2" />
-              Agendar mensagem
-            </DropdownMenuItem>
+            <DropdownMenuItem><Tag className="w-4 h-4 mr-2" />Adicionar tag</DropdownMenuItem>
+            <DropdownMenuItem onClick={onOpenTransfer}><ArrowRight className="w-4 h-4 mr-2" />Transferir</DropdownMenuItem>
+            <DropdownMenuItem onClick={onOpenSchedule}><Clock className="w-4 h-4 mr-2" />Agendar mensagem</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Marcar como resolvido
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Archive className="w-4 h-4 mr-2" />
-              Arquivar
-            </DropdownMenuItem>
+            <DropdownMenuItem><CheckCircle className="w-4 h-4 mr-2" />Marcar como resolvido</DropdownMenuItem>
+            <DropdownMenuItem><Archive className="w-4 h-4 mr-2" />Arquivar</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onCloseConversation} className="text-destructive focus:text-destructive">
-              <XCircle className="w-4 h-4 mr-2" />
-              Encerrar Conversa
+              <XCircle className="w-4 h-4 mr-2" />Encerrar Conversa
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
