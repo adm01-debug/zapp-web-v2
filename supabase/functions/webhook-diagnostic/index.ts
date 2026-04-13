@@ -47,12 +47,13 @@ Deno.serve(async (req: Request) => {
 
       // 2a. Check instance status
       try {
-        const statusRes = await fetch(`${evolutionUrl}/instance/connectionState/${conn.instance_id}`, {
+        const statusRes = await fetch(`${evolutionUrl}/instance/fetchInstances?instanceName=${conn.instance_id}`, {
           headers: { apikey: evolutionKey },
           signal: AbortSignal.timeout(10000),
         });
         const statusData = await statusRes.json();
-        diag.connectionState = statusData?.instance?.state || statusData?.state || 'unknown';
+        const inst = Array.isArray(statusData) ? statusData[0] : statusData;
+        diag.connectionState = inst?.instance?.status || inst?.state || 'unknown';
         diag.statusOk = statusRes.ok;
       } catch (e) {
         diag.connectionState = 'error';
