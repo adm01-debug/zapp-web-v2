@@ -70,7 +70,7 @@ export function useEvolutionMonitoring() {
   const fetchData = useCallback(async () => {
     try {
       const now = new Date();
-      const sixHoursAgo = new Date(now.getTime() - 6 * 60 * 60 * 1000);
+      const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
 
       const [connRes, logsRes, msgRes] = await Promise.all([
         supabase.from('whatsapp_connections').select('id, instance_id, phone_number, status, health_status, health_response_ms, last_health_check, updated_at'),
