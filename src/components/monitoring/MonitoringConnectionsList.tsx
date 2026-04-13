@@ -60,11 +60,11 @@ export function MonitoringConnectionsList({ connections, webhookTest, onCheckWeb
   );
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" role="list" aria-label="Lista de conexões WhatsApp">
       {connections.map((conn, i) => {
         const offline = conn.status !== 'connected';
         return (
-          <motion.div key={conn.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+          <motion.div key={conn.id} role="listitem" aria-label={`Conexão ${conn.instance_id} - ${conn.status}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
             <Card className="hover:shadow-md transition-all border-border/60">
               <CardContent className="py-4 px-5">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -110,7 +110,7 @@ export function MonitoringConnectionsList({ connections, webhookTest, onCheckWeb
                 </div>
                 {qrCodes[conn.instance_id] && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="mt-4 flex justify-center">
-                    <div className="p-4 bg-white rounded-xl border shadow-sm">
+                    <div className="p-4 bg-background rounded-xl border shadow-sm">
                       <img src={qrCodes[conn.instance_id]} alt={`QR ${conn.instance_id}`} className="w-48 h-48 object-contain" />
                       <p className="text-[10px] text-center text-muted-foreground mt-2">Escaneie com WhatsApp</p>
                     </div>
