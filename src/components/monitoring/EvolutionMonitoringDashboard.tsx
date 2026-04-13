@@ -15,6 +15,7 @@ import { MonitoringWebhookPanel } from './MonitoringWebhookPanel';
 import { MonitoringHealthLogs } from './MonitoringHealthLogs';
 import { MonitoringDiagnosticPanel } from './MonitoringDiagnosticPanel';
 import { MonitoringEventTimeline } from './MonitoringEventTimeline';
+import { MonitoringAvailabilityHeatmap } from './MonitoringAvailabilityHeatmap';
 
 const PERIODS: { value: TimePeriod; label: string }[] = [
   { value: '1h', label: '1h' },
@@ -116,6 +117,8 @@ export function EvolutionMonitoringDashboard() {
         </div>
         <MonitoringEventTimeline />
       </div>
+
+      <MonitoringAvailabilityHeatmap healthLogs={healthLogs} />
 
       <Tabs defaultValue="connections" className="space-y-4">
         <TabsList>
