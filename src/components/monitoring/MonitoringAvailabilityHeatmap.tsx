@@ -16,14 +16,6 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const DAYS = 7;
 const HEALTHY = ['connected', 'healthy'];
 
-interface CellData {
-  date: Date;
-  hour: number;
-  total: number;
-  healthy: number;
-  ratio: number;
-}
-
 function getCellColor(ratio: number, total: number): string {
   if (total === 0) return 'bg-muted/30';
   if (ratio >= 0.95) return 'bg-emerald-500';
@@ -36,13 +28,13 @@ function getCellColor(ratio: number, total: number): string {
 export function MonitoringAvailabilityHeatmap({ healthLogs }: Props) {
   const { grid, overallUptime, dayLabels } = useMemo(() => {
     const now = new Date();
-    const cells: CellData[][] = [];
+    const cells: { total: number; healthy: number; ratio: number; date: Date; hour: number }[][] = [];
     const labels: string[] = [];
 
     for (let d = DAYS - 1; d >= 0; d--) {
       const day = subDays(now, d);
       labels.push(format(day, 'EEE dd/MM', { locale: ptBR }));
-      const row: CellData[] = [];
+      const row: typeof cells[0] = [];
 
       for (const h of HOURS) {
         const start = new Date(day.getFullYear(), day.getMonth(), day.getDate(), h, 0, 0);
@@ -65,9 +57,9 @@ export function MonitoringAvailabilityHeatmap({ healthLogs }: Props) {
 
     const totalAll = healthLogs.length;
     const healthyAll = healthLogs.filter(l => HEALTHY.includes(l.status)).length;
-    const uptime = totalAll > 0 ? Math.round((healthyAll / totalAll) * 1000) / 10 : 100;
+    const up = totalAll > 0 ? Math.round((healthyAll / totalAll) * 1000) / 10 : 100;
 
-    return { grid: cells, overallUptime: uptime, dayLabels: labels };
+    return { grid: cells, overallUptime: up, dayLabels: labels };
   }, [healthLogs]);
 
   return (
