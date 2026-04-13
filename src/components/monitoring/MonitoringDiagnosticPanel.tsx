@@ -143,9 +143,12 @@ export function MonitoringDiagnosticPanel({ diagnostic, diagnosing, onRunDiagnos
           {diagnosing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Wrench className="w-4 h-4 mr-2" />}Diagnóstico + Auto-Fix
         </Button>
         {diagnostic && (
-          <div className="flex items-center gap-2 ml-auto">
-            <Button variant="ghost" size="sm" className="text-xs h-8" onClick={() => exportReport(diagnostic)}>
-              <Download className="w-3.5 h-3.5 mr-1" />Exportar
+          <div className="flex items-center gap-2 ml-auto flex-wrap">
+            <Button variant="ghost" size="sm" className="text-xs h-8" onClick={() => exportReportTxt(diagnostic)}>
+              <Download className="w-3.5 h-3.5 mr-1" />TXT
+            </Button>
+            <Button variant="ghost" size="sm" className="text-xs h-8" onClick={() => exportReportPdf(diagnostic)}>
+              <FileText className="w-3.5 h-3.5 mr-1" />PDF
             </Button>
             <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{new Date(diagnostic.timestamp).toLocaleString('pt-BR')}</span>
           </div>
