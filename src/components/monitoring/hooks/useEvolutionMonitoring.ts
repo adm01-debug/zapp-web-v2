@@ -75,7 +75,7 @@ export function useEvolutionMonitoring() {
       const [connRes, logsRes, msgRes] = await Promise.all([
         supabase.from('whatsapp_connections').select('id, instance_id, phone_number, status, health_status, health_response_ms, last_health_check, updated_at'),
         supabase.from('connection_health_logs').select('*').order('checked_at', { ascending: false }).limit(100),
-        supabase.from('messages').select('sender, created_at').gte('created_at', sixHoursAgo.toISOString()).order('created_at', { ascending: true }),
+        supabase.from('messages').select('sender, created_at').gte('created_at', twelveHoursAgo.toISOString()).order('created_at', { ascending: true }),
       ]);
 
       if (connRes.data) setConnections(connRes.data);
