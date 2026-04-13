@@ -70,12 +70,12 @@ export function useEvolutionMonitoring() {
   const fetchData = useCallback(async () => {
     try {
       const now = new Date();
-      const sixHoursAgo = new Date(now.getTime() - 6 * 60 * 60 * 1000);
+      const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
 
       const [connRes, logsRes, msgRes] = await Promise.all([
         supabase.from('whatsapp_connections').select('id, instance_id, phone_number, status, health_status, health_response_ms, last_health_check, updated_at'),
         supabase.from('connection_health_logs').select('*').order('checked_at', { ascending: false }).limit(100),
-        supabase.from('messages').select('sender, created_at').gte('created_at', sixHoursAgo.toISOString()).order('created_at', { ascending: true }),
+        supabase.from('messages').select('sender, created_at').gte('created_at', twelveHoursAgo.toISOString()).order('created_at', { ascending: true }),
       ]);
 
       if (connRes.data) setConnections(connRes.data);
@@ -87,7 +87,7 @@ export function useEvolutionMonitoring() {
 
         // Build hourly buckets
         const buckets: Record<string, { incoming: number; outgoing: number }> = {};
-        for (let i = 5; i >= 0; i--) {
+        for (let i = 11; i >= 0; i--) {
           const h = new Date(now.getTime() - i * 60 * 60 * 1000);
           const key = `${h.getHours().toString().padStart(2, '0')}:00`;
           buckets[key] = { incoming: 0, outgoing: 0 };
