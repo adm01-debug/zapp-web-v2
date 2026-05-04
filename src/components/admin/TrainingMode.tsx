@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,13 @@ import { Json } from '@/integrations/supabase/types';
 interface SimMessage {
   role: 'customer' | 'agent';
   content: string;
+}
+
+interface TrainingSession {
+  id: string;
+  scenario_name: string;
+  status: string;
+  score: number | null;
 }
 
 const SCENARIOS = [
@@ -46,25 +53,17 @@ export function TrainingMode() {
   const [customerStep, setCustomerStep] = useState(0);
   const [score, setScore] = useState<number | null>(null);
   const [feedback, setFeedback] = useState('');
-  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<TrainingSession[]>([]);
   const [profileId, setProfileId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
-  useEffect(() => {
-    if (profileId) loadSessions();
-  }, [profileId]);
-
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const { data } = await supabase.from('profiles').select('id').eq('user_id', user.id).single();
     if (data) setProfileId(data.id);
-  };
+  }, []);
 
-  const loadSessions = async () => {
+  const loadSessions = useCallback(async () => {
     if (!profileId) return;
     const { data } = await supabase
       .from('training_sessions')
@@ -72,8 +71,18 @@ export function TrainingMode() {
       .eq('profile_id', profileId)
       .order('created_at', { ascending: false })
       .limit(10);
-    if (data) setSessions(data);
-  };
+    if (data) setSessions(data as TrainingSession[]);
+  }, [profileId]);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
+  useEffect(() => {
+    if (profileId) {
+      loadSessions();
+    }
+  }, [profileId, loadSessions]);
 
   const startScenario = async (s: typeof SCENARIOS[0]) => {
     if (!profileId) return;
