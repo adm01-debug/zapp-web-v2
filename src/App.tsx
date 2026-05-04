@@ -114,7 +114,12 @@ function AppContent() {
   const [deferredReady, setDeferredReady] = useState(false);
 
   useEffect(() => {
-    // Immediate activation for critical UI parts
+    console.log('[BOOT] AppContent mounted');
+    if (window.performance && window.performance.mark) {
+      performance.mark('app-content-mounted');
+      const measure = performance.measure('total-load', undefined, 'app-content-mounted');
+      console.log(`[METRIC] Total Load Time: ${measure.duration.toFixed(2)}ms`);
+    }
     setDeferredReady(true);
   }, []);
 

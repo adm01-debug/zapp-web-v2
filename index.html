@@ -71,46 +71,36 @@
     }
     </script>
 
-    <!-- Theme flash prevention (dark/light + skin CSS vars) -->
     <script>
       (function(){
+        window.__APP_START_TIME__ = performance.now();
+        console.log('[BOOT] HTML scripts execution started');
+        
+        function logMetric(name, value) {
+          console.log('[METRIC] ' + name + ': ' + (value || performance.now() - window.__APP_START_TIME__).toFixed(2) + 'ms');
+        }
+
         try {
+          logMetric('Theme Init Start');
           var t = localStorage.getItem('theme');
           var isDark = t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          if (isDark) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-          // Restore skin CSS vars before React mounts
+          document.documentElement.classList.toggle('dark', isDark);
+          
           var skin = localStorage.getItem('theme-custom-colors');
           if (skin) {
             var c = JSON.parse(skin);
-            var normalizedPreset = (!c.preset || c.preset === 'purpure' || c.preset === 'default') ? 'corporate' : c.preset;
-            var expectedMode = isDark ? 'dark' : 'light';
-            var canReuseCachedVars = c.cssVarsCache && c.cachePreset === normalizedPreset && c.cacheMode === expectedMode;
-
-            c.preset = normalizedPreset;
-
-            if (!canReuseCachedVars) {
-              delete c.cssVarsCache;
-              delete c.cachePreset;
-              delete c.cacheMode;
-              localStorage.setItem('theme-custom-colors', JSON.stringify(c));
-            }
-
+            var root = document.documentElement;
             if (c.cssVarsCache) {
-              var root = document.documentElement;
-              var vars = c.cssVarsCache;
-              for (var k in vars) {
-                if (vars.hasOwnProperty(k)) root.style.setProperty('--' + k, vars[k]);
-              }
+              for (var k in c.cssVarsCache) root.style.setProperty('--' + k, c.cssVarsCache[k]);
             }
             if (c.borderRadius != null) {
-              document.documentElement.style.setProperty('--radius', (c.borderRadius / 16) + 'rem');
+              root.style.setProperty('--radius', (c.borderRadius / 16) + 'rem');
             }
           }
-        } catch(e){}
+          logMetric('Theme Init End');
+        } catch(e) {
+          console.error('[BOOT] Theme init failed:', e);
+        }
       })();
     </script>
     <meta property="og:title" content="ZAPP Web - Plataforma de Multiatendimento">
