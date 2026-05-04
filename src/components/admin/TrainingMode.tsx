@@ -15,6 +15,13 @@ interface SimMessage {
   content: string;
 }
 
+interface TrainingSession {
+  id: string;
+  scenario_name: string;
+  status: string;
+  score: number | null;
+}
+
 const SCENARIOS = [
   { name: 'Reclamação sobre entrega', type: 'support', customerScript: [
     'Boa tarde, meu pedido não chegou e já passaram 5 dias.',
