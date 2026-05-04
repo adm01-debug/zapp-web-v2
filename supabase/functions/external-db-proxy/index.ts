@@ -12,11 +12,11 @@ Deno.serve(async (req) => {
 
   try {
     const url = Deno.env.get('EXTERNAL_SUPABASE_URL')
-    
+    const key = Deno.env.get('EXTERNAL_SUPABASE_ANON_KEY')
 
-    const ext = createClient(url, key, {
-      auth: { persistSession: false, autoRefreshToken: false }
-    })
+    // Validate URL is properly configured (not a placeholder)
+    if (!url || !key || url.includes('PLACEHOLDER') || !url.startsWith('https://')) {
+      console.error('EXTERNAL_SUPABASE_URL not configured correctly. Got:', url 
 
     const body = await req.json()
     const { action, table, select, filters, order, limit, offset, countMode, rpc, params, data, match } = body
