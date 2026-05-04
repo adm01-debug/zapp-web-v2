@@ -1,7 +1,6 @@
 /* ===== DESIGN TOKENS — Light & Dark mode CSS variables ===== */
 
-@layer base {
-  :root {
+:root {
     /* ===== FONTS ===== */
     --font-sans: 'Outfit', system-ui, sans-serif;
     --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -206,10 +205,10 @@
     --chart-sentiment-positive: 160 70% 42%;
     --chart-sentiment-neutral: 220 10% 50%;
     --chart-sentiment-negative: 0 84% 60%;
-  }
+}
 
-  /* ===== DARK MODE - Corporate Blue ===== */
-  .dark {
+/* ===== DARK MODE - Corporate Blue ===== */
+.dark {
     --background: 0 0% 4%;
     --foreground: 0 0% 97%;
     --card: 240 7% 11%;
@@ -317,5 +316,4 @@
     --chart-sentiment-positive: 155 80% 52%;
     --chart-sentiment-neutral: 220 25% 65%;
     --chart-sentiment-negative: 0 85% 62%;
-  }
 }
