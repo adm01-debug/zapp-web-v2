@@ -31,7 +31,6 @@ export function ThemeInitializer() {
   const { resolvedTheme } = useTheme();
 
   useEffect(() => {
-    console.log("[ThemeInitializer] Initializing theme...");
     const saved = localStorage.getItem(STORAGE_KEY);
     let presetId = DEFAULT_PRESET_ID;
     let radius = 8;
@@ -73,7 +72,6 @@ export function ThemeInitializer() {
     }
 
     document.documentElement.style.setProperty('--radius', `${radius / 16}rem`);
-    console.log("[ThemeInitializer] Theme variables applied.");
   }, [resolvedTheme]);
 
   return null;

@@ -257,7 +257,6 @@ const DeferredHooks = lazy(() =>
 );
 
 function AppWithErrorRecovery() {
-  console.log("[AppWithErrorRecovery] Rendering wrapper...");
   const [errorKey, setErrorKey] = useState(0);
   const retryCountRef = useRef(0);
   const MAX_RETRIES = 3;
@@ -297,10 +296,7 @@ function AppWithErrorRecovery() {
   );
 }
 
-const App = () => {
-  console.log("[AppRoot] Rendering App...");
-  return <AppWithErrorRecovery />;
-};
+const App = () => <AppWithErrorRecovery />;
 
 export default App;
 

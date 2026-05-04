@@ -73,10 +73,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        console.log("[Auth] Session found, fetching profile...");
         fetchProfile(session.user.id);
       }
-      console.log("[Auth] Auth initialization complete, setting loading=false");
       setLoading(false);
     });
 
