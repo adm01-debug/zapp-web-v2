@@ -71,7 +71,7 @@ export function TrainingMode() {
       .eq('profile_id', profileId)
       .order('created_at', { ascending: false })
       .limit(10);
-    if (data) setSessions(data);
+    if (data) setSessions(data as TrainingSession[]);
   }, [profileId]);
 
   useEffect(() => {
