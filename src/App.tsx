@@ -37,10 +37,13 @@ function DeferredProviders({ children }: { children?: React.ReactNode }) {
 }
 
 // Retry wrapper for lazy imports to handle transient network failures
-function lazyWithRetry(factory: () => Promise<any>, retries = 3): React.LazyExoticComponent<any> {
+function lazyWithRetry<T extends React.ComponentType<any>>(
+  factory: () => Promise<{ default: T }>,
+  retries = 3
+): React.LazyExoticComponent<T> {
   return lazy(() => {
     let attempt = 0;
-    const load = (): Promise<any> =>
+    const load = (): Promise<{ default: T }> =>
       factory().catch((err: unknown) => {
         attempt++;
         if (attempt < retries) {
