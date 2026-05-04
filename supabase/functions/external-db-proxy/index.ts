@@ -16,7 +16,17 @@ Deno.serve(async (req) => {
 
     // Validate URL is properly configured (not a placeholder)
     if (!url || !key || url.includes('PLACEHOLDER') || !url.startsWith('https://')) {
-      console.error('EXTERNAL_SUPABASE_URL not configured correctly. Got:', url 
+      console.error('EXTERNAL_SUPABASE_URL not configured correctly')
+      return new Response(JSON.stringify({
+        error: 'External DB not configured. Please set EXTERNAL_SUPABASE_URL and EXTERNAL_SUPABASE_ANON_KEY secrets to valid values.'
+      }), {
+        status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    const ext = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    })
 
     const body = await req.json()
     const { action, table, select, filters, order, limit, offset, countMode, rpc, params, data, match } = body
