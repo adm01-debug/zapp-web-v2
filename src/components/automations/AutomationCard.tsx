@@ -8,6 +8,11 @@ import { cn } from '@/lib/utils';
 import { TRIGGER_TYPES, ACTION_TYPES } from './automationConstants';
 import type { AutomationRow } from './useAutomations';
 
+interface AutomationAction {
+  type: string;
+  [key: string]: unknown;
+}
+
 interface AutomationCardProps {
   automation: AutomationRow;
   onToggle: () => void;
