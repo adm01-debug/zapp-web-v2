@@ -329,7 +329,8 @@ describe('Team Chat — Exhaustive Audit', () => {
     });
 
     it('should not save empty edits', () => {
-      expect(panelHookSrc).toMatch(/!trimmed.*handleCancelEdit/);
+      expect(panelHookSrc).toContain('!trimmed');
+      expect(panelHookSrc).toContain('handleCancelEdit');
     });
   });
 
