@@ -114,12 +114,8 @@ function AppContent() {
   const [deferredReady, setDeferredReady] = useState(false);
 
   useEffect(() => {
-    const id = requestAnimationFrame(() => {
-      // Reduced delay to show content faster
-      const timer = setTimeout(() => setDeferredReady(true), 100);
-      return () => clearTimeout(timer);
-    });
-    return () => cancelAnimationFrame(id);
+    // Immediate activation for critical UI parts
+    setDeferredReady(true);
   }, []);
 
   // Global unhandled rejection handler
