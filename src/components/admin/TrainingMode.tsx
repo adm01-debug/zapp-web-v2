@@ -53,7 +53,7 @@ export function TrainingMode() {
   const [customerStep, setCustomerStep] = useState(0);
   const [score, setScore] = useState<number | null>(null);
   const [feedback, setFeedback] = useState('');
-  const [sessions, setSessions] = useState<unknown[]>([]);
+  const [sessions, setSessions] = useState<TrainingSession[]>([]);
   const [profileId, setProfileId] = useState<string | null>(null);
 
   const loadProfile = useCallback(async () => {
