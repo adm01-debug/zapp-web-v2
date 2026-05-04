@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -68,7 +68,7 @@ export function AdvancedMessageMenu({ instanceName, recipientNumber, onPollSent,
 
   const { sendStickerMessage, sendPollMessage, sendContactMessage, sendStatusMessage, isLoading } = useEvolutionApi();
 
-  const handleSendSticker = async () => {
+  const handleSendSticker = useCallback(async () => {
     if (!stickerUrl.trim()) return;
     try {
       await sendStickerMessage(instanceName, recipientNumber, stickerUrl);
@@ -78,9 +78,9 @@ export function AdvancedMessageMenu({ instanceName, recipientNumber, onPollSent,
     } catch {
       toast.error('Erro ao enviar figurinha');
     }
-  };
+  }, [stickerUrl, instanceName, recipientNumber, sendStickerMessage]);
 
-  const handleSendPoll = async () => {
+  const handleSendPoll = useCallback(async () => {
     const validOptions = pollOptions.filter(o => o.trim());
     if (!pollName.trim() || validOptions.length < 2) {
       toast.error('Preencha o título e pelo menos 2 opções');
@@ -102,9 +102,9 @@ export function AdvancedMessageMenu({ instanceName, recipientNumber, onPollSent,
     } catch {
       toast.error('Erro ao enviar enquete');
     }
-  };
+  }, [pollName, pollOptions, pollSelectableCount, instanceName, recipientNumber, sendPollMessage, onPollSent]);
 
-  const handleSendContact = async () => {
+  const handleSendContact = useCallback(async () => {
     if (!contactCard.fullName.trim() || !contactCard.phoneNumber.trim()) {
       toast.error('Nome e telefone são obrigatórios');
       return;
@@ -124,9 +124,9 @@ export function AdvancedMessageMenu({ instanceName, recipientNumber, onPollSent,
     } catch {
       toast.error('Erro ao enviar contato');
     }
-  };
+  }, [contactCard, instanceName, recipientNumber, sendContactMessage, onContactSent]);
 
-  const handleSendStatus = async () => {
+  const handleSendStatus = useCallback(async () => {
     if (!statusText.trim()) return;
     try {
       await sendStatusMessage(instanceName, { type: 'text', content: statusText });
@@ -136,14 +136,14 @@ export function AdvancedMessageMenu({ instanceName, recipientNumber, onPollSent,
     } catch {
       toast.error('Erro ao publicar status');
     }
-  };
+  }, [statusText, instanceName, sendStatusMessage]);
 
-  const menuItems = [
+  const menuItems = useCallback(() => [
     { icon: Sticker, label: 'Figurinha', onClick: () => { setPopoverOpen(false); setStickerDialog(true); } },
     { icon: BarChart3, label: 'Enquete', onClick: () => { setPopoverOpen(false); setPollDialog(true); } },
     { icon: Contact2, label: 'Cartão de Contato', onClick: () => { setPopoverOpen(false); setContactDialog(true); } },
     { icon: Radio, label: 'Status/Story', onClick: () => { setPopoverOpen(false); setStatusDialog(true); } },
-  ];
+  ], []);
 
   return (
     <>
@@ -154,8 +154,8 @@ export function AdvancedMessageMenu({ instanceName, recipientNumber, onPollSent,
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-56 p-2 glass-strong border-border/50" align="start">
-          <div className="space-y-1">
-            {menuItems.map(({ icon: Icon, label, onClick }) => (
+           <div className="space-y-1">
+            {menuItems().map(({ icon: Icon, label, onClick }) => (
               <button
                 key={label}
                 onClick={onClick}
