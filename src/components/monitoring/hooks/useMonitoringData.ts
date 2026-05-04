@@ -35,11 +35,14 @@ function computeInstanceUptimes(logs: HealthLog[], now: Date): InstanceUptime[] 
   });
 }
 
-function computeSparklines(logs: HealthLog[], msgs: { sender: string; created_at: string }[], now: Date): SparklineData {
+function computeSparklines(logs: HealthLog[], msgs: { sender: string; created_at: string }[], now: Date, period: TimePeriod): SparklineData {
   const r: SparklineData = { messages: [], latency: [], uptime: [] };
+  const ms = periodMs[period];
+  const bucketSize = ms / 8;
+
   for (let i = 7; i >= 0; i--) {
-    const s = new Date(now.getTime() - (i + 1) * 3600000);
-    const e = new Date(now.getTime() - i * 3600000);
+    const s = new Date(now.getTime() - (i + 1) * bucketSize);
+    const e = new Date(now.getTime() - i * bucketSize);
     const hl = logs.filter(l => { const t = new Date(l.checked_at); return t >= s && t < e; });
     const hh = hl.filter(l => HEALTHY_STATUSES.includes(l.status));
     r.uptime.push(hl.length > 0 ? Math.round((hh.length / hl.length) * 100) : 100);
@@ -97,7 +100,7 @@ export function useMonitoringData(onConnectionsUpdate?: (c: ConnectionInfo[]) =>
         });
         setMessageStats({ incoming, outgoing, total: msgRes.data.length, hourlyData: Object.entries(buckets).map(([hour, d]) => ({ hour, ...d })) });
       }
-      if (logsRes.data && msgRes.data) setSparklines(computeSparklines(logsRes.data, msgRes.data, now));
+      if (logsRes.data && msgRes.data) setSparklines(computeSparklines(logsRes.data, msgRes.data, now, period));
     } catch (err) {
       console.error('Monitoring fetch error:', err);
     } finally {
