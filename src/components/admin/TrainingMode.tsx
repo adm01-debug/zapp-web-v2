@@ -46,25 +46,17 @@ export function TrainingMode() {
   const [customerStep, setCustomerStep] = useState(0);
   const [score, setScore] = useState<number | null>(null);
   const [feedback, setFeedback] = useState('');
-  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<unknown[]>([]);
   const [profileId, setProfileId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
-  useEffect(() => {
-    if (profileId) loadSessions();
-  }, [profileId]);
-
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const { data } = await supabase.from('profiles').select('id').eq('user_id', user.id).single();
     if (data) setProfileId(data.id);
-  };
+  }, []);
 
-  const loadSessions = async () => {
+  const loadSessions = useCallback(async () => {
     if (!profileId) return;
     const { data } = await supabase
       .from('training_sessions')
@@ -73,7 +65,17 @@ export function TrainingMode() {
       .order('created_at', { ascending: false })
       .limit(10);
     if (data) setSessions(data);
-  };
+  }, [profileId]);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
+  useEffect(() => {
+    if (profileId) {
+      loadSessions();
+    }
+  }, [profileId, loadSessions]);
 
   const startScenario = async (s: typeof SCENARIOS[0]) => {
     if (!profileId) return;
