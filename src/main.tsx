@@ -7,6 +7,10 @@ import { getLogger } from "./lib/logger";
 import { initWebVitals } from "./lib/web-vitals";
 
 const log = getLogger('App');
+if (window.performance && window.performance.mark) {
+  performance.mark('main-init');
+}
+console.log('[BOOT] src/main.tsx loaded');
 log.info('Initialized at', new Date().toISOString());
 
 // Global unhandled error handlers for resilience
