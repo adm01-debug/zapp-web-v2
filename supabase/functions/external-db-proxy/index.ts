@@ -13,9 +13,14 @@ Deno.serve(async (req) => {
   try {
     const url = Deno.env.get('EXTERNAL_SUPABASE_URL')
     const key = Deno.env.get('EXTERNAL_SUPABASE_ANON_KEY')
-    if (!url || !key) {
-      return new Response(JSON.stringify({ error: 'External DB not configured' }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+
+    // Validate URL is properly configured (not a placeholder)
+    if (!url || !key || url.includes('PLACEHOLDER') || !url.startsWith('https://')) {
+      console.error('EXTERNAL_SUPABASE_URL not configured correctly')
+      return new Response(JSON.stringify({
+        error: 'External DB not configured. Please set EXTERNAL_SUPABASE_URL and EXTERNAL_SUPABASE_ANON_KEY secrets to valid values.'
+      }), {
+        status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
