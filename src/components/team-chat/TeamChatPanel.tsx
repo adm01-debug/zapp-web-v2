@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, memo } from 'react';
 import { TeamConversation } from '@/hooks/useTeamChat';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ import { AddMembersDialog } from './AddMembersDialog';
 import { TeamChatHeader } from './TeamChatHeader';
 import { TeamChatInputArea } from './TeamChatInputArea';
 import { useTeamChatPanel } from './useTeamChatPanel';
-import { memo } from 'react';
+
 import { TeamMessage } from '@/hooks/useTeamChat';
 import { isToday, isYesterday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
