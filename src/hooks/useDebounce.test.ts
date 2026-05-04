@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { useDebounce } from './useDebounce';
 
 describe('useDebounce hook', () => {
@@ -11,56 +11,47 @@ describe('useDebounce hook', () => {
     vi.restoreAllMocks();
   });
 
-  it('returns the initial value immediately', () => {
-    const { result } = renderHook(() => useDebounce('initial', 500));
-    expect(result.current).toBe('initial');
-  });
-
-  it('updates the value after the delay', () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 'initial', delay: 500 } }
-    );
-
-    // Update props
-    rerender({ value: 'updated', delay: 500 });
+  it('debounces a function call', () => {
+    const callback = vi.fn();
+    const { result } = renderHook(() => useDebounce(callback, 500));
     
-    // Value should still be initial
-    expect(result.current).toBe('initial');
+    const debouncedFn = result.current;
+
+    // Call the function
+    debouncedFn('test');
+    
+    // Should not have been called yet
+    expect(callback).not.toHaveBeenCalled();
 
     // Fast-forward time
-    act(() => {
-      vi.advanceTimersByTime(500);
-    });
+    vi.advanceTimersByTime(500);
 
-    // Value should now be updated
-    expect(result.current).toBe('updated');
+    // Should have been called now
+    expect(callback).toHaveBeenCalledWith('test');
+    expect(callback).toHaveBeenCalledTimes(1);
   });
 
-  it('cancels previous update if value changes again before delay', () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 'initial', delay: 500 } }
-    );
+  it('cancels previous calls if called multiple times within delay', () => {
+    const callback = vi.fn();
+    const { result } = renderHook(() => useDebounce(callback, 500));
+    
+    const debouncedFn = result.current;
 
-    // First update
-    rerender({ value: 'first update', delay: 500 });
-    act(() => {
-      vi.advanceTimersByTime(250);
-    });
-    expect(result.current).toBe('initial');
+    // Call multiple times
+    debouncedFn(1);
+    vi.advanceTimersByTime(250);
+    debouncedFn(2);
+    vi.advanceTimersByTime(250);
+    debouncedFn(3);
+    
+    // Still not called
+    expect(callback).not.toHaveBeenCalled();
 
-    // Second update before first finishes
-    rerender({ value: 'second update', delay: 500 });
-    act(() => {
-      vi.advanceTimersByTime(250);
-    });
-    // Still initial because the second update reset the timer
-    expect(result.current).toBe('initial');
+    // Fast-forward remaining time for the last call
+    vi.advanceTimersByTime(500);
 
-    act(() => {
-      vi.advanceTimersByTime(250);
-    });
-    expect(result.current).toBe('second update');
+    // Only the last call should be executed
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(3);
   });
 });
