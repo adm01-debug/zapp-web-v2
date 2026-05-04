@@ -47,20 +47,22 @@ export function initWebVitals() {
 
   // LCP - Largest Contentful Paint
   try {
-    const lcpObserver = new PerformanceObserver((list) => {
-      const entries = list.getEntries();
-      const lastEntry = entries[entries.length - 1] as PerformanceEntry;
-      if (lastEntry) {
-        onMetric({
-          name: 'LCP',
-          value: lastEntry.startTime,
-          rating: getRating('LCP', lastEntry.startTime),
-          delta: lastEntry.startTime,
-          id: `lcp-${Date.now()}`,
-        });
-      }
-    });
-    lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+    if (PerformanceObserver.supportedEntryTypes.includes('largest-contentful-paint')) {
+      const lcpObserver = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        const lastEntry = entries[entries.length - 1] as PerformanceEntry;
+        if (lastEntry) {
+          onMetric({
+            name: 'LCP',
+            value: lastEntry.startTime,
+            rating: getRating('LCP', lastEntry.startTime),
+            delta: lastEntry.startTime,
+            id: `lcp-${Date.now()}`,
+          });
+        }
+      });
+      lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+    }
   } catch (e) { /* not supported */ }
 
   // FID - First Input Delay
