@@ -13,7 +13,9 @@ const inputSrc = readSrc('components/team-chat/TeamChatInputArea.tsx');
 const headerSrc = readSrc('components/team-chat/TeamChatHeader.tsx');
 const uploaderSrc = readSrc('components/team-chat/TeamFileUploader.tsx');
 const viewSrc = readSrc('components/team-chat/TeamChatView.tsx');
-const hookSrc = readSrc('hooks/useTeamChat.ts');
+const hookSrc = readSrc('hooks/team-chat/useTeamMessages.ts');
+const mutationHookSrc = readSrc('hooks/team-chat/useTeamChatMutations.ts');
+const panelHookSrc = readSrc('components/team-chat/useTeamChatPanel.ts');
 
 // External chat reference files
 const inboxToolbarSrc = readSrc('components/inbox/chat/ChatToolbar.tsx');
@@ -326,8 +328,9 @@ describe('Team Chat — Exhaustive Audit', () => {
       expect(panelSrc).toContain('editado');
     });
 
-    it.skip('should not save empty edits', () => {
-      expect(panelSrc).toMatch(/!editText\.trim\(\)/);
+    it('should not save empty edits', () => {
+      expect(panelHookSrc).toContain('!trimmed');
+      expect(panelHookSrc).toContain('handleCancelEdit');
     });
   });
 
