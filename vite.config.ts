@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => ({
     force: true,
   },
   esbuild: {
-    drop: mode === 'production' ? ['console', 'debugger'] : [],
+    drop: [], // Mantém logs para facilitar a depuração no preview
   },
   build: {
     target: "esnext",
