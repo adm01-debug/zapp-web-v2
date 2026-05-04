@@ -108,19 +108,21 @@ export function initWebVitals() {
 
   // INP - Interaction to Next Paint
   try {
-    const inpObserver = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        const duration = entry.duration;
-        onMetric({
-          name: 'INP',
-          value: duration,
-          rating: getRating('INP', duration),
-          delta: duration,
-          id: `inp-${Date.now()}`,
-        });
-      }
-    });
-    inpObserver.observe({ type: 'event', buffered: true, durationThreshold: 40 } as PerformanceObserverInit);
+    if (PerformanceObserver.supportedEntryTypes.includes('event')) {
+      const inpObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          const duration = entry.duration;
+          onMetric({
+            name: 'INP',
+            value: duration,
+            rating: getRating('INP', duration),
+            delta: duration,
+            id: `inp-${Date.now()}`,
+          });
+        }
+      });
+      inpObserver.observe({ type: 'event', buffered: true, durationThreshold: 40 } as PerformanceObserverInit);
+    }
   } catch (e) { /* not supported */ }
 
   // TTFB - Time to First Byte
