@@ -86,22 +86,24 @@ export function initWebVitals() {
 
   // CLS - Cumulative Layout Shift
   try {
-    let clsValue = 0;
-    const clsObserver = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        if (!(entry as PerformanceEntry & { hadRecentInput?: boolean }).hadRecentInput) {
-          clsValue += (entry as PerformanceEntry & { value: number }).value;
+    if (PerformanceObserver.supportedEntryTypes.includes('layout-shift')) {
+      let clsValue = 0;
+      const clsObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (!(entry as PerformanceEntry & { hadRecentInput?: boolean }).hadRecentInput) {
+            clsValue += (entry as PerformanceEntry & { value: number }).value;
+          }
         }
-      }
-      onMetric({
-        name: 'CLS',
-        value: clsValue,
-        rating: getRating('CLS', clsValue),
-        delta: clsValue,
-        id: `cls-${Date.now()}`,
+        onMetric({
+          name: 'CLS',
+          value: clsValue,
+          rating: getRating('CLS', clsValue),
+          delta: clsValue,
+          id: `cls-${Date.now()}`,
+        });
       });
-    });
-    clsObserver.observe({ type: 'layout-shift', buffered: true });
+      clsObserver.observe({ type: 'layout-shift', buffered: true });
+    }
   } catch (e) { /* not supported */ }
 
   // INP - Interaction to Next Paint
