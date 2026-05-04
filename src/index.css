@@ -40,34 +40,3 @@ html, body, #root {
   ::view-transition-old(root),
   ::view-transition-new(root) { animation-duration: 0.01ms !important; }
 }
-
-
-
-/* ===== ACCESSIBILITY ===== */
-/* Global focus-visible ring for all interactive elements */
-:focus-visible {
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
-  border-radius: inherit;
-}
-
-:focus:not(:focus-visible) {
-  outline: none;
-}
-
-.safe-area-top { padding-top: env(safe-area-inset-top, 0); }
-.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0); }
-.touch-manipulation { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-
-/* Mobile-specific optimizations */
-@media (max-width: 767px) {
-  input, textarea, select { font-size: 16px !important; }
-  * { -webkit-overflow-scrolling: touch; }
-  body { overscroll-behavior-y: contain; }
-  button, a, [role="button"] { min-height: 44px; min-width: 44px; }
-  .scrollbar-none::-webkit-scrollbar { display: none; }
-  .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
-  .overscroll-contain { overscroll-behavior: contain; }
-  .will-change-transform { will-change: transform; }
-}
-
