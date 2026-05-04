@@ -44,67 +44,27 @@ export function useServiceWorker() {
 
     if (!('serviceWorker' in navigator)) return;
 
-    let cleanup: (() => void) | undefined;
-    let disposed = false;
-
-    const registerServiceWorker = async () => {
+    const unregisterAll = async () => {
       try {
-        const reloadedForLegacyCleanup = await cleanupLegacyServiceWorker();
-        if (reloadedForLegacyCleanup || disposed) return;
-
-        const registration = await navigator.serviceWorker.register('/sw.js', {
-          scope: '/',
-          updateViaCache: 'none',
-        });
-
-        if (disposed) return;
-
-        log.debug('[ServiceWorker] Registration successful:', registration.scope);
-
-        // Check for updates every 5 minutes (was 1 min — too frequent)
-        const intervalId = setInterval(() => {
-          registration.update();
-        }, 300_000);
-
-        // Handle service worker updates
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                log.debug('[ServiceWorker] New content available');
-                document.dispatchEvent(new CustomEvent('sw-update-available'));
-              }
-            });
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          await registration.unregister();
+          log.info('[ServiceWorker] Unregistered existing worker');
+        }
+        
+        if (typeof caches !== 'undefined') {
+          const keys = await caches.keys();
+          for (const key of keys) {
+            await caches.delete(key);
+            log.info('[ServiceWorker] Deleted cache:', key);
           }
-        });
-
-        // Listen for messages from service worker
-        const onMessage = (event: MessageEvent) => {
-          log.debug('[ServiceWorker] Message received:', event.data);
-          if (event.data.type === 'NOTIFICATION_CLICK') {
-            document.dispatchEvent(new CustomEvent('notification-click', {
-              detail: event.data.data,
-            }));
-          }
-        };
-        navigator.serviceWorker.addEventListener('message', onMessage);
-
-        // Cleanup on unmount (interval was leaking before)
-        cleanup = () => {
-          clearInterval(intervalId);
-          navigator.serviceWorker.removeEventListener('message', onMessage);
-        };
+        }
       } catch (error) {
-        log.error('[ServiceWorker] Registration failed:', error);
+        log.error('[ServiceWorker] Unregistration failed:', error);
       }
     };
 
-    void registerServiceWorker();
-
-    return () => {
-      disposed = true;
-      cleanup?.();
-    };
+    void unregisterAll();
   }, []);
+
 }
