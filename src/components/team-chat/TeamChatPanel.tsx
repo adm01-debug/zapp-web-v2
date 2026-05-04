@@ -117,9 +117,12 @@ export function TeamChatPanel({ conversation, onBack, onToggleDetails, showDetai
                         {!isMine && conversation.type === 'group' && <p className="text-[10px] font-medium mb-0.5 opacity-70">{msg.sender?.name}</p>}
                         {repliedMsg && <div className={cn("text-[10px] mb-1.5 px-2 py-1 rounded border-l-2", isMine ? "bg-primary-foreground/10 border-primary-foreground/30" : "bg-muted/50 border-muted-foreground/30")}><span className="font-medium">{repliedMsg.sender?.name}</span><p className="truncate opacity-80 flex items-center gap-1">{repliedMsg.media_type && <MediaTypeIcon type={repliedMsg.media_type} />}{repliedMsg.content || 'Mídia'}</p></div>}
                         {isEditing ? (
-                          <div className="space-y-1.5">
-                            <Input value={s.editText} onChange={e => s.setEditText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') s.handleSaveEdit(); if (e.key === 'Escape') s.handleCancelEdit(); }} className="h-7 text-sm bg-background text-foreground" autoFocus />
-                            <div className="flex gap-1 justify-end"><Button size="icon" variant="ghost" className="h-5 w-5" onClick={s.handleCancelEdit}><X className="w-3 h-3" /></Button><Button size="icon" variant="ghost" className="h-5 w-5" onClick={s.handleSaveEdit}><Check className="w-3 h-3" /></Button></div>
+                          <div className="space-y-1.5 min-w-[150px]">
+                            <Input value={s.editText} onChange={e => s.setEditText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') s.handleSaveEdit(); if (e.key === 'Escape') s.handleCancelEdit(); }} className="h-8 text-sm bg-background text-foreground border-primary/50" autoFocus />
+                            <div className="flex gap-2 justify-end">
+                              <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={s.handleCancelEdit}>Cancelar</Button>
+                              <Button size="sm" className="h-7 px-2 text-xs" onClick={s.handleSaveEdit}>Salvar</Button>
+                            </div>
                           </div>
                         ) : (
                           <>

@@ -326,8 +326,8 @@ describe('Team Chat — Exhaustive Audit', () => {
       expect(panelSrc).toContain('editado');
     });
 
-    it.skip('should not save empty edits', () => {
-      expect(panelSrc).toMatch(/!editText\.trim\(\)/);
+    it('should not save empty edits', () => {
+      expect(panelSrc).toMatch(/!trimmed.*handleCancelEdit/);
     });
   });
 

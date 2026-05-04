@@ -90,16 +90,18 @@ export function useTeamChatPanel(conversation: TeamConversation) {
       { onError: (err) => { log.error('Failed to delete:', err); toast.error('Falha ao excluir.'); } });
   }, [deleteMutation, conversation.id]);
 
-  const handleStartEdit = useCallback((msg: TeamMessage) => { setEditingId(msg.id); setEditText(msg.content); }, []);
+  const handleStartEdit = useCallback((msg: TeamMessage) => { setEditingId(msg.id); setEditText(msg.content || ''); }, []);
   const handleSaveEdit = useCallback(() => {
-    if (!editingId || !editText.trim()) return;
-    editMutation.mutate({ messageId: editingId, content: editText.trim(), conversationId: conversation.id },
+    const trimmed = editText.trim();
+    if (!editingId || !trimmed) { handleCancelEdit(); return; }
+    editMutation.mutate({ messageId: editingId, content: trimmed, conversationId: conversation.id },
       { onError: (err) => { log.error('Failed to edit:', err); toast.error('Falha ao editar.'); } });
     setEditingId(null); setEditText('');
   }, [editingId, editText, editMutation, conversation.id]);
 
   const handleCancelEdit = useCallback(() => { setEditingId(null); setEditText(''); }, []);
-  const handleCopyMessage = useCallback((content: string) => {
+  const handleCopyMessage = useCallback((content: string | null) => {
+    if (!content) return;
     navigator.clipboard.writeText(content).then(() => toast.success('Copiado!')).catch(() => toast.error('Erro ao copiar'));
   }, []);
 
