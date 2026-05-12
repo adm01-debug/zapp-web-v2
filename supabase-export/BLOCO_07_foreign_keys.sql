@@ -8,7 +8,6 @@
 -- PRÉ-REQUISITO: BLOCO 1 (tabelas) + BLOCO 6 (índices) devem estar aplicados.
 -- ═══════════════════════════════════════════════════════════════════════════════
 
-
 ALTER TABLE agent_achievements DROP CONSTRAINT IF EXISTS agent_achievements_profile_id_fkey CASCADE;
 ALTER TABLE agent_achievements ADD CONSTRAINT agent_achievements_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE;
 
