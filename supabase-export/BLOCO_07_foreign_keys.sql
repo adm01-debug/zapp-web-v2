@@ -515,5 +515,5 @@ ALTER TABLE whisper_messages DROP CONSTRAINT IF EXISTS whisper_messages_target_a
 ALTER TABLE whisper_messages ADD CONSTRAINT whisper_messages_target_agent_id_fkey FOREIGN KEY (target_agent_id) REFERENCES profiles(id);
 
 -- ═══════════════════════════════════════════════════════════════════════════════
--- FIM DO BLOCO 7 — 85 foreign keys exportadas
+-- FIM DO BLOCO 7 — 169 foreign keys exportadas
 -- ═══════════════════════════════════════════════════════════════════════════════
