@@ -1,3 +1,11 @@
+      - name: Archive validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-logs
+          path: |
+            supabase-export/validation_result.json
+            supabase-export/validation_log.csv
 name: Supabase Sync & Validate
 
 on:
