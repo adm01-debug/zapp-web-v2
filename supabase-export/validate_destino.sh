@@ -38,8 +38,10 @@ if ! psql "$URL" -v ON_ERROR_STOP=1 -f "$SQL" 2>&1 | tee "$OUT"; then
   exit 2
 fi
 
-FAIL_COUNT=$(grep -c '❌ FAIL' "$OUT" || true)
-EXTRA_COUNT=$(grep -c '⚠️  EXTRA' "$OUT" || true)
+# Conta apenas linhas DENTRO da tabela de resultados (entre bordas │),
+# ignorando o cabeçalho/legenda do SQL.
+FAIL_COUNT=$(grep -cE '│[^│]*❌ FAIL' "$OUT" || true)
+EXTRA_COUNT=$(grep -cE '│[^│]*⚠️  EXTRA' "$OUT" || true)
 
 echo
 echo "──────────────────────────────────────────────"
