@@ -200,6 +200,11 @@
       "runWhen": "post-import"
     },
     {
+      "file": "import.sh",
+      "purpose": "Runner de importação que aplica os blocos na ordem correta e roda a validação final.",
+      "runWhen": "import"
+    },
+    {
       "file": "README.md",
       "purpose": "Documentação do padrão de exportação (pasta única, naming, manifesto, ordem de aplicação).",
       "runWhen": "reference"
