@@ -2285,3 +2285,34 @@ DO $$ BEGIN
     ALTER TABLE public.sicoob_contact_mapping ADD CONSTRAINT sicoob_contact_mapping_pkey PRIMARY KEY (id);
   END IF;
 END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='sicoob_contact_mapping_sicoob_user_id_sicoob_singular_id_key' AND conrelid='public.sicoob_contact_mapping'::regclass) THEN
+    ALTER TABLE public.sicoob_contact_mapping ADD CONSTRAINT sicoob_contact_mapping_sicoob_user_id_sicoob_singular_id_key UNIQUE (sicoob_user_id, sicoob_singular_id);
+  END IF;
+END $$;
+ALTER TABLE public.sicoob_contact_mapping ENABLE ROW LEVEL SECURITY;
+
+-- ------------------------------------------------------------
+-- TABLE: public.sla_configurations
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.sla_configurations ();
+ALTER TABLE public.sla_configurations ADD COLUMN IF NOT EXISTS id uuid DEFAULT gen_random_uuid() NOT NULL;
+ALTER TABLE public.sla_configurations ADD COLUMN IF NOT EXISTS name text NOT NULL;
+ALTER TABLE public.sla_configurations ADD COLUMN IF NOT EXISTS first_response_minutes integer DEFAULT 5 NOT NULL;
+ALTER TABLE public.sla_configurations ADD COLUMN IF NOT EXISTS resolution_minutes integer DEFAULT 60 NOT NULL;
+ALTER TABLE public.sla_configurations ADD COLUMN IF NOT EXISTS priority text DEFAULT 'medium'::text NOT NULL;
+ALTER TABLE public.sla_configurations ADD COLUMN IF NOT EXISTS is_default boolean DEFAULT false;
+ALTER TABLE public.sla_configurations ADD COLUMN IF NOT EXISTS is_active boolean DEFAULT true;
+ALTER TABLE public.sla_configurations ADD COLUMN IF NOT EXISTS created_at timestamp with time zone DEFAULT now() NOT NULL;
+ALTER TABLE public.sla_configurations ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='' AND conrelid='public.sla_configurations'::regclass) THEN
+    ALTER TABLE public.sla_configurations ADD CONSTRAINT sla_configurations_pkey PRIMARY KEY (id);
+  END IF;
+END $$;
+ALTER TABLE public.sla_configurations ENABLE ROW LEVEL SECURITY;
+
+-- ------------------------------------------------------------
+-- TABLE: public.sla_rules
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.sla_rules ();
