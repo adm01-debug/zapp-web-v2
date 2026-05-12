@@ -2316,3 +2316,39 @@ ALTER TABLE public.sla_configurations ENABLE ROW LEVEL SECURITY;
 -- TABLE: public.sla_rules
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.sla_rules ();
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS id uuid DEFAULT gen_random_uuid() NOT NULL;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS name text NOT NULL;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS first_response_minutes integer DEFAULT 5 NOT NULL;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS resolution_minutes integer DEFAULT 60 NOT NULL;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS priority integer DEFAULT 0 NOT NULL;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS contact_id uuid;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS company text;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS job_title text;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS contact_type text;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS queue_id uuid;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS agent_id uuid;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS is_active boolean DEFAULT true NOT NULL;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS created_at timestamp with time zone DEFAULT now() NOT NULL;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now() NOT NULL;
+ALTER TABLE public.sla_rules ADD COLUMN IF NOT EXISTS metadata jsonb DEFAULT '{}'::jsonb;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='' AND conrelid='public.sla_rules'::regclass) THEN
+    ALTER TABLE public.sla_rules ADD CONSTRAINT sla_rules_pkey PRIMARY KEY (id);
+  END IF;
+END $$;
+ALTER TABLE public.sla_rules ENABLE ROW LEVEL SECURITY;
+
+-- ------------------------------------------------------------
+-- TABLE: public.stickers
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.stickers ();
+ALTER TABLE public.stickers ADD COLUMN IF NOT EXISTS id uuid DEFAULT gen_random_uuid() NOT NULL;
+ALTER TABLE public.stickers ADD COLUMN IF NOT EXISTS name text;
+ALTER TABLE public.stickers ADD COLUMN IF NOT EXISTS image_url text NOT NULL;
+ALTER TABLE public.stickers ADD COLUMN IF NOT EXISTS category text DEFAULT 'geral'::text;
+ALTER TABLE public.stickers ADD COLUMN IF NOT EXISTS uploaded_by text;
+ALTER TABLE public.stickers ADD COLUMN IF NOT EXISTS is_favorite boolean DEFAULT false;
+ALTER TABLE public.stickers ADD COLUMN IF NOT EXISTS use_count integer DEFAULT 0;
+ALTER TABLE public.stickers ADD COLUMN IF NOT EXISTS created_at timestamp with time zone DEFAULT now();
+ALTER TABLE public.stickers ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT now();
+ALTER TABLE public.stickers ADD COLUMN IF NOT EXISTS owner_id uuid;
