@@ -205,6 +205,11 @@
       "runWhen": "import"
     },
     {
+      "file": "VALIDATE_DESTINO_JSON.sql",
+      "purpose": "Gera saída JSON estruturada com as métricas de validação.",
+      "runWhen": "post-import"
+    },
+    {
       "file": "README.md",
       "purpose": "Documentação do padrão de exportação (pasta única, naming, manifesto, ordem de aplicação).",
       "runWhen": "reference"
