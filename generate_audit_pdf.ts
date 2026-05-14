@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 const doc = new jsPDF();
 
@@ -22,7 +22,7 @@ const summary = "A auditoria detalhada do sistema Pronto Talk Suite identificou 
 doc.text(doc.splitTextToSize(summary, 170), 20, 62);
 
 // Tabela de Funcionalidades
-(doc as any).autoTable({
+autoTable(doc, {
   startY: 80,
   head: [['Modulo', 'Funcionalidade', 'Status', 'Prioridade']],
   body: [
