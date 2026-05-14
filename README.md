@@ -25,12 +25,23 @@
 - [Integrações](#integrações)
 - [Segurança](#segurança)
 - [Testes](#testes)
-- [Deploy](#deploy)
-- [Documentação Adicional](#documentação-adicional)
-- [Contribuição](#contribuição)
+ - [Auditoria](#-auditoria-e-conformidade)
+ - [Deploy](#deploy)
+ - [Documentação Adicional](#documentação-adicional)
+ - [Contribuição](#contribuição)
 
 ---
 
+ ## 🛡️ Auditoria e Conformidade
+ 
+ O sistema passa por auditorias regulares de segurança e funcionalidade.
+ - **Relatório em Markdown:** [docs/audit_report.md](docs/audit_report.md)
+ - **Relatório em PDF:** [docs/audit_report.pdf](docs/audit_report.pdf)
+ 
+ *O PDF é gerado automaticamente via CI a cada atualização do relatório (commit contendo 'audit').*
+ 
+ ---
+ 
 ## Visão Geral
 
 ZAPP-WEB (Pronto Talk Suite) é uma plataforma completa de atendimento ao cliente que centraliza comunicações via WhatsApp, oferece sugestões de IA, CRM integrado, gamificação de agentes, dashboards analíticos e automações de fluxo.

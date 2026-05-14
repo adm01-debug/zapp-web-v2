@@ -56,5 +56,5 @@ evidence.forEach(line => {
   y += 10;
 });
 
-doc.save("/mnt/documents/RELATORIO_AUDITORIA_ENTERPRISE.pdf");
-console.log("PDF gerado em /mnt/documents/RELATORIO_AUDITORIA_ENTERPRISE.pdf");
+ doc.save("docs/audit_report.pdf");
+ console.log("PDF gerado em docs/audit_report.pdf");
