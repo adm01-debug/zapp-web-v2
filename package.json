@@ -62,7 +62,7 @@
     "framer-motion": "^12.23.26",
     "i18next": "^25.7.3",
     "input-otp": "^1.4.2",
-    "jsdom": "^28.1.0",
+    "jsdom": "^29.1.1",
     "jspdf": "4.2.1",
     "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.462.0",
