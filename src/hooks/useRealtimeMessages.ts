@@ -4,18 +4,15 @@ import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { getLogger } from '@/lib/logger';
 import { MessageRow } from '@/types/chat';
 import { ContactRow } from '@/types/contact';
+import { RealtimeService } from '@/services/realtime.service';
 import { sendMessageToContact } from './realtime/messageSender';
 import {
-  normalizeMessage, buildConversation, dedupeContacts, buildConversations,
-  getUniqueMessageContactIds, chunkArray,
+  normalizeMessage, buildConversation, buildConversations,
 } from './realtime/realtimeUtils';
 import { useRealtimeNotifications } from './realtime/useRealtimeNotifications';
 import { useMessageUpdateBatcher } from './realtime/useMessageUpdateBatcher';
 
 const log = getLogger('RealtimeMessages');
-const SEEDED_CONTACT_LIMIT = 500;
-const RECENT_MESSAGES_LIMIT = 1000;
-const CONTACT_FETCH_CHUNK_SIZE = 200;
 
 export interface NewMessageNotification {
   id: string;
@@ -60,23 +57,11 @@ export function useRealtimeMessages() {
     []
   );
 
-  const fetchContactsByIds = useCallback(async (contactIds: string[]) => {
-    const uniqueIds = Array.from(new Set(contactIds.filter(Boolean)));
-    if (uniqueIds.length === 0) return [] as ConversationContact[];
-    const fetchedContacts: ConversationContact[] = [];
-    for (const idsChunk of chunkArray(uniqueIds, CONTACT_FETCH_CHUNK_SIZE)) {
-      const { data, error: contactsError } = await supabase.from('contacts').select('*').in('id', idsChunk);
-      if (contactsError) throw contactsError;
-      fetchedContacts.push(...((data ?? []) as ConversationContact[]));
-    }
-    return dedupeContacts(fetchedContacts);
-  }, []);
-
   const hydrateConversationForMessage = useCallback(
     async (message: RealtimeMessage) => {
       if (!message.contact_id) return;
       try {
-        const [contact] = await fetchContactsByIds([message.contact_id]);
+        const [contact] = await RealtimeService.fetchContactsByIds([message.contact_id]);
         if (!contact) { log.warn('Incoming message received for unknown contact', { contactId: message.contact_id }); return; }
         commitConversations((prev) => {
           const idx = prev.findIndex((c) => c.contact.id === contact.id);
@@ -93,7 +78,7 @@ export function useRealtimeMessages() {
         notifyAboutIncomingMessage(contact, message);
       } catch (err) { log.error('Error hydrating conversation for incoming message:', err); }
     },
-    [commitConversations, fetchContactsByIds, notifyAboutIncomingMessage]
+    [commitConversations, notifyAboutIncomingMessage]
   );
 
   const { handleMessageUpdate } = useMessageUpdateBatcher(conversationsRef, commitConversations, hydrateConversationForMessage);
@@ -126,29 +111,17 @@ export function useRealtimeMessages() {
     try {
       setLoading(true);
       setError(null);
-      const { data: seededContacts, error: contactsError } = await supabase.from('contacts').select('*').order('updated_at', { ascending: false }).limit(SEEDED_CONTACT_LIMIT);
-      if (contactsError) throw contactsError;
-      const { data: recentMessages, error: messagesError } = await supabase.from('messages').select('*').order('created_at', { ascending: false }).limit(RECENT_MESSAGES_LIMIT);
-      if (messagesError) throw messagesError;
-
-      const normalizedMessages = ((recentMessages ?? []) as RealtimeMessage[]).map(normalizeMessage);
-      const seededContactRows = (seededContacts ?? []) as ConversationContact[];
-      const seededContactIds = new Set(seededContactRows.map((c) => c.id));
-      const missingContactIds = getUniqueMessageContactIds(normalizedMessages).filter((id) => !seededContactIds.has(id));
-      const messageContacts = await fetchContactsByIds(missingContactIds);
-      commitConversations(buildConversations([...seededContactRows, ...messageContacts], normalizedMessages));
+      const builtConversations = await RealtimeService.fetchInitialConversations();
+      commitConversations(builtConversations);
     } catch (err) {
       log.error('Error fetching conversations:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch conversations');
     } finally { setLoading(false); }
-  }, [commitConversations, fetchContactsByIds]);
+  }, [commitConversations]);
 
   useEffect(() => {
     fetchConversations();
-    const channel = supabase.channel('messages-realtime')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, handleNewMessage)
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, handleMessageUpdate)
-      .subscribe((status) => { log.debug('Subscription status', { status }); });
+    const channel = RealtimeService.subscribeToMessages(handleNewMessage, handleMessageUpdate);
     return () => { supabase.removeChannel(channel); };
   }, [fetchConversations, handleNewMessage, handleMessageUpdate]);
 
@@ -157,14 +130,17 @@ export function useRealtimeMessages() {
   };
 
   const markAsRead = async (contactId: string) => {
-    const { error } = await supabase.from('messages').update({ is_read: true }).eq('contact_id', contactId).eq('sender', 'contact').eq('is_read', false);
-    if (error) log.error('Error marking messages as read:', error);
-    commitConversations((prev) =>
-      prev.map((c) => c.contact.id === contactId
-        ? buildConversation(c.contact, c.messages.map((m) => ({ ...m, is_read: true })))
-        : c
-      )
-    );
+    try {
+      await RealtimeService.markMessagesAsRead(contactId);
+      commitConversations((prev) =>
+        prev.map((c) => c.contact.id === contactId
+          ? buildConversation(c.contact, c.messages.map((m) => ({ ...m, is_read: true })))
+          : c
+        )
+      );
+    } catch (err) {
+      log.error('Error in markAsRead hook:', err);
+    }
   };
 
   return {
