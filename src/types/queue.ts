@@ -4,7 +4,7 @@ export type QueueRow = Database['public']['Tables']['queues']['Row'];
 export type QueueMemberRow = Database['public']['Tables']['queue_members']['Row'];
 
 export interface Queue extends QueueRow {
-  // Compatibility
+  // Aliases for compatibility
 }
 
 export interface QueueMember extends QueueMemberRow {
@@ -17,6 +17,9 @@ export interface QueueMember extends QueueMemberRow {
 }
 
 export interface QueueWithMembers extends Queue {
+  id: string;
+  name: string;
+  color: string;
   members: QueueMember[];
   waiting_count: number;
 }
