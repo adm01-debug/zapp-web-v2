@@ -12,9 +12,10 @@ export interface MessageReaction {
   createdAt?: string;
 }
 
-export interface Message extends Partial<Omit<MessageRow, 'id' | 'content' | 'sender'>> {
+export interface Message extends Partial<Omit<MessageRow, 'id' | 'content' | 'sender' | 'created_at'>> {
   id: string;
   content: string;
+  created_at: string;
   sender: 'agent' | 'contact';
   senderName?: string;
   timestamp: Date;
@@ -30,29 +31,30 @@ export interface Message extends Partial<Omit<MessageRow, 'id' | 'content' | 'se
   conversationId?: string;
 }
 
-// Note: Contact type lives in '@/types/contact'; do not re-export here to avoid conflicts.
+// Backward-compat alias (Contact is re-exported as ConversationContact)
+export type { ConversationContact as Contact };
 
 export interface ConversationContact {
   id: string;
   name: string;
-  surname: string | null;
-  nickname: string | null;
+  surname?: string | null;
+  nickname?: string | null;
   phone: string;
-  email: string | null;
-  avatar_url: string | null;
+  email?: string | null;
+  avatar_url?: string | null;
   avatar?: string | null;
-  tags: string[] | null;
-  company: string | null;
-  job_title: string | null;
-  assigned_to: string | null;
-  queue_id: string | null;
-  created_at: string;
+  tags?: string[] | null;
+  company?: string | null;
+  job_title?: string | null;
+  assigned_to?: string | null;
+  queue_id?: string | null;
+  created_at?: string;
   createdAt?: Date;
-  updated_at: string;
-  whatsapp_connection_id: string | null;
-  contact_type: string | null;
-  group_category: string | null;
-  ai_sentiment: string | null;
+  updated_at?: string;
+  whatsapp_connection_id?: string | null;
+  contact_type?: string | null;
+  group_category?: string | null;
+  ai_sentiment?: string | null;
 }
 
 export interface AssignedAgentInfo {
