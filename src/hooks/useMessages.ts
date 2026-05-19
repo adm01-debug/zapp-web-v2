@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+ import { useState, useEffect, useCallback, useRef } from 'react';
+ import { useSupabaseRealtime } from '@/hooks/realtime/useSupabaseRealtime';
 import { supabase } from '@/integrations/supabase/client';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { log } from '@/lib/logger';
