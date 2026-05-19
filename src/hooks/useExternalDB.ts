@@ -2,60 +2,16 @@
  * useExternalDB — Generic hook for querying any table in the external CRM database
  * Uses externalSupabase client directly (secured by RLS policies on the external DB)
  */
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState, useCallback } from 'react';
-import { getExternalSupabase, isExternalConfigured } from '@/integrations/supabase/externalClient';
+ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+ import { useState, useCallback } from 'react';
+ import { getExternalSupabase, isExternalConfigured } from '@/integrations/supabase/externalClient';
+ import { ExternalCRMService } from '@/services/crm/external-crm.service';
 import type {
   ExternalDBFilter,
   ExternalDBOrder,
   ExternalDBQueryResult,
   ExternalTableName,
 } from '@/types/externalDB';
-
-// ─── Direct query helper ──────────────────────────────────────
-async function queryExternal<T = unknown>(params: {
-  table: string;
-  select?: string;
-  filters?: ExternalDBFilter[];
-  order?: ExternalDBOrder;
-  limit?: number;
-  offset?: number;
-  countMode?: 'exact' | 'planned' | 'estimated';
-}): Promise<ExternalDBQueryResult<T>> {
-  const start = performance.now();
-
-  let query = getExternalSupabase()
-    .from(params.table)
-    .select(params.select || '*', { count: params.countMode || undefined });
-
-  if (params.filters) {
-    for (const f of params.filters) {
-      query = query.filter(f.column, f.operator, f.value as string);
-    }
-  }
-
-  if (params.order) {
-    query = query.order(params.order.column, { ascending: params.order.ascending ?? true });
-  }
-
-  const limit = params.limit || 50;
-  const offset = params.offset || 0;
-  query = query.range(offset, offset + limit - 1);
-
-  const { data, error, count } = await query;
-  const duration = Math.round(performance.now() - start);
-
-  if (error) throw new Error(error.message);
-
-  return {
-    data: (data as T[]) || [],
-    meta: {
-      record_count: count ?? (Array.isArray(data) ? data.length : null),
-      duration_ms: duration,
-      severity: duration > 3000 ? 'slow' : 'ok',
-    },
-  };
-}
 
 // ─── Select query hook ────────────────────────────────────────
 interface UseExternalSelectOptions<T> {
@@ -75,15 +31,15 @@ export function useExternalSelect<T = Record<string, unknown>>(options: UseExter
 
   return useQuery({
     queryKey: ['external-db', table, { select, filters, order, limit, offset, countMode }],
-    queryFn: () => queryExternal<T>({
-      table,
-      select,
-      filters,
-      order,
-      limit,
-      offset,
-      countMode,
-    }),
+     queryFn: () => ExternalCRMService.queryExternal<T>({
+       table,
+       select,
+       filters,
+       order,
+       limit,
+       offset,
+       countMode,
+     }),
     enabled: enabled && isExternalConfigured,
     staleTime,
     gcTime: staleTime * 2,
@@ -101,16 +57,7 @@ interface UseExternalRPCOptions {
 export function useExternalRPC<T = unknown>(options: UseExternalRPCOptions) {
   return useQuery({
     queryKey: ['external-db', 'rpc', options.rpc, options.params],
-    queryFn: async () => {
-      const start = performance.now();
-      const { data, error } = await getExternalSupabase().rpc(options.rpc, options.params || {});
-      const duration = Math.round(performance.now() - start);
-      if (error) throw new Error(error.message);
-      return {
-        data: Array.isArray(data) ? data as T[] : [data as T],
-        meta: { record_count: Array.isArray(data) ? data.length : 1, duration_ms: duration, severity: 'ok' as string },
-      };
-    },
+     queryFn: () => ExternalCRMService.callRPC<T>(options.rpc, options.params),
     enabled: (options.enabled ?? true) && isExternalConfigured,
     staleTime: options.staleTime ?? 10 * 60 * 1000,
   });
