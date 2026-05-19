@@ -1,168 +1,80 @@
-export interface Contact {
-  id: string;
-  name: string;
-  nickname?: string;
-  surname?: string;
-  job_title?: string;
-  company?: string;
-  phone: string;
-  avatar?: string;
-  email?: string;
-  tags: string[];
-  createdAt: Date;
-  contact_type?: string | null;
-  whatsapp_connection_id?: string | null;
+import type { Database } from '@/integrations/supabase/client';
+
+export type MessageRow = Database['public']['Tables']['messages']['Row'];
+export type MessageInsert = Database['public']['Tables']['messages']['Insert'];
+export type MessageUpdate = Database['public']['Tables']['messages']['Update'];
+
+export interface Message extends MessageRow {
+  timestamp?: Date;
+  type?: 'text' | 'image' | 'video' | 'audio' | 'file' | 'location' | 'interactive';
+  mediaUrl?: string;
+  isEdited?: boolean;
 }
 
-// WhatsApp Interactive Message Types
-export interface InteractiveButton {
-  type: 'reply' | 'url' | 'phone';
+export interface ConversationContact {
   id: string;
-  title: string;
-  // For URL buttons
+  name: string;
+  surname: string | null;
+  nickname: string | null;
+  phone: string;
+  email: string | null;
+  avatar_url: string | null;
+  tags: string[] | null;
+  company: string | null;
+  job_title: string | null;
+  assigned_to: string | null;
+  queue_id: string | null;
+  created_at: string;
+  updated_at: string;
+  whatsapp_connection_id: string | null;
+  contact_type: string | null;
+  group_category: string | null;
+  ai_sentiment: string | null;
+}
+
+export interface Conversation {
+  id: string;
+  contact: ConversationContact;
+  lastMessage?: any;
+  unreadCount: number;
+  status: 'open' | 'closed' | 'pending' | 'waiting' | 'resolved';
+  priority: 'low' | 'medium' | 'high';
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  assignedTo?: string | null;
+  sentiment?: string | null;
+}
+
+export interface InteractiveMessage {
+  type: 'button' | 'list';
+  header?: { type: 'text' | 'image' | 'video'; text?: string; media_url?: string };
+  body: string;
+  footer?: string;
+  buttons?: InteractiveButton[];
+  sections?: InteractiveListSection[];
+  listButtonText?: string;
+}
+
+export interface InteractiveButton {
+  id: string;
+  text: string;
+  title?: string;
+  type?: 'reply' | 'url' | 'call';
   url?: string;
-  // For phone buttons
   phoneNumber?: string;
 }
 
 export interface InteractiveListSection {
   title: string;
-  rows: {
-    id: string;
-    title: string;
-    description?: string;
-  }[];
+  rows: { id: string; title: string; description?: string }[];
 }
 
-export interface InteractiveMessage {
-  type: 'buttons' | 'list' | 'cta_url';
-  header?: {
-    type: 'text' | 'image' | 'video' | 'document';
-    text?: string;
-    mediaUrl?: string;
-  };
-  body: string;
-  footer?: string;
-  // For button type
-  buttons?: InteractiveButton[];
-  // For list type
-  listButtonText?: string;
-  sections?: InteractiveListSection[];
-}
-
-// Location Message Types
 export interface LocationMessage {
   latitude: number;
   longitude: number;
   name?: string;
   address?: string;
   isLive?: boolean;
-  liveUntil?: Date;
-}
-
-// Message Reaction Types (WhatsApp API)
-export interface MessageReaction {
-  emoji: string;
-  userId: string;
-  userName?: string;
-  timestamp: Date;
-}
-
-export interface Message {
-  id: string;
-  conversationId: string;
-  content: string;
-  type: 'text' | 'image' | 'audio' | 'video' | 'document' | 'interactive' | 'button_response' | 'location' | 'sticker';
-  mediaUrl?: string;
-  sender: 'contact' | 'agent';
-  agentId?: string;
-  timestamp: Date;
-  status: 'sent' | 'delivered' | 'read' | 'failed';
-  // Interactive message data
-  interactive?: InteractiveMessage;
-  // Button response data (when user clicks a button)
-  buttonResponse?: {
-    buttonId: string;
-    buttonTitle: string;
-    originalMessageId: string;
-  };
-  // Reply/Quote reference
-  replyTo?: {
-    messageId: string;
-    content: string;
-    sender: 'contact' | 'agent';
-  };
-  // Location data
-  location?: LocationMessage;
-  // Forwarded indicator
-  isForwarded?: boolean;
-  // Reactions (WhatsApp API format)
-  reactions?: MessageReaction[];
-  // Audio transcription
-  transcription?: string | null;
-  transcriptionStatus?: 'pending' | 'processing' | 'completed' | 'failed' | null;
-  // Edit tracking
-  isEdited?: boolean;
-  // Database fields (present when loaded from DB)
-  external_id?: string;
-  is_deleted?: boolean;
-  message_type?: string;
-  senderName?: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-
-export interface Conversation {
-  id: string;
-  contact: Contact;
-  lastMessage?: Message;
-  unreadCount: number;
-  status: 'open' | 'pending' | 'resolved' | 'waiting';
-  priority: 'high' | 'medium' | 'low';
-  assignedTo?: Agent;
-  queue?: Queue;
-  tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
-  // Sentiment tracking
-  sentiment?: 'positive' | 'neutral' | 'negative' | 'critical';
-  sentimentScore?: number;
-}
-
-export interface Agent {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  role: 'admin' | 'supervisor' | 'agent' | 'special_agent';
-  status: 'online' | 'away' | 'offline';
-  activeChats: number;
-  maxChats: number;
-  queues: string[];
-}
-
-export interface Queue {
-  id: string;
-  name: string;
-  color: string;
-  description?: string;
-  agents: string[];
-  waitingCount: number;
-}
-
-export interface QuickReply {
-  id: string;
-  title: string;
-  content: string;
-  shortcut: string;
-  category: string;
-}
-
-export interface WhatsAppInstance {
-  id: string;
-  name: string;
-  phone: string;
-  status: 'connected' | 'disconnected' | 'connecting';
-  qrCode?: string;
+  liveUntil?: string;
 }

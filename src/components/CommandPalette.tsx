@@ -9,15 +9,9 @@ import {
   CommandItem,
   CommandSeparator,
 } from '@/components/ui/command';
-import {
-  primaryNav,
-  communicationNav,
-  automationNav,
-  salesNav,
-  connectionsNav,
-  analyticsNav,
-  systemNav,
-} from '@/components/layout/sidebarNavConfig';
+ import { sidebarGroups, primaryNav } from '@/components/layout/sidebarNavConfig';
+ import { useUserRole } from '@/hooks/useUserRole';
+ import { NavigationService } from '@/services/navigation.service';
 import type { NavItemConfig } from '@/components/layout/SidebarNavItem';
 
 interface CommandPaletteProps {
@@ -26,18 +20,6 @@ interface CommandPaletteProps {
 
 const RECENT_KEY = 'zapp-recent-modules';
 const MAX_RECENT = 5;
-
-const groups: { label: string; items: readonly NavItemConfig[] }[] = [
-  { label: 'Principal', items: primaryNav },
-  { label: 'Comunicação', items: communicationNav },
-  { label: 'Automação & IA', items: automationNav },
-  { label: 'Vendas & CRM', items: salesNav },
-  { label: 'Conexões', items: connectionsNav },
-  { label: 'Analytics', items: analyticsNav },
-  { label: 'Sistema', items: systemNav },
-];
-
-const allItems = groups.flatMap(g => g.items);
 
 function getRecent(): string[] {
   try {
@@ -51,7 +33,22 @@ function pushRecent(id: string) {
   localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, MAX_RECENT)));
 }
 
-export function CommandPalette({ onNavigate }: CommandPaletteProps) {
+ export function CommandPalette({ onNavigate }: CommandPaletteProps) {
+   const { roles } = useUserRole();
+ 
+   const filteredGroups = useMemo(() => {
+     const groups = [
+       { label: 'Principal', items: primaryNav },
+       ...sidebarGroups
+     ];
+     return groups.map(g => ({
+       ...g,
+       items: NavigationService.filterNavItems(g.items as any, roles)
+     })).filter(g => g.items.length > 0);
+   }, [roles]);
+ 
+   const allItems = useMemo(() => filteredGroups.flatMap(g => g.items), [filteredGroups]);
+ 
   const [open, setOpen] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
 
@@ -75,10 +72,10 @@ export function CommandPalette({ onNavigate }: CommandPaletteProps) {
     };
   }, []);
 
-  const recentItems = useMemo(
-    () => recent.map(id => allItems.find(i => i.id === id)).filter(Boolean) as NavItemConfig[],
-    [recent]
-  );
+   const recentItems = useMemo(
+     () => recent.map(id => allItems.find(i => i.id === id)).filter(Boolean) as any[],
+     [recent, allItems]
+   );
 
   const select = (id: string) => {
     pushRecent(id);
@@ -110,7 +107,7 @@ export function CommandPalette({ onNavigate }: CommandPaletteProps) {
           </>
         )}
 
-        {groups.map((group, i) => (
+         {filteredGroups.map((group, i) => (
           <div key={group.label}>
             {i > 0 && <CommandSeparator />}
             <CommandGroup heading={group.label}>
