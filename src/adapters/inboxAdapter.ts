@@ -1,5 +1,20 @@
-import { Message, Conversation, ConversationContact, AssignedAgentInfo } from '@/types/chat';
+import { Message, Conversation, ConversationContact, MessageRow } from '@/types/chat';
 import { RealtimeMessage, ConversationWithMessages, ConversationContact as RealtimeContact } from '@/hooks/useRealtimeMessages';
+
+export function mapMessageRowToMessage(row: MessageRow): Message {
+  return {
+    ...row,
+    id: row.id,
+    content: row.content,
+    sender: (row.sender as 'agent' | 'contact'),
+    timestamp: new Date(row.created_at),
+    type: row.message_type as Message['type'],
+    mediaUrl: row.media_url || undefined,
+    isEdited: !!(row as { is_edited?: boolean }).is_edited,
+    is_deleted: row.is_deleted ?? false,
+    external_id: row.external_id || undefined,
+  };
+}
 
 export function mapRealtimeContactToContact(rc: RealtimeContact): ConversationContact {
   return {
@@ -44,3 +59,4 @@ export function mapRealtimeConversationToConversation(rc: ConversationWithMessag
     sentiment: rc.contact.ai_sentiment,
   };
 }
+
