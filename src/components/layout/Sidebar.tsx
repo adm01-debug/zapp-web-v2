@@ -11,7 +11,9 @@ import { SoundMuteToggle } from '@/components/notifications/SoundMuteToggle';
 import { SidebarNavItem } from './SidebarNavItem';
 import { SidebarNavGroup } from './SidebarNavGroup';
 import { AgentProfilePopover } from './AgentProfilePopover';
-import { primaryNav, sidebarGroups, communicationNav, automationNav, salesNav, connectionsNav, analyticsNav, systemNav, advancedNav } from './sidebarNavConfig';
+ import { primaryNav, sidebarGroups, advancedNav } from './sidebarNavConfig';
+ import { useUserRole } from '@/hooks/useUserRole';
+ import { NavigationService } from '@/services/navigation.service';
 
 interface SidebarProps {
   currentView: string;
@@ -27,9 +29,16 @@ export const Sidebar = React.memo(function Sidebar({ currentView, onViewChange, 
   const isDark = resolvedTheme === 'dark';
   const [statusOpen, setStatusOpen] = useState(false);
   const { collapsed, toggle } = useSidebarCollapse();
-  const { favorites, toggleFavorite, isFavorite } = useSidebarFavorites();
-
-  const allNavItems = [...communicationNav, ...automationNav, ...salesNav, ...connectionsNav, ...analyticsNav, ...systemNav, ...advancedNav];
+   const { favorites, toggleFavorite, isFavorite } = useSidebarFavorites();
+   const { roles } = useUserRole();
+ 
+   const filteredPrimaryNav = NavigationService.filterNavItems(primaryNav as any, roles);
+   const filteredGroups = sidebarGroups.map(group => ({
+     ...group,
+     items: NavigationService.filterNavItems(group.items as any, roles)
+   })).filter(group => group.items.length > 0);
+ 
+   const allNavItems = [...primaryNav, ...sidebarGroups.flatMap(g => g.items), ...advancedNav];
   const favoriteItems = favorites.map(id => allNavItems.find(item => item.id === id)).filter(Boolean) as typeof allNavItems;
 
   return (
@@ -61,12 +70,21 @@ export const Sidebar = React.memo(function Sidebar({ currentView, onViewChange, 
         </div>
       )}
 
-      {/* Primary Nav */}
-      <nav className={cn('flex flex-col gap-0.5', collapsed ? 'items-center px-[11px]' : 'px-2')} aria-label="Menu principal">
-        <ul role="list" className={cn('flex flex-col gap-0.5 w-full list-none p-0 m-0', collapsed && 'items-center')}>
-          {primaryNav.map((item) => <li key={item.id}><SidebarNavItem item={item} currentView={currentView} onViewChange={onViewChange} badge={item.id === 'inbox' ? inboxBadge : undefined} collapsed={collapsed} /></li>)}
-        </ul>
-      </nav>
+       <nav className={cn('flex flex-col gap-0.5', collapsed ? 'items-center px-[11px]' : 'px-2')} aria-label="Menu principal">
+         <ul role="list" className={cn('flex flex-col gap-0.5 w-full list-none p-0 m-0', collapsed && 'items-center')}>
+           {filteredPrimaryNav.map((item) => (
+             <li key={item.id}>
+               <SidebarNavItem
+                 item={item as any}
+                 currentView={currentView}
+                 onViewChange={onViewChange}
+                 badge={item.id === 'inbox' ? inboxBadge : undefined}
+                 collapsed={collapsed}
+               />
+             </li>
+           ))}
+         </ul>
+       </nav>
 
       {/* Search */}
       <div className={cn('flex my-1.5', collapsed ? 'justify-center px-[11px]' : 'px-2')}>
@@ -95,12 +113,23 @@ export const Sidebar = React.memo(function Sidebar({ currentView, onViewChange, 
 
       <div className={cn('mx-3 h-px bg-border', collapsed ? 'my-1' : 'my-1.5')} />
 
-      {/* Groups */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin scroll-smooth [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border hover:[&::-webkit-scrollbar-thumb]:bg-primary/50">
-        <div className={cn('flex flex-col gap-1.5 py-1', collapsed ? 'items-center px-[11px]' : 'px-2')}>
-          {sidebarGroups.map((group) => <SidebarNavGroup key={group.label} label={group.label} icon={group.icon} items={group.items} currentView={currentView} onViewChange={onViewChange} collapsed={collapsed} onToggleFavorite={toggleFavorite} isFavorite={isFavorite} />)}
-        </div>
-      </div>
+       <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin scroll-smooth [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border hover:[&::-webkit-scrollbar-thumb]:bg-primary/50">
+         <div className={cn('flex flex-col gap-1.5 py-1', collapsed ? 'items-center px-[11px]' : 'px-2')}>
+           {filteredGroups.map((group) => (
+             <SidebarNavGroup
+               key={group.label}
+               label={group.label}
+               icon={group.icon}
+               items={group.items as any}
+               currentView={currentView}
+               onViewChange={onViewChange}
+               collapsed={collapsed}
+               onToggleFavorite={toggleFavorite}
+               isFavorite={isFavorite}
+             />
+           ))}
+         </div>
+       </div>
 
       {/* Bottom Controls */}
       <div className="flex flex-col items-center gap-1.5 pt-1.5 pb-3 shrink-0">
