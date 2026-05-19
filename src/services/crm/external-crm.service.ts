@@ -1,4 +1,25 @@
- import { getExternalSupabase } from '@/integrations/supabase/externalClient';
+  import { getExternalSupabase } from '@/integrations/supabase/externalClient';
+  import { queryExternalProxy } from '@/lib/externalProxy';
+   static async fetchEvolutionMessages(limit = 500) {
+     const result = await queryExternalProxy<any>({
+       table: 'evolution_messages',
+       select: '*',
+       order: { column: 'created_at', ascending: false },
+       limit,
+     });
+     return result.data;
+   }
+ 
+   static async fetchEvolutionMessagesByJid(remoteJid: string, limit = 1000) {
+     const result = await queryExternalProxy<any>({
+       table: 'evolution_messages',
+       select: '*',
+       filters: [{ column: 'remote_jid', operator: 'eq', value: remoteJid }],
+       order: { column: 'created_at', ascending: true },
+       limit,
+     });
+     return result.data;
+   }
  import { log } from '@/lib/logger';
  
  export class ExternalCRMService {
