@@ -23,9 +23,8 @@ import { EvolutionDisconnectBanner } from '@/components/alerts/EvolutionDisconne
 import { toast } from 'sonner';
 
 const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _ref) {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { user, profile, loading, signOut } = useAuth();
+   const navigate = useNavigate();
+   const { user, profile, loading, signOut } = useAuth();
   const { hasCompletedOnboarding, loading: loadingOnboarding, completeOnboarding } = useOnboarding();
   const { startTour } = useTour();
   const { currentView, navigateTo: rawNavigateTo, goBack: rawGoBack, goForward: rawGoForward, canGoBack, canGoForward, breadcrumbTrail } = useNavigationHistory('inbox');
