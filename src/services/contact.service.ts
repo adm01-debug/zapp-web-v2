@@ -74,9 +74,25 @@ export class ContactService {
       .single();
   }
 
-  static async deleteNote(noteId: string) {
-    return supabase.from('contact_notes').delete().eq('id', noteId);
-  }
+   static async deleteNote(noteId: string) {
+     return supabase.from('contact_notes').delete().eq('id', noteId);
+   }
+ 
+   static async fetchCustomFields(contactId: string) {
+     return supabase
+       .from('contact_custom_fields')
+       .select('*')
+       .eq('contact_id', contactId)
+       .order('field_name');
+   }
+ 
+   static async upsertCustomField(payload: Database['public']['Tables']['contact_custom_fields']['Insert']) {
+     return supabase.from('contact_custom_fields').upsert(payload);
+   }
+ 
+   static async deleteCustomField(fieldId: string) {
+     return supabase.from('contact_custom_fields').delete().eq('id', fieldId);
+   }
 
   static async fetchStats(contactId: string) {
     const { count: messageCount } = await supabase
