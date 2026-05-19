@@ -76,6 +76,21 @@ export class RealtimeService {
       .subscribe();
   }
 
+  static subscribeToReactions(messageId: string, onChange: (payload: any) => void) {
+    return supabase
+      .channel(`chat-reactions:${messageId}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'message_reactions',
+      }, onChange)
+      .subscribe();
+  }
+
+  static removeChannel(channel: any) {
+    return supabase.removeChannel(channel);
+  }
+
   static async markMessagesAsRead(contactId: string): Promise<void> {
     const { error } = await supabase
       .from('messages')
