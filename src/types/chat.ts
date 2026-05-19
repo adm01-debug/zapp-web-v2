@@ -12,7 +12,9 @@ export interface MessageReaction {
   createdAt?: string;
 }
 
-export interface Message extends Omit<MessageRow, 'sender'> {
+export interface Message extends Partial<Omit<MessageRow, 'id' | 'content' | 'sender'>> {
+  id: string;
+  content: string;
   sender: 'agent' | 'contact';
   senderName?: string;
   timestamp: Date;
@@ -25,10 +27,10 @@ export interface Message extends Omit<MessageRow, 'sender'> {
   location?: LocationMessage | null;
   transcriptionStatus?: string | null;
   reactions?: MessageReaction[];
+  conversationId?: string;
 }
 
-// Backward-compat alias
-export type Contact = ConversationContact;
+// Note: Contact type lives in '@/types/contact'; do not re-export here to avoid conflicts.
 
 export interface ConversationContact {
   id: string;
@@ -45,6 +47,7 @@ export interface ConversationContact {
   assigned_to: string | null;
   queue_id: string | null;
   created_at: string;
+  createdAt?: Date;
   updated_at: string;
   whatsapp_connection_id: string | null;
   contact_type: string | null;

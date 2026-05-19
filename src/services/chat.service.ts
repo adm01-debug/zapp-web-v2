@@ -1,6 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Message, MessageInsert } from '@/types';
 
+export type { Message, MessageInsert };
+
 export class ChatService {
   static async fetchMessages(contactId: string, page = 0, pageSize = 1000) {
     const from = page * pageSize;
