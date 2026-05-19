@@ -145,50 +145,16 @@ export function useMessages({ contactId, enabled = true }: UseMessagesOptions) {
     }
   }, [contactId, enabled, fetchMessages]);
 
-  // Subscribe to realtime updates
-  useEffect(() => {
-    if (!enabled || !contactId) return;
-
-    const channel = supabase
-      .channel(`messages:${contactId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `contact_id=eq.${contactId}`,
-        },
-        handleNewMessage
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'messages',
-          filter: `contact_id=eq.${contactId}`,
-        },
-        handleMessageUpdate
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'messages',
-          filter: `contact_id=eq.${contactId}`,
-        },
-        handleMessageDelete
-      )
-      .subscribe((status) => {
-        log.debug(`Messages realtime subscription (${contactId}):`, status);
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [contactId, enabled, handleNewMessage, handleMessageUpdate, handleMessageDelete]);
+   // Subscribe to realtime updates using the standardized hook
+   useSupabaseRealtime<Message>({
+     channelName: `messages:${contactId}`,
+     table: 'messages',
+     filter: contactId ? `contact_id=eq.${contactId}` : undefined,
+     enabled: enabled && !!contactId,
+     onInsert: handleNewMessage,
+     onUpdate: handleMessageUpdate,
+     onDelete: handleMessageDelete,
+   });
 
   // Add a message optimistically
   const addMessage = useCallback((message: Message) => {
