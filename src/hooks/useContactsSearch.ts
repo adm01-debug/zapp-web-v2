@@ -1,23 +1,6 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-
-interface Contact {
-  id: string;
-  name: string;
-  nickname: string | null;
-  surname: string | null;
-  job_title: string | null;
-  company: string | null;
-  phone: string;
-  email: string | null;
-  avatar_url: string | null;
-  tags: string[] | null;
-  notes: string | null;
-  contact_type: string | null;
-  created_at: string;
-  updated_at: string;
-}
+ import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+ import { useQuery } from '@tanstack/react-query';
+ import { ContactService, Contact } from '@/services/contact.service';
 
 interface SearchFilters {
   searchTerm: string;
@@ -104,40 +87,40 @@ export function useContactsSearch() {
     page,
   ];
 
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey,
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc('search_contacts', {
-        search_term: debouncedSearch || '',
-        contact_type_filter: activeTab === 'all' ? null : activeTab,
-        company_filter: filterCompany || null,
-        job_title_filter: filterJobTitle || null,
-        tag_filter: filterTag || null,
-        date_from: dateFrom,
-        sort_field: sortField,
-        sort_direction: sortDirection,
-        page_size: PAGE_SIZE,
-        page_offset: page * PAGE_SIZE,
-      });
-      if (error) throw error;
-      return data as (Contact & { total_count: number })[];
-    },
-  });
+   const { data, isLoading, error, refetch } = useQuery({
+     queryKey,
+     queryFn: async () => {
+       const { data, error } = await ContactService.searchContacts({
+         search_term: debouncedSearch,
+         contact_type_filter: activeTab === 'all' ? null : activeTab,
+         company_filter: filterCompany,
+         job_title_filter: filterJobTitle,
+         tag_filter: filterTag,
+         date_from: dateFrom,
+         sort_field: sortField,
+         sort_direction: sortDirection,
+         page_size: PAGE_SIZE,
+         page_offset: page * PAGE_SIZE,
+       });
+       if (error) throw error;
+       return data as (Contact & { total_count: number })[];
+     },
+   });
 
   const contacts = useMemo(() => data ?? [], [data]);
   const totalCount = contacts.length > 0 ? Number(contacts[0].total_count) : 0;
   const hasMore = (page + 1) * PAGE_SIZE < totalCount;
 
   // Fetch counts by type (lightweight separate query)
-  const { data: typeCounts } = useQuery({
-    queryKey: ['contacts-type-counts'],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc('contacts_count_by_type');
-      if (error) throw error;
-      return (data as { contact_type: string; count: number }[]) ?? [];
-    },
-    staleTime: 30000, // Cache for 30s
-  });
+   const { data: typeCounts } = useQuery({
+     queryKey: ['contacts-type-counts'],
+     queryFn: async () => {
+       const { data, error } = await ContactService.getCountsByType();
+       if (error) throw error;
+       return (data as { contact_type: string; count: number }[]) ?? [];
+     },
+     staleTime: 30000,
+   });
 
   const contactCountByType = useMemo(() => {
     const map: Record<string, number> = {};
