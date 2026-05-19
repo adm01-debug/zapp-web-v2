@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { ContactService } from '@/services/contact.service';
 import { log } from '@/lib/logger';
 
 export interface EnrichedContactData {
@@ -28,16 +28,10 @@ export interface SLAInfo {
 }
 
 export function useContactEnrichedData(contactId: string) {
-  // Fetch enriched contact fields from DB
   const { data: enrichedData } = useQuery({
     queryKey: ['contact-enriched', contactId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('contacts')
-        .select('company, job_title, nickname, surname, contact_type, ai_sentiment, ai_priority, channel_type')
-        .eq('id', contactId)
-        .single();
-
+      const { data, error } = await ContactService.fetchEnrichedData(contactId);
       if (error) {
         log.error('Error fetching enriched contact data:', error);
         return null;
@@ -47,16 +41,10 @@ export function useContactEnrichedData(contactId: string) {
     enabled: !!contactId,
   });
 
-  // Fetch AI conversation tags
   const { data: aiTags = [] } = useQuery({
     queryKey: ['contact-ai-tags', contactId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ai_conversation_tags')
-        .select('id, tag_name, confidence, source')
-        .eq('contact_id', contactId)
-        .order('confidence', { ascending: false });
-
+      const { data, error } = await ContactService.fetchAITags(contactId);
       if (error) {
         log.error('Error fetching AI tags:', error);
         return [];
@@ -66,18 +54,10 @@ export function useContactEnrichedData(contactId: string) {
     enabled: !!contactId,
   });
 
-  // Fetch SLA info
   const { data: slaInfo } = useQuery({
     queryKey: ['contact-sla', contactId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('conversation_sla')
-        .select('first_response_breached, resolution_breached, first_response_at, resolved_at')
-        .eq('contact_id', contactId)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
+      const { data, error } = await ContactService.fetchSLA(contactId);
       if (error) {
         log.error('Error fetching SLA info:', error);
         return null;

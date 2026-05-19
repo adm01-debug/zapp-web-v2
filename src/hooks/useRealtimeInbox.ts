@@ -1,4 +1,6 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+ import { useInboxUIState } from '@/hooks/inbox/useInboxUIState';
+ import { ChatService } from '@/services/chat.service';
 import { useOfflineCache } from '@/hooks/useOfflineCache';
 import { useMessages } from '@/hooks/useMessages';
 import { useRealtimeMessages, ConversationWithMessages, ConversationContact } from '@/hooks/useRealtimeMessages';
@@ -28,17 +30,11 @@ export function useRealtimeInbox() {
 
   // These features only available on local for now
   const { sendMessage, markAsRead } = localRealtime;
-  const { newMessageNotification, dismissNotification, setSelectedContact, setSoundEnabled } = localRealtime;
-
-  const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
-  const [selectedContactFallback, setSelectedContactFallback] = useState<ConversationContact | null>(null);
-  const [showDetails, setShowDetails] = useState(true);
-  const [isOnline, setIsOnline] = useState(true);
-  const [pipContact, setPipContact] = useState<{ name: string; avatar?: string; lastMessage?: string; contactId: string } | null>(null);
-  const [pendingContactId, setPendingContactId] = useState<string | null>(null);
-  const [soundOn, setSoundOn] = useState(true);
-  const [globalSearchOpen, setGlobalSearchOpen] = useState(false);
-  const [showNewConversation, setShowNewConversation] = useState(false);
+   const { newMessageNotification, dismissNotification, setSelectedContact, setSoundEnabled } = localRealtime;
+   const uiState = useInboxUIState();
+   const { selectedContactId, setSelectedContactId, soundOn, setSoundOn, setPendingContactId } = uiState;
+   const [selectedContactFallback, setSelectedContactFallback] = useState<ConversationContact | null>(null);
+   const [isOnline, setIsOnline] = useState(true);
   const { profile } = useAuth();
 
   const { conversations: cachedConversations, usingCache } = useOfflineCache(conversations, loading);
@@ -127,11 +123,11 @@ export function useRealtimeInbox() {
     }
   }, [newMessageNotification, handleSelectConversation, dismissNotification]);
 
-  const toggleSound = useCallback(() => {
-    const v = !soundOn;
-    setSoundOn(v);
-    setSoundEnabled(v);
-  }, [soundOn, setSoundEnabled]);
+   const toggleSound = useCallback(() => {
+     const v = !soundOn;
+     setSoundOn(v);
+     setSoundEnabled(v);
+   }, [soundOn, setSoundOn, setSoundEnabled]);
 
   const refreshActiveConversation = useCallback(async () => {
     await Promise.all([refetch(), refetchSelectedMessages()]);
@@ -148,22 +144,18 @@ export function useRealtimeInbox() {
     }
   }, [selectedContactId, sendMessage, refreshActiveConversation]);
 
-  const handleSendAudio = useCallback(async (blob: Blob) => {
-    if (!selectedContactId) { toast.error('Selecione uma conversa primeiro'); return; }
-    try {
-      const fileName = `${selectedContactId}/${Date.now()}.webm`;
-      const { error: uploadError } = await supabase.storage.from('audio-messages').upload(fileName, blob, { contentType: 'audio/webm' });
-      if (uploadError) { log.error('Error uploading audio:', uploadError); toast.error('Erro ao fazer upload do áudio'); return; }
-      const { data: signedData, error: signError } = await supabase.storage.from('audio-messages').createSignedUrl(fileName, 3600);
-      if (signError || !signedData?.signedUrl) { log.error('Error creating signed URL:', signError); toast.error('Erro ao gerar URL do áudio'); return; }
-      await sendMessage(selectedContactId, '[Áudio]', 'audio', signedData.signedUrl);
-    } catch (err) {
-      log.error('Error in handleSendAudio:', err);
-      toast.error('Erro ao enviar áudio. Tente novamente.');
-    } finally {
-      await refreshActiveConversation();
-    }
-  }, [selectedContactId, sendMessage, refreshActiveConversation]);
+   const handleSendAudio = useCallback(async (blob: Blob) => {
+     if (!selectedContactId) { toast.error('Selecione uma conversa primeiro'); return; }
+     try {
+       const signedUrl = await ChatService.uploadAudio(selectedContactId, blob);
+       await sendMessage(selectedContactId, '[Áudio]', 'audio', signedUrl);
+     } catch (err) {
+       log.error('Error in handleSendAudio:', err);
+       toast.error('Erro ao enviar áudio. Tente novamente.');
+     } finally {
+       await refreshActiveConversation();
+     }
+   }, [selectedContactId, sendMessage, refreshActiveConversation]);
 
   // Convert to legacy format
   const legacyConversation: Conversation | null = resolvedSelectedConversation
@@ -217,30 +209,22 @@ export function useRealtimeInbox() {
     external_id: m.external_id || undefined,
   }));
 
-  return {
-    // State
-    selectedContactId, setSelectedContactId,
-    showDetails, setShowDetails,
-    isOnline,
-    pipContact, setPipContact,
-    pendingContactId, setPendingContactId,
-    soundOn, toggleSound,
-    globalSearchOpen, setGlobalSearchOpen,
-    showNewConversation, setShowNewConversation,
-    profile,
-    // Data
-    conversations, cachedConversations, usingCache,
-    loading, error,
-    selectedMessagesLoading,
-    newMessageNotification, dismissNotification,
-    legacyConversation, legacyMessages,
-    // Actions
-    handleSelectConversation,
-    handleNotificationView,
-    handleSendMessage,
-    handleSendAudio,
-    refetch,
-    setSelectedContact,
-    markAsRead,
-  };
+   return {
+     ...uiState,
+     isOnline,
+     profile,
+     toggleSound,
+     conversations, cachedConversations, usingCache,
+     loading, error,
+     selectedMessagesLoading,
+     newMessageNotification, dismissNotification,
+     legacyConversation, legacyMessages,
+     handleSelectConversation,
+     handleNotificationView,
+     handleSendMessage,
+     handleSendAudio,
+     refetch,
+     setSelectedContact,
+     markAsRead,
+   };
 }

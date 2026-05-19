@@ -23,4 +23,20 @@
    static async markAsRead(messageId: string) {
      return supabase.from('messages').update({ is_read: true }).eq('id', messageId);
    }
+ 
+   static async uploadAudio(contactId: string, blob: Blob) {
+     const fileName = `${contactId}/${Date.now()}.webm`;
+     const { error: uploadError } = await supabase.storage
+       .from('audio-messages')
+       .upload(fileName, blob, { contentType: 'audio/webm' });
+ 
+     if (uploadError) throw uploadError;
+ 
+     const { data: signedData, error: signError } = await supabase.storage
+       .from('audio-messages')
+       .createSignedUrl(fileName, 3600);
+ 
+     if (signError) throw signError;
+     return signedData.signedUrl;
+   }
  }

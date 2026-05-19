@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { ContactService } from '@/services/contact.service';
 import { log } from '@/lib/logger';
 
 export interface CustomField {
@@ -20,11 +20,7 @@ export function useContactCustomFields(contactId: string | undefined) {
     if (!contactId) return;
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('contact_custom_fields')
-        .select('*')
-        .eq('contact_id', contactId)
-        .order('field_name');
+      const { data, error } = await ContactService.fetchCustomFields(contactId);
       if (error) throw error;
       setFields((data || []) as CustomField[]);
     } catch (err) {
@@ -41,14 +37,12 @@ export function useContactCustomFields(contactId: string | undefined) {
   const addField = useCallback(async (fieldName: string, fieldValue: string, fieldType = 'text') => {
     if (!contactId) return;
     try {
-      const { error } = await supabase
-        .from('contact_custom_fields')
-        .upsert({
-          contact_id: contactId,
-          field_name: fieldName,
-          field_value: fieldValue,
-          field_type: fieldType,
-        });
+      const { error } = await ContactService.upsertCustomField({
+        contact_id: contactId,
+        field_name: fieldName,
+        field_value: fieldValue,
+        field_type: fieldType,
+      });
       if (error) throw error;
       await fetchFields();
     } catch (err) {
@@ -59,10 +53,7 @@ export function useContactCustomFields(contactId: string | undefined) {
 
   const removeField = useCallback(async (fieldId: string) => {
     try {
-      const { error } = await supabase
-        .from('contact_custom_fields')
-        .delete()
-        .eq('id', fieldId);
+      const { error } = await ContactService.deleteCustomField(fieldId);
       if (error) throw error;
       setFields(prev => prev.filter(f => f.id !== fieldId));
     } catch (err) {

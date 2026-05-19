@@ -1,4 +1,4 @@
-import { Suspense, useCallback, forwardRef, lazy, useState } from 'react';
+ import { Suspense, useCallback, forwardRef, lazy, useState, useMemo } from 'react';
  import { ZenModeToggle } from '@/components/layout/ZenModeToggle';
  import { VoiceCopilotFAB } from '@/components/layout/VoiceCopilotFAB';
 import { useViewTransition } from '@/hooks/useViewTransition';
@@ -8,13 +8,14 @@ import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist
 import { ViewRouter } from '@/pages/ViewRouter';
 import { ViewLoadingFallback } from '@/components/layout/ViewLoadingFallback';
 import { RouteLoadingBar } from '@/components/ui/route-loading-bar';
-import { MobileShell } from '@/components/mobile/MobileShell';
+ import { MobileShell } from '@/components/mobile/MobileShell';
+ import { A11yBoilerplate } from '@/components/layout/A11yBoilerplate';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { useZenMode } from '@/hooks/useZenMode';
  import { TooltipProvider } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
-import type { VoiceAgentAction } from '@/hooks/voice/types';
+ import { useVoiceAgent } from '@/hooks/voice/useVoiceAgent';
 
 const LazyVoiceOverlay = lazy(() => import('@/components/voice/VoiceSearchOverlayConnected'));
 
@@ -63,39 +64,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     startTransition(() => setCurrentView(viewId));
   }, [startTransition, setCurrentView]);
 
-  const handleVoiceAction = useCallback((action: VoiceAgentAction) => {
-    switch (action.action) {
-      case 'navigate':
-        if (action.data?.route) {
-          handleViewChange(action.data.route);
-          toast.success(`Navegando para ${action.data.route}`);
-        }
-        break;
-      case 'search':
-        if (action.data?.query) {
-          handleViewChange('contacts');
-          toast.info(`Buscando: "${action.data.query}"`);
-        }
-        break;
-      case 'filter':
-        if (action.data?.filters) {
-          handleViewChange('inbox');
-          toast.info('Filtros aplicados por comando de voz');
-        }
-        break;
-      case 'sort':
-        if (action.data?.sortBy) {
-          toast.info(`Ordenação alterada: ${action.data.sortBy}`);
-        }
-        break;
-      case 'clear':
-        toast.info('Filtros limpos');
-        break;
-      case 'answer':
-        // Verbal response already given via TTS
-        break;
-    }
-  }, [handleViewChange]);
+   const { handleVoiceAction } = useVoiceAgent(handleViewChange);
 
   // Mobile edge-swipe navigation
   useSwipeNavigation({
@@ -112,13 +81,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     <div className="flex h-screen max-h-screen min-h-screen bg-background overflow-hidden relative">
       <RouteLoadingBar isLoading={loading} />
 
-      {/* Skip to content — a11y */}
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg focus:text-sm focus:font-medium"
-      >
-        Pular para o conteúdo
-      </a>
+       <A11yBoilerplate />
 
       {/* Mobile wrapper */}
       {isMobile && (
@@ -192,21 +155,6 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
         </Suspense>
       )}
 
-      {/* Accessible live region for screen reader announcements */}
-      <div
-        id="a11y-status"
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        className="sr-only"
-      />
-      <div
-        id="a11y-alert"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-        className="sr-only"
-      />
     </div>
   );
 });
