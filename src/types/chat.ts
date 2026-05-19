@@ -1,12 +1,14 @@
 import type { Database } from '@/integrations/supabase/client';
 
 export type MessageRow = Database['public']['Tables']['messages']['Row'];
+export type MessageInsert = Database['public']['Tables']['messages']['Insert'];
+export type MessageUpdate = Database['public']['Tables']['messages']['Update'];
 
 export interface Message extends MessageRow {
-  // Add camelCase aliases for backward compatibility where needed
   timestamp?: Date;
   type?: 'text' | 'image' | 'video' | 'audio' | 'file' | 'location' | 'interactive';
   mediaUrl?: string;
+  isEdited?: boolean;
 }
 
 export interface Conversation {
