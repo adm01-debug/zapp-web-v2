@@ -1,3 +1,47 @@
+   static async fetchStats(contactId: string) {
+     const { count: messageCount } = await supabase
+       .from('messages')
+       .select('id', { count: 'exact', head: true })
+       .eq('contact_id', contactId);
+ 
+     const { data: messages } = await supabase
+       .from('messages')
+       .select('created_at')
+       .eq('contact_id', contactId)
+       .order('created_at', { ascending: false })
+       .limit(500);
+ 
+     const uniqueDays = new Set(messages?.map(m => new Date(m.created_at).toDateString()) || []);
+     const { data: csatData } = await supabase.from('csat_surveys').select('rating').eq('contact_id', contactId);
+     const csatAvg = csatData && csatData.length > 0 ? csatData.reduce((sum, s) => sum + s.rating, 0) / csatData.length : null;
+ 
+     const { data: agentMessages } = await supabase
+       .from('messages')
+       .select('created_at, sender')
+       .eq('contact_id', contactId)
+       .order('created_at', { ascending: true })
+       .limit(200);
+ 
+     let totalResponseTime = 0;
+     let responseCount = 0;
+     if (agentMessages) {
+       for (let i = 1; i < agentMessages.length; i++) {
+         if (agentMessages[i].sender === 'agent' && agentMessages[i - 1].sender === 'contact') {
+           const diff = new Date(agentMessages[i].created_at).getTime() - new Date(agentMessages[i - 1].created_at).getTime();
+           totalResponseTime += diff;
+           responseCount++;
+         }
+       }
+     }
+ 
+     return {
+       totalMessages: messageCount || 0,
+       avgResponseTimeMinutes: responseCount > 0 ? Math.round(totalResponseTime / (responseCount * 60000)) : 0,
+       totalConversations: uniqueDays.size,
+       csatAverage: csatAvg,
+       csatCount: csatData?.length || 0,
+     };
+   }
  import { supabase } from '@/integrations/supabase/client';
  import type { Database } from '@/integrations/supabase/types';
  
