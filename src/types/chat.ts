@@ -27,15 +27,21 @@ export interface Conversation {
 
 export interface InteractiveMessage {
   type: 'button' | 'list';
+  header?: { type: 'text' | 'image' | 'video'; text?: string; media_url?: string };
   body: string;
   footer?: string;
   buttons?: InteractiveButton[];
   sections?: InteractiveListSection[];
+  listButtonText?: string;
 }
 
 export interface InteractiveButton {
   id: string;
   text: string;
+  title?: string;
+  type?: 'reply' | 'url' | 'call';
+  url?: string;
+  phoneNumber?: string;
 }
 
 export interface InteractiveListSection {
@@ -48,4 +54,6 @@ export interface LocationMessage {
   longitude: number;
   name?: string;
   address?: string;
+  isLive?: boolean;
+  liveUntil?: string;
 }
