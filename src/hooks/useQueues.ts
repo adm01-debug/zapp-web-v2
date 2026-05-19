@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+ import { useState, useEffect, useCallback } from 'react';
+ import { supabase } from '@/integrations/supabase/client';
+ import { useSupabaseRealtime } from '@/hooks/realtime/useSupabaseRealtime';
 import { useToast } from '@/hooks/use-toast';
 import { log } from '@/lib/logger';
 
@@ -40,7 +41,7 @@ export function useQueues() {
   const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
 
-  const fetchQueues = async () => {
+   const fetchQueues = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -94,7 +95,7 @@ export function useQueues() {
     } finally {
       setLoading(false);
     }
-  };
+   }, [toast]);
 
   const createQueue = async (queue: Partial<Queue>) => {
     try {
@@ -263,20 +264,21 @@ export function useQueues() {
     }
   };
 
-  useEffect(() => {
-    fetchQueues();
-
-    // Subscribe to realtime changes
-    const queuesChannel = supabase
-      .channel('queues-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'queues' }, fetchQueues)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'queue_members' }, fetchQueues)
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(queuesChannel);
-    };
-  }, []);
+   useEffect(() => {
+     fetchQueues();
+   }, [fetchQueues]);
+ 
+   useSupabaseRealtime({
+     channelName: 'queues-changes',
+     table: 'queues',
+     onAll: fetchQueues,
+   });
+ 
+   useSupabaseRealtime({
+     channelName: 'queue-members-changes',
+     table: 'queue_members',
+     onAll: fetchQueues,
+   });
 
   return {
     queues,
