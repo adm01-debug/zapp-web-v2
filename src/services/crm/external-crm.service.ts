@@ -1,3 +1,8 @@
+ import { getExternalSupabase } from '@/integrations/supabase/externalClient';
+ import { queryExternalProxy } from '@/lib/externalProxy';
+ import { log } from '@/lib/logger';
+ 
+ export class ExternalCRMService {
    static async queryExternal<T = unknown>(params: {
      table: string;
      select?: string;
@@ -52,11 +57,6 @@
      };
    }
  
- import { getExternalSupabase } from '@/integrations/supabase/externalClient';
- import { queryExternalProxy } from '@/lib/externalProxy';
- import { log } from '@/lib/logger';
- 
- export class ExternalCRMService {
    static async fetchEvolutionMessages(limit = 500) {
      const result = await queryExternalProxy<any>({
        table: 'evolution_messages',
