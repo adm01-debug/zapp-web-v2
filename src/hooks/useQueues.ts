@@ -1,19 +1,12 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { log } from '@/lib/logger';
-
-export interface Queue {
-  id: string;
-  name: string;
-  description: string | null;
-  color: string;
-  is_active: boolean;
-  max_wait_time_minutes: number;
-  priority: number;
-  created_at: string;
-  updated_at: string;
-}
+ import { useState, useEffect, useCallback } from 'react';
+ import { supabase } from '@/integrations/supabase/client';
+  import { QueueService } from '@/services/queue.service';
+ import { useSupabaseRealtime } from '@/hooks/realtime/useSupabaseRealtime';
+ import { useToast } from '@/hooks/use-toast';
+ import { log } from '@/lib/logger';
+ 
+  import type { Queue } from '@/services/queue.service';
+  export type { Queue };
 
 export interface QueueMember {
   id: string;
@@ -40,77 +33,43 @@ export function useQueues() {
   const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
 
-  const fetchQueues = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch queues
-      const { data: queuesData, error: queuesError } = await supabase
-        .from('queues')
-        .select('*')
-        .order('priority', { ascending: false });
+   const fetchQueues = useCallback(async () => {
+     try {
+       setLoading(true);
+       const [{ data: queuesData, error: queuesError }, { data: membersData, error: membersError }] = await Promise.all([
+         QueueService.fetchQueues(),
+         QueueService.fetchMembers()
+       ]);
+ 
+       if (queuesError) throw queuesError;
+       if (membersError) throw membersError;
+ 
+       const queuesWithMembers: QueueWithMembers[] = (queuesData || []).map(queue => ({
+         ...queue,
+         members: (membersData || []).filter(m => m.queue_id === queue.id) as QueueMember[],
+         waiting_count: 0 // Waiting counts logic could be moved to service if needed
+       }));
+ 
+       setQueues(queuesWithMembers);
+       setError(null);
+     } catch (err) {
+       log.error('Error fetching queues:', err);
+       setError(err as Error);
+     } finally {
+       setLoading(false);
+     }
+   }, []);
 
-      if (queuesError) throw queuesError;
-
-      // Fetch queue members with profiles
-      const { data: membersData, error: membersError } = await supabase
-        .from('queue_members')
-        .select(`
-          *,
-          profile:profiles(id, name, avatar_url, is_active)
-        `);
-
-      if (membersError) throw membersError;
-
-      // Fetch waiting counts per queue
-      const { data: waitingData, error: waitingError } = await supabase
-        .from('contacts')
-        .select('queue_id')
-        .not('queue_id', 'is', null)
-        .is('assigned_to', null);
-
-      if (waitingError) throw waitingError;
-
-      // Count waiting per queue
-      const waitingCounts: Record<string, number> = {};
-      waitingData?.forEach(contact => {
-        if (contact.queue_id) {
-          waitingCounts[contact.queue_id] = (waitingCounts[contact.queue_id] || 0) + 1;
-        }
-      });
-
-      // Combine data
-      const queuesWithMembers: QueueWithMembers[] = (queuesData || []).map(queue => ({
-        ...queue,
-        members: (membersData || []).filter(m => m.queue_id === queue.id) as QueueMember[],
-        waiting_count: waitingCounts[queue.id] || 0
-      }));
-
-      setQueues(queuesWithMembers);
-      setError(null);
-    } catch (err) {
-      log.error('Error fetching queues:', err);
-      setError(err as Error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const createQueue = async (queue: Partial<Queue>) => {
-    try {
-      const { data, error } = await supabase
-        .from('queues')
-        .insert({
-          name: queue.name!,
-          description: queue.description,
-          color: queue.color || '#3B82F6',
-          max_wait_time_minutes: queue.max_wait_time_minutes || 30,
-          priority: queue.priority || 0
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
+   const createQueue = async (queue: Partial<Queue>) => {
+     try {
+       const { data, error } = await QueueService.createQueue({
+         name: queue.name!,
+         description: queue.description,
+         color: queue.color || '#3B82F6',
+         max_wait_time_minutes: queue.max_wait_time_minutes || 30,
+         priority: queue.priority || 0
+       });
+       if (error) throw error;
 
       toast({
         title: 'Fila criada',
@@ -130,14 +89,10 @@ export function useQueues() {
     }
   };
 
-  const updateQueue = async (id: string, updates: Partial<Queue>) => {
-    try {
-      const { error } = await supabase
-        .from('queues')
-        .update(updates)
-        .eq('id', id);
-
-      if (error) throw error;
+   const updateQueue = async (id: string, updates: Partial<Queue>) => {
+     try {
+       const { error } = await QueueService.updateQueue(id, updates);
+       if (error) throw error;
 
       toast({
         title: 'Fila atualizada',
@@ -156,14 +111,10 @@ export function useQueues() {
     }
   };
 
-  const deleteQueue = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('queues')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+   const deleteQueue = async (id: string) => {
+     try {
+       const { error } = await QueueService.deleteQueue(id);
+       if (error) throw error;
 
       toast({
         title: 'Fila excluída',
@@ -210,13 +161,12 @@ export function useQueues() {
     }
   };
 
-  const removeMember = async (queueId: string, profileId: string) => {
-    try {
-      const { error } = await supabase
-        .from('queue_members')
-        .delete()
-        .eq('queue_id', queueId)
-        .eq('profile_id', profileId);
+   const removeMember = async (queueId: string, profileId: string) => {
+     try {
+       const { error } = await supabase
+         .from('queue_members')
+         .delete()
+         .match({ queue_id: queueId, profile_id: profileId });
 
       if (error) throw error;
 
@@ -237,12 +187,12 @@ export function useQueues() {
     }
   };
 
-  const assignContactToQueue = async (contactId: string, queueId: string | null) => {
-    try {
-      const { error } = await supabase
-        .from('contacts')
-        .update({ queue_id: queueId, assigned_to: null })
-        .eq('id', contactId);
+   const assignContactToQueue = async (contactId: string, queueId: string | null) => {
+     try {
+       const { error } = await supabase
+         .from('contacts')
+         .update({ queue_id: queueId, assigned_to: null })
+         .match({ id: contactId });
 
       if (error) throw error;
 
@@ -263,20 +213,21 @@ export function useQueues() {
     }
   };
 
-  useEffect(() => {
-    fetchQueues();
-
-    // Subscribe to realtime changes
-    const queuesChannel = supabase
-      .channel('queues-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'queues' }, fetchQueues)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'queue_members' }, fetchQueues)
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(queuesChannel);
-    };
-  }, []);
+   useEffect(() => {
+     fetchQueues();
+   }, [fetchQueues]);
+ 
+   useSupabaseRealtime({
+     channelName: 'queues-changes',
+     table: 'queues',
+     onAll: fetchQueues,
+   });
+ 
+   useSupabaseRealtime({
+     channelName: 'queue-members-changes',
+     table: 'queue_members',
+     onAll: fetchQueues,
+   });
 
   return {
     queues,

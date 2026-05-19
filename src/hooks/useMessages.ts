@@ -1,27 +1,8 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
-import { log } from '@/lib/logger';
-
-export interface Message {
-  id: string;
-  contact_id: string | null;
-  agent_id: string | null;
-  content: string;
-  sender: string;
-  message_type: string;
-  media_url: string | null;
-  is_read: boolean | null;
-  status: 'sent' | 'delivered' | 'read' | 'failed' | null;
-  status_updated_at: string | null;
-  created_at: string;
-  updated_at: string;
-  external_id: string | null;
-  whatsapp_connection_id: string | null;
-  transcription: string | null;
-  transcription_status: string | null;
-  is_deleted: boolean | null;
-}
+ import { useState, useEffect, useCallback, useRef } from 'react';
+ import { useSupabaseRealtime } from '@/hooks/realtime/useSupabaseRealtime';
+ import { ChatService, Message } from '@/services/chat.service';
+ import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+ import { log } from '@/lib/logger';
 
 interface UseMessagesOptions {
   contactId: string | null;
@@ -49,47 +30,18 @@ export function useMessages({ contactId, enabled = true }: UseMessagesOptions) {
       return;
     }
 
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Fetch all messages using pagination to bypass the 1000 row default limit
-      type MessageRow = Omit<Message, 'isEdited'>;
-      let allData: MessageRow[] = [];
-      let from = 0;
-      const PAGE_SIZE = 1000;
-      let hasMore = true;
-
-      while (hasMore) {
-        const { data: page, error: fetchError } = await supabase
-          .from('messages')
-          .select('*')
-          .eq('contact_id', contactId)
-          .order('created_at', { ascending: true })
-          .range(from, from + PAGE_SIZE - 1);
-
-        if (fetchError) throw fetchError;
-
-        if (page && page.length > 0) {
-          allData = allData.concat(page as MessageRow[]);
-          from += PAGE_SIZE;
-          hasMore = page.length === PAGE_SIZE;
-        } else {
-          hasMore = false;
-        }
-      }
-
-      const mappedMessages: Message[] = allData.map((m) => ({
-        ...m,
-        isEdited: !!(m as any).is_edited,
-      }));
-      if (mountedRef.current) setMessages(mappedMessages);
-    } catch (err) {
-      log.error('Error fetching messages:', err);
-      if (mountedRef.current) setError(err instanceof Error ? err.message : 'Failed to fetch messages');
-    } finally {
-      if (mountedRef.current) setLoading(false);
-    }
+     try {
+       setLoading(true);
+       setError(null);
+       const { data, error: fetchError } = await ChatService.fetchMessages(contactId);
+       if (fetchError) throw fetchError;
+       if (mountedRef.current) setMessages(data as Message[]);
+     } catch (err) {
+       log.error('Error fetching messages:', err);
+       if (mountedRef.current) setError(err instanceof Error ? err.message : 'Failed to fetch messages');
+     } finally {
+       if (mountedRef.current) setLoading(false);
+     }
   }, [contactId]);
 
   // Handle new message from realtime
@@ -145,50 +97,16 @@ export function useMessages({ contactId, enabled = true }: UseMessagesOptions) {
     }
   }, [contactId, enabled, fetchMessages]);
 
-  // Subscribe to realtime updates
-  useEffect(() => {
-    if (!enabled || !contactId) return;
-
-    const channel = supabase
-      .channel(`messages:${contactId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `contact_id=eq.${contactId}`,
-        },
-        handleNewMessage
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'messages',
-          filter: `contact_id=eq.${contactId}`,
-        },
-        handleMessageUpdate
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'messages',
-          filter: `contact_id=eq.${contactId}`,
-        },
-        handleMessageDelete
-      )
-      .subscribe((status) => {
-        log.debug(`Messages realtime subscription (${contactId}):`, status);
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [contactId, enabled, handleNewMessage, handleMessageUpdate, handleMessageDelete]);
+   // Subscribe to realtime updates using the standardized hook
+   useSupabaseRealtime<Message>({
+     channelName: `messages:${contactId}`,
+     table: 'messages',
+     filter: contactId ? `contact_id=eq.${contactId}` : undefined,
+     enabled: enabled && !!contactId,
+     onInsert: handleNewMessage,
+     onUpdate: handleMessageUpdate,
+     onDelete: handleMessageDelete,
+   });
 
   // Add a message optimistically
   const addMessage = useCallback((message: Message) => {
