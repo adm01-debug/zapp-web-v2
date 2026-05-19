@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { getLogger } from '@/lib/logger';
 
 const log = getLogger('ChatMessagesArea');
-import { supabase } from '@/integrations/supabase/client';
+import { ChatService } from '@/services/chat.service';
 import { ChatWatermark } from './ChatWatermark';
 import { cn } from '@/lib/utils';
 import { Message, InteractiveButton } from '@/types/chat';
@@ -54,7 +54,7 @@ export const ChatMessagesArea = memo(forwardRef<ChatMessagesAreaRef, ChatMessage
 
   const handleMessageDeleted = useCallback(async (messageId: string) => {
     try {
-      await supabase.from('messages').update({ is_deleted: true, content: '[Mensagem apagada]' }).eq('id', messageId);
+      await ChatService.deleteMessage(messageId);
     } catch {
       log.error('Failed to mark message as deleted in DB');
     }
