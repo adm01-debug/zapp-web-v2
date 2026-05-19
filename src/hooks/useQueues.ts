@@ -89,14 +89,10 @@ export function useQueues() {
     }
   };
 
-  const updateQueue = async (id: string, updates: Partial<Queue>) => {
-    try {
-      const { error } = await supabase
-        .from('queues')
-        .update(updates)
-        .eq('id', id);
-
-      if (error) throw error;
+   const updateQueue = async (id: string, updates: Partial<Queue>) => {
+     try {
+       const { error } = await QueueService.updateQueue(id, updates);
+       if (error) throw error;
 
       toast({
         title: 'Fila atualizada',
@@ -115,14 +111,10 @@ export function useQueues() {
     }
   };
 
-  const deleteQueue = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('queues')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+   const deleteQueue = async (id: string) => {
+     try {
+       const { error } = await QueueService.deleteQueue(id);
+       if (error) throw error;
 
       toast({
         title: 'Fila excluída',
