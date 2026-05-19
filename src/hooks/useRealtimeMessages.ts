@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { getLogger } from '@/lib/logger';
+import { MessageRow, ContactRow } from '@/types/chat';
 import { sendMessageToContact } from './realtime/messageSender';
 import {
   normalizeMessage, buildConversation, dedupeContacts, buildConversations,
@@ -24,46 +25,8 @@ export interface NewMessageNotification {
   timestamp: Date;
 }
 
-export interface RealtimeMessage {
-  id: string;
-  contact_id: string | null;
-  agent_id: string | null;
-  content: string;
-  sender: string;
-  message_type: string;
-  media_url: string | null;
-  is_read: boolean | null;
-  status: 'sent' | 'delivered' | 'read' | 'failed' | null;
-  status_updated_at: string | null;
-  created_at: string;
-  updated_at: string;
-  external_id: string | null;
-  whatsapp_connection_id: string | null;
-  transcription: string | null;
-  transcription_status: string | null;
-  is_deleted: boolean | null;
-}
-
-export interface ConversationContact {
-  id: string;
-  name: string;
-  surname: string | null;
-  nickname: string | null;
-  phone: string;
-  email: string | null;
-  avatar_url: string | null;
-  tags: string[] | null;
-  company: string | null;
-  job_title: string | null;
-  assigned_to: string | null;
-  queue_id: string | null;
-  created_at: string;
-  updated_at: string;
-  whatsapp_connection_id: string | null;
-  contact_type: string | null;
-  group_category: string | null;
-  ai_sentiment: string | null;
-}
+export type RealtimeMessage = MessageRow;
+export type ConversationContact = ContactRow;
 
 export interface ConversationWithMessages {
   contact: ConversationContact;
