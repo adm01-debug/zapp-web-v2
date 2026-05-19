@@ -4,11 +4,26 @@ export type MessageRow = Database['public']['Tables']['messages']['Row'];
 export type MessageInsert = Database['public']['Tables']['messages']['Insert'];
 export type MessageUpdate = Database['public']['Tables']['messages']['Update'];
 
-export interface Message extends MessageRow {
-  timestamp?: Date;
-  type?: 'text' | 'image' | 'video' | 'audio' | 'file' | 'location' | 'interactive';
+export interface MessageReaction {
+  id: string;
+  emoji: string;
+  userId: string;
+  userName?: string;
+  createdAt?: string;
+}
+
+export interface Message extends Omit<MessageRow, 'sender'> {
+  sender: 'agent' | 'contact' | 'user' | string;
+  timestamp: Date;
+  type: 'text' | 'image' | 'video' | 'audio' | 'file' | 'document' | 'location' | 'interactive' | 'sticker';
   mediaUrl?: string;
   isEdited?: boolean;
+  replyTo?: Message | { id: string; content: string; sender: string } | null;
+  buttonResponse?: { buttonId: string; title: string } | null;
+  interactive?: InteractiveMessage | null;
+  location?: LocationMessage | null;
+  transcriptionStatus?: string | null;
+  reactions?: MessageReaction[];
 }
 
 export interface ConversationContact {
@@ -19,6 +34,7 @@ export interface ConversationContact {
   phone: string;
   email: string | null;
   avatar_url: string | null;
+  avatar?: string | null;
   tags: string[] | null;
   company: string | null;
   job_title: string | null;
@@ -32,6 +48,12 @@ export interface ConversationContact {
   ai_sentiment: string | null;
 }
 
+export interface AssignedAgentInfo {
+  id: string;
+  name: string;
+  avatar?: string | null;
+}
+
 export interface Conversation {
   id: string;
   contact: ConversationContact;
@@ -42,13 +64,13 @@ export interface Conversation {
   tags: string[];
   createdAt: Date;
   updatedAt: Date;
-  assignedTo?: string | null;
+  assignedTo?: AssignedAgentInfo | string | null;
   sentiment?: string | null;
 }
 
 export interface InteractiveMessage {
-  type: 'button' | 'list';
-  header?: { type: 'text' | 'image' | 'video'; text?: string; media_url?: string };
+  type: 'button' | 'buttons' | 'list';
+  header?: { type: 'text' | 'image' | 'video'; text?: string; media_url?: string; mediaUrl?: string } | string;
   body: string;
   footer?: string;
   buttons?: InteractiveButton[];
@@ -60,7 +82,7 @@ export interface InteractiveButton {
   id: string;
   text: string;
   title?: string;
-  type?: 'reply' | 'url' | 'call';
+  type?: 'reply' | 'url' | 'call' | 'phone';
   url?: string;
   phoneNumber?: string;
 }
@@ -76,5 +98,5 @@ export interface LocationMessage {
   name?: string;
   address?: string;
   isLive?: boolean;
-  liveUntil?: string;
+  liveUntil?: string | Date;
 }
