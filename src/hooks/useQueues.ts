@@ -161,13 +161,12 @@ export function useQueues() {
     }
   };
 
-  const removeMember = async (queueId: string, profileId: string) => {
-    try {
-      const { error } = await supabase
-        .from('queue_members')
-        .delete()
-        .eq('queue_id', queueId)
-        .eq('profile_id', profileId);
+   const removeMember = async (queueId: string, profileId: string) => {
+     try {
+       const { error } = await supabase
+         .from('queue_members')
+         .delete()
+         .match({ queue_id: queueId, profile_id: profileId });
 
       if (error) throw error;
 
@@ -188,12 +187,12 @@ export function useQueues() {
     }
   };
 
-  const assignContactToQueue = async (contactId: string, queueId: string | null) => {
-    try {
-      const { error } = await supabase
-        .from('contacts')
-        .update({ queue_id: queueId, assigned_to: null })
-        .eq('id', contactId);
+   const assignContactToQueue = async (contactId: string, queueId: string | null) => {
+     try {
+       const { error } = await supabase
+         .from('contacts')
+         .update({ queue_id: queueId, assigned_to: null })
+         .match({ id: contactId });
 
       if (error) throw error;
 
