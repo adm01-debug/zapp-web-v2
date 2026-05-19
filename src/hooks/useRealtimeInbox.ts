@@ -9,6 +9,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { getLogger } from '@/lib/logger';
 import { Conversation, Message } from '@/types/chat';
+import { 
+  mapRealtimeConversationToConversation, 
+  mapRealtimeMessageToMessage 
+} from '@/adapters/inboxAdapter';
 import { toast } from 'sonner';
 
 const log = getLogger('useRealtimeInbox');
@@ -157,57 +161,17 @@ export function useRealtimeInbox() {
      }
    }, [selectedContactId, sendMessage, refreshActiveConversation]);
 
-  // Convert to legacy format
-  const legacyConversation: Conversation | null = resolvedSelectedConversation
-    ? {
-        id: resolvedSelectedConversation.contact.id,
-        contact: {
-          id: resolvedSelectedConversation.contact.id,
-          name: resolvedSelectedConversation.contact.name,
-          phone: resolvedSelectedConversation.contact.phone,
-          email: resolvedSelectedConversation.contact.email || undefined,
-          avatar: resolvedSelectedConversation.contact.avatar_url || undefined,
-          tags: resolvedSelectedConversation.contact.tags || [],
-          createdAt: new Date(resolvedSelectedConversation.contact.created_at),
-          contact_type: resolvedSelectedConversation.contact.contact_type || undefined,
-          whatsapp_connection_id: resolvedSelectedConversation.contact.whatsapp_connection_id || undefined,
-        },
-        lastMessage: resolvedSelectedConversation.lastMessage
-          ? {
-              id: resolvedSelectedConversation.lastMessage.id,
-              conversationId: resolvedSelectedConversation.contact.id,
-              content: resolvedSelectedConversation.lastMessage.content,
-              type: resolvedSelectedConversation.lastMessage.message_type as Message['type'],
-              sender: resolvedSelectedConversation.lastMessage.sender as Message['sender'],
-              timestamp: new Date(resolvedSelectedConversation.lastMessage.created_at),
-              status: 'read' as const,
-            }
-          : undefined,
-        unreadCount: resolvedSelectedConversation.unreadCount,
-        status: 'open',
-        priority: 'medium',
-        tags: resolvedSelectedConversation.contact.tags || [],
-        createdAt: new Date(resolvedSelectedConversation.contact.created_at),
-        updatedAt: new Date(resolvedSelectedConversation.contact.updated_at),
-      }
-    : null;
+  // Convert to legacy format using specialized adapter
+  const legacyConversation: Conversation | null = useMemo(() => 
+    resolvedSelectedConversation ? mapRealtimeConversationToConversation(resolvedSelectedConversation) : null,
+    [resolvedSelectedConversation]
+  );
 
   const messageSource = selectedContactId ? selectedMessages : resolvedSelectedConversation?.messages || [];
-  const legacyMessages: Message[] = messageSource.map((m) => ({
-    id: m.id,
-    conversationId: resolvedSelectedConversation?.contact.id || selectedContactId || '',
-    content: m.content,
-    type: m.message_type as Message['type'],
-    sender: m.sender as Message['sender'],
-    agentId: m.agent_id || undefined,
-    timestamp: new Date(m.created_at),
-    status: (m.status as Message['status'] | null) || (m.is_read ? 'read' : 'delivered'),
-    mediaUrl: m.media_url || undefined,
-    transcription: m.transcription || null,
-    transcriptionStatus: m.transcription_status as Message['transcriptionStatus'] || null,
-    is_deleted: m.is_deleted ?? false,
-    external_id: m.external_id || undefined,
-  }));
+  const legacyMessages: Message[] = useMemo(() => 
+    messageSource.map((m) => mapRealtimeMessageToMessage(m, selectedContactId || resolvedSelectedConversation?.contact.id)),
+    [messageSource, selectedContactId, resolvedSelectedConversation?.contact.id]
+  );
 
    return {
      ...uiState,
