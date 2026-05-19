@@ -1,3 +1,8 @@
+ import { getExternalSupabase } from '@/integrations/supabase/externalClient';
+ import { queryExternalProxy } from '@/lib/externalProxy';
+ import { log } from '@/lib/logger';
+ 
+ export class ExternalCRMService {
    static async getContact360Batch(phones: string[]) {
      const cleanedPhones = [...new Set(phones.map(p => p.replace(/[^0-9]/g, '')).filter(p => p.length >= 8))];
      if (cleanedPhones.length === 0) return new Map();
@@ -25,11 +30,6 @@
      return map;
    }
  
- import { getExternalSupabase } from '@/integrations/supabase/externalClient';
- import { queryExternalProxy } from '@/lib/externalProxy';
- import { log } from '@/lib/logger';
- 
- export class ExternalCRMService {
    static async queryExternal<T = unknown>(params: {
      table: string;
      select?: string;
