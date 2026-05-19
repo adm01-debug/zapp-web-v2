@@ -1,5 +1,5 @@
  import { useState, useEffect, useCallback } from 'react';
- import { supabase } from '@/integrations/supabase/client';
+ import { QueueService, Queue } from '@/services/queue.service';
  import { useSupabaseRealtime } from '@/hooks/realtime/useSupabaseRealtime';
 import { useToast } from '@/hooks/use-toast';
 import { log } from '@/lib/logger';
@@ -42,76 +42,42 @@ export function useQueues() {
   const { toast } = useToast();
 
    const fetchQueues = useCallback(async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch queues
-      const { data: queuesData, error: queuesError } = await supabase
-        .from('queues')
-        .select('*')
-        .order('priority', { ascending: false });
+     try {
+       setLoading(true);
+       const [{ data: queuesData, error: queuesError }, { data: membersData, error: membersError }] = await Promise.all([
+         QueueService.fetchQueues(),
+         QueueService.fetchMembers()
+       ]);
+ 
+       if (queuesError) throw queuesError;
+       if (membersError) throw membersError;
+ 
+       const queuesWithMembers: QueueWithMembers[] = (queuesData || []).map(queue => ({
+         ...queue,
+         members: (membersData || []).filter(m => m.queue_id === queue.id) as QueueMember[],
+         waiting_count: 0 // Waiting counts logic could be moved to service if needed
+       }));
+ 
+       setQueues(queuesWithMembers);
+       setError(null);
+     } catch (err) {
+       log.error('Error fetching queues:', err);
+       setError(err as Error);
+     } finally {
+       setLoading(false);
+     }
+   }, []);
 
-      if (queuesError) throw queuesError;
-
-      // Fetch queue members with profiles
-      const { data: membersData, error: membersError } = await supabase
-        .from('queue_members')
-        .select(`
-          *,
-          profile:profiles(id, name, avatar_url, is_active)
-        `);
-
-      if (membersError) throw membersError;
-
-      // Fetch waiting counts per queue
-      const { data: waitingData, error: waitingError } = await supabase
-        .from('contacts')
-        .select('queue_id')
-        .not('queue_id', 'is', null)
-        .is('assigned_to', null);
-
-      if (waitingError) throw waitingError;
-
-      // Count waiting per queue
-      const waitingCounts: Record<string, number> = {};
-      waitingData?.forEach(contact => {
-        if (contact.queue_id) {
-          waitingCounts[contact.queue_id] = (waitingCounts[contact.queue_id] || 0) + 1;
-        }
-      });
-
-      // Combine data
-      const queuesWithMembers: QueueWithMembers[] = (queuesData || []).map(queue => ({
-        ...queue,
-        members: (membersData || []).filter(m => m.queue_id === queue.id) as QueueMember[],
-        waiting_count: waitingCounts[queue.id] || 0
-      }));
-
-      setQueues(queuesWithMembers);
-      setError(null);
-    } catch (err) {
-      log.error('Error fetching queues:', err);
-      setError(err as Error);
-    } finally {
-      setLoading(false);
-    }
-   }, [toast]);
-
-  const createQueue = async (queue: Partial<Queue>) => {
-    try {
-      const { data, error } = await supabase
-        .from('queues')
-        .insert({
-          name: queue.name!,
-          description: queue.description,
-          color: queue.color || '#3B82F6',
-          max_wait_time_minutes: queue.max_wait_time_minutes || 30,
-          priority: queue.priority || 0
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
+   const createQueue = async (queue: Partial<Queue>) => {
+     try {
+       const { data, error } = await QueueService.createQueue({
+         name: queue.name!,
+         description: queue.description,
+         color: queue.color || '#3B82F6',
+         max_wait_time_minutes: queue.max_wait_time_minutes || 30,
+         priority: queue.priority || 0
+       });
+       if (error) throw error;
 
       toast({
         title: 'Fila criada',
