@@ -1,5 +1,8 @@
-  import { getExternalSupabase } from '@/integrations/supabase/externalClient';
-  import { queryExternalProxy } from '@/lib/externalProxy';
+ import { getExternalSupabase } from '@/integrations/supabase/externalClient';
+ import { queryExternalProxy } from '@/lib/externalProxy';
+ import { log } from '@/lib/logger';
+ 
+ export class ExternalCRMService {
    static async fetchEvolutionMessages(limit = 500) {
      const result = await queryExternalProxy<any>({
        table: 'evolution_messages',
@@ -20,9 +23,7 @@
      });
      return result.data;
    }
- import { log } from '@/lib/logger';
  
- export class ExternalCRMService {
    static async getContact360(phone: string) {
      const cleanedPhone = phone.replace(/[^0-9]/g, '');
      if (cleanedPhone.length < 8) return null;
