@@ -30,9 +30,21 @@
        totalConversations: contacts.length,
        onlineAgents: agents.onlineAgents,
        totalAgents: agents.totalAgents,
-       queuesStats: [], // Placeholder for now
-       recentActivity: [], // Placeholder for now
+       avgResponseTime: null,
+       queuesStats: [],
+       recentActivity: [],
      };
+ 
+ export const formatResponseTime = (seconds: number | null): string => {
+   if (seconds === null) return 'N/A';
+   if (seconds < 60) return `${seconds}s`;
+   const minutes = Math.floor(seconds / 60);
+   const remainingSeconds = seconds % 60;
+   if (minutes < 60) return `${minutes}min ${remainingSeconds}s`;
+   const hours = Math.floor(minutes / 60);
+   const remainingMinutes = minutes % 60;
+   return `${hours}h ${remainingMinutes}min`;
+ };
    }, [agents, contacts]);
  
    return { stats, isLoading, error, refetch };
