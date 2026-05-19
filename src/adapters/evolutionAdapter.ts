@@ -141,6 +141,10 @@ export function derivedToConversationContact(dc: DerivedContact): ConversationCo
     ai_sentiment: null,
     ai_priority: 'medium',
     consent_status: 'opt_in',
+    lead_origin: null,
+    lead_score: 0,
+    notes: null,
+    risk_score: 0,
   };
 }
 
