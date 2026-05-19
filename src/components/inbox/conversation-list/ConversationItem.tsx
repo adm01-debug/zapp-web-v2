@@ -52,8 +52,8 @@ interface ConversationItemProps {
 
 export function ConversationItem({ conversation, isSelected, onSelect, compact = false }: ConversationItemProps) {
   const StatusIcon = statusIcons[conversation.status];
-  const sentiment: SentimentLevel | null = conversation.sentiment || 
-    (conversation.sentimentScore !== undefined ? getSentimentFromScore(conversation.sentimentScore) : null);
+  const sentiment: SentimentLevel | null = (conversation.sentiment as SentimentLevel | null) || 
+    (conversation.sentimentScore !== undefined && conversation.sentimentScore !== null ? getSentimentFromScore(conversation.sentimentScore) : null);
 
   if (compact) {
     return (

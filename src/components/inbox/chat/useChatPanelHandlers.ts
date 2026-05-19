@@ -178,7 +178,8 @@ export function useChatPanelHandlers(opts: UseChatPanelHandlersOptions) {
   }, []);
 
   const handleSendLocation = useCallback((location: LocationMessage) => {
-    toast({ title: 'Localização enviada!', description: location.isLive ? `Localização em tempo real por ${location.liveUntil ? Math.round((location.liveUntil.getTime() - Date.now()) / 60000) : 15} minutos` : location.name || 'Localização compartilhada' });
+    const liveUntilDate = location.liveUntil instanceof Date ? location.liveUntil : location.liveUntil ? new Date(location.liveUntil) : null;
+    toast({ title: 'Localização enviada!', description: location.isLive ? `Localização em tempo real por ${liveUntilDate ? Math.round((liveUntilDate.getTime() - Date.now()) / 60000) : 15} minutos` : location.name || 'Localização compartilhada' });
   }, []);
 
   const handleAudioSend = useCallback(async (audioBlob: Blob, onSendAudio?: (blob: Blob) => Promise<void>) => {

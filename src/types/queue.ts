@@ -1,4 +1,4 @@
-import type { Database } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
 export type QueueRow = Database['public']['Tables']['queues']['Row'];
 export type QueueMemberRow = Database['public']['Tables']['queue_members']['Row'];

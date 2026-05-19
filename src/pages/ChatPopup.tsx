@@ -110,7 +110,7 @@ export default function ChatPopup() {
     : null;
 
   const legacyMessages = contactId
-    ? mapToLegacyMessages(messages, contactId)
+    ? mapToLegacyMessages(messages as unknown as RawMessage[], contactId)
     : [];
 
   const handleSendMessage = useCallback(
