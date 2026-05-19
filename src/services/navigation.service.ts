@@ -1,3 +1,19 @@
+   static getAdvancedNav(): NavItem[] {
+     return [
+       { id: 'audit-logs', icon: ScrollText, label: 'Auditoria' },
+       { id: 'auto-export', icon: ClipboardList, label: 'Export Auto' },
+       { id: 'transcriptions', icon: Mic, label: 'Transcrições' },
+       { id: 'diagnostics', icon: Compass, label: 'Diagnóstico' },
+       { id: 'performance', icon: Cpu, label: 'Performance' },
+       { id: 'telemetry', icon: BarChartHorizontal, label: 'Telemetria BD' },
+       { id: 'ai-usage', icon: BrainCircuit, label: 'Consumo IA' },
+       { id: 'public-api', icon: Code2, label: 'API Pública' },
+       { id: 'gmail-webhook', icon: Webhook, label: 'Gmail Webhook' },
+       { id: 'media-migration', icon: HardDrive, label: 'Migração Mídia' },
+       { id: 'sicoob-bridge', icon: Landmark, label: 'Sicoob Bridge' },
+       { id: 'evolution-monitor', icon: Activity, label: 'Monitor Evolution' },
+     ];
+   }
  import { AppRole } from './role.service';
  import { 
    MessageSquare, MessagesSquare, Mail, User, BarChart3, Kanban, Sparkles, Settings,
