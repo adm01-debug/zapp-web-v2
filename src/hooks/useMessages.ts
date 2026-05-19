@@ -1,5 +1,5 @@
  import { useState, useEffect, useCallback, useRef } from 'react';
- import { mapMessageRowToMessage } from '@/adapters/messageAdapter';
+ import { mapMessageRowToMessage } from '@/adapters/inboxAdapter';
  import { useSupabaseRealtime } from '@/hooks/realtime/useSupabaseRealtime';
  import { ChatService, Message } from '@/services/chat.service';
  import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
