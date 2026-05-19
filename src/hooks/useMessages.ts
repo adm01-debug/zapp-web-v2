@@ -1,4 +1,5 @@
  import { useState, useEffect, useCallback, useRef } from 'react';
+ import { mapMessageRowToMessage } from '@/adapters/messageAdapter';
  import { useSupabaseRealtime } from '@/hooks/realtime/useSupabaseRealtime';
  import { ChatService, Message } from '@/services/chat.service';
  import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
@@ -35,7 +36,7 @@ export function useMessages({ contactId, enabled = true }: UseMessagesOptions) {
        setError(null);
        const { data, error: fetchError } = await ChatService.fetchMessages(contactId);
        if (fetchError) throw fetchError;
-       if (mountedRef.current) setMessages(data as Message[]);
+        if (mountedRef.current) setMessages((data || []).map(mapMessageRowToMessage));
      } catch (err) {
        log.error('Error fetching messages:', err);
        if (mountedRef.current) setError(err instanceof Error ? err.message : 'Failed to fetch messages');
@@ -47,7 +48,7 @@ export function useMessages({ contactId, enabled = true }: UseMessagesOptions) {
   // Handle new message from realtime
   const handleNewMessage = useCallback(
     (payload: RealtimePostgresChangesPayload<Message>) => {
-      const newMessage = payload.new as Message;
+      const newMessage = mapMessageRowToMessage(payload.new as any);
       
       // Only add if it's for the current contact
       if (newMessage.contact_id === contactId) {
@@ -66,7 +67,7 @@ export function useMessages({ contactId, enabled = true }: UseMessagesOptions) {
   // Handle message update from realtime
   const handleMessageUpdate = useCallback(
     (payload: RealtimePostgresChangesPayload<Message>) => {
-      const updatedMessage = payload.new as Message;
+      const updatedMessage = mapMessageRowToMessage(payload.new as any);
 
       if (updatedMessage.contact_id === contactId) {
         setMessages((prev) =>
