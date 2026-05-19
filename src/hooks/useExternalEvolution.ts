@@ -4,13 +4,11 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { queryExternalProxy } from '@/lib/externalProxy';
-import {
-  buildExternalConversations,
-  evolutionToRealtimeMessage,
-} from '@/adapters/evolutionAdapter';
-import type { EvolutionMessage } from '@/types/evolutionExternal';
-import type { ConversationWithMessages } from '@/hooks/useRealtimeMessages';
+ import {
+   buildExternalConversations,
+   evolutionToRealtimeMessage,
+ } from '@/adapters/evolutionAdapter';
+ import { ExternalCRMService } from '@/services/crm/external-crm.service';
 import type { RealtimeMessage } from '@/hooks/useRealtimeMessages';
 import { getLogger } from '@/lib/logger';
 
@@ -18,39 +16,16 @@ const log = getLogger('useExternalEvolution');
 
 const POLL_INTERVAL = 5000; // 5s polling
 
-// ─── Fetch all recent messages from external DB ───────────────
-async function fetchExternalMessages(limit = 500): Promise<EvolutionMessage[]> {
-  const result = await queryExternalProxy<EvolutionMessage>({
-    table: 'evolution_messages',
-    select: '*',
-    order: { column: 'created_at', ascending: false },
-    limit,
-  });
-  return result.data;
-}
-
-// ─── Fetch messages for a specific remote_jid ─────────────────
-async function fetchMessagesByJid(remoteJid: string, limit = 1000): Promise<EvolutionMessage[]> {
-  const result = await queryExternalProxy<EvolutionMessage>({
-    table: 'evolution_messages',
-    select: '*',
-    filters: [{ column: 'remote_jid', operator: 'eq', value: remoteJid }],
-    order: { column: 'created_at', ascending: true },
-    limit,
-  });
-  return result.data;
-}
-
 // ─── Hook: External Conversations (list for sidebar) ──────────
 export function useExternalConversations(enabled = true) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
     queryKey: ['external-evolution', 'conversations'],
-    queryFn: async () => {
-      const messages = await fetchExternalMessages(500);
-      return buildExternalConversations(messages);
-    },
+     queryFn: async () => {
+       const messages = await ExternalCRMService.fetchEvolutionMessages(500);
+       return buildExternalConversations(messages);
+     },
     enabled,
     refetchInterval: enabled ? POLL_INTERVAL : false,
     staleTime: POLL_INTERVAL - 1000,
@@ -83,14 +58,14 @@ export function useExternalMessages(remoteJid: string | null) {
       return;
     }
 
-    try {
-      setLoading(true);
-      setError(null);
-      const evoMessages = await fetchMessagesByJid(remoteJid);
-      if (mountedRef.current) {
-        setMessages(evoMessages.map(evolutionToRealtimeMessage));
-      }
-    } catch (err) {
+     try {
+       setLoading(true);
+       setError(null);
+       const evoMessages = await ExternalCRMService.fetchEvolutionMessagesByJid(remoteJid);
+       if (mountedRef.current) {
+         setMessages(evoMessages.map(evolutionToRealtimeMessage));
+       }
+     } catch (err) {
       log.error('Error fetching external messages:', err);
       if (mountedRef.current) setError(err instanceof Error ? err.message : 'Failed to fetch');
     } finally {

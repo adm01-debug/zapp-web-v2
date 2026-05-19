@@ -10,7 +10,8 @@
  * Returns a Map<phone, CRMBatchResult> for O(1) lookup per conversation item.
  */
 import { useQuery } from '@tanstack/react-query';
-import { getExternalSupabase, isExternalConfigured } from '@/integrations/supabase/externalClient';
+ import { isExternalConfigured } from '@/integrations/supabase/externalClient';
+ import { ExternalCRMService } from '@/services/crm/external-crm.service';
 import { log } from '@/lib/logger';
 
 export interface CRMBatchResult {
@@ -36,35 +37,7 @@ export function useExternalContact360Batch(phones: string[]) {
 
   const query = useQuery<Map<string, CRMBatchResult>>({
     queryKey: ['external-contact-360-batch', queryKey],
-    queryFn: async () => {
-      if (cleanedPhones.length === 0) return new Map();
-
-      const { data, error } = await getExternalSupabase().rpc('get_companies_by_phones_batch', {
-        p_phones: cleanedPhones,
-      });
-
-      if (error) {
-        log.error('Batch CRM lookup error:', error);
-        return new Map();
-      }
-
-      // Convert JSONB object to Map for O(1) lookups
-      const map = new Map<string, CRMBatchResult>();
-      if (data && typeof data === 'object') {
-        for (const [phone, info] of Object.entries(data)) {
-          map.set(phone, info as CRMBatchResult);
-          // Also index by cleaned version (without country code)
-          const clean = cleanPhone(phone);
-          if (clean !== phone) map.set(clean, info as CRMBatchResult);
-          // Also index with country code
-          if (!phone.startsWith('55') && clean.length <= 11) {
-            map.set('55' + clean, info as CRMBatchResult);
-          }
-        }
-      }
-
-      return map;
-    },
+     queryFn: () => ExternalCRMService.getContact360Batch(cleanedPhones),
     enabled: isExternalConfigured && cleanedPhones.length > 0,
     staleTime: 1000 * 60 * 10, // 10 min cache
     gcTime: 1000 * 60 * 30,
