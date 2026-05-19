@@ -93,6 +93,32 @@ export class ContactService {
    static async deleteCustomField(fieldId: string) {
      return supabase.from('contact_custom_fields').delete().eq('id', fieldId);
    }
+ 
+   static async fetchEnrichedData(contactId: string) {
+     return supabase
+       .from('contacts')
+       .select('company, job_title, nickname, surname, contact_type, ai_sentiment, ai_priority, channel_type')
+       .eq('id', contactId)
+       .single();
+   }
+ 
+   static async fetchAITags(contactId: string) {
+     return supabase
+       .from('ai_conversation_tags')
+       .select('id, tag_name, confidence, source')
+       .eq('contact_id', contactId)
+       .order('confidence', { ascending: false });
+   }
+ 
+   static async fetchSLA(contactId: string) {
+     return supabase
+       .from('conversation_sla')
+       .select('first_response_breached, resolution_breached, first_response_at, resolved_at')
+       .eq('contact_id', contactId)
+       .order('created_at', { ascending: false })
+       .limit(1)
+       .maybeSingle();
+   }
 
   static async fetchStats(contactId: string) {
     const { count: messageCount } = await supabase
