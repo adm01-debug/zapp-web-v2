@@ -1,3 +1,7 @@
+ import { getExternalSupabase } from '@/integrations/supabase/externalClient';
+ import { log } from '@/lib/logger';
+ 
+ export class ExternalCRMService {
    static async getContact360(phone: string) {
      const cleanedPhone = phone.replace(/[^0-9]/g, '');
      if (cleanedPhone.length < 8) return null;
@@ -13,10 +17,7 @@
  
      return data;
    }
- import { getExternalSupabase } from '@/integrations/supabase/externalClient';
- import { log } from '@/lib/logger';
  
- export class ExternalCRMService {
    static async fetchUniqueCompanies(maxPages = 5, pageSize = 200) {
      const allNames: string[] = [];
      let page = 0;
