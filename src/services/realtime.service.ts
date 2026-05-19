@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
-import { getLogger } from '@/lib/logger';
+import { MessageRow } from '@/types/chat';
+import { ContactRow } from '@/types/contact';
 import { 
   RealtimeMessage, 
   ConversationWithMessages, 
@@ -13,6 +14,7 @@ import {
   dedupeContacts,
   buildConversation
 } from '@/hooks/realtime/realtimeUtils';
+import { getLogger } from '@/lib/logger';
 
 const log = getLogger('RealtimeService');
 const SEEDED_CONTACT_LIMIT = 500;

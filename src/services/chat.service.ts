@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import type { Message, MessageInsert } from '@/types';
+import type { Message, MessageInsert } from '@/types/chat';
 
 export type { Message, MessageInsert };
 
