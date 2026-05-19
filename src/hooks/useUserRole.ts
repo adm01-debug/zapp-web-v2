@@ -1,6 +1,7 @@
  import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
  import { useAuth } from '@/hooks/useAuth';
- import { RoleService, AppRole } from '@/services/role.service';
+ import { RoleService, type AppRole } from '@/services/role.service';
+ export type { AppRole };
  
  export function useUserRole() {
    const { user } = useAuth();
