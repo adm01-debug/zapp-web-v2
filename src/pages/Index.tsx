@@ -1,4 +1,5 @@
- import { useState, useEffect, useCallback, useRef, forwardRef, memo, ReactNode } from 'react';
+ import { useState, useEffect, useCallback, useRef, forwardRef, memo } from 'react';
+ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigationHistory } from '@/hooks/useNavigationHistory';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
