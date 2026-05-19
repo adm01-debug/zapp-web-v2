@@ -13,18 +13,22 @@ export interface MessageReaction {
 }
 
 export interface Message extends Omit<MessageRow, 'sender'> {
-  sender: 'agent' | 'contact' | 'user' | string;
+  sender: 'agent' | 'contact';
+  senderName?: string;
   timestamp: Date;
   type: 'text' | 'image' | 'video' | 'audio' | 'file' | 'document' | 'location' | 'interactive' | 'sticker';
   mediaUrl?: string;
   isEdited?: boolean;
-  replyTo?: Message | { id: string; content: string; sender: string } | null;
-  buttonResponse?: { buttonId: string; title: string } | null;
+  replyTo?: { messageId: string; content: string; sender: 'agent' | 'contact'; type?: string } | null;
+  buttonResponse?: { buttonId: string; buttonTitle: string; title?: string } | null;
   interactive?: InteractiveMessage | null;
   location?: LocationMessage | null;
   transcriptionStatus?: string | null;
   reactions?: MessageReaction[];
 }
+
+// Backward-compat alias
+export type Contact = ConversationContact;
 
 export interface ConversationContact {
   id: string;
@@ -64,13 +68,15 @@ export interface Conversation {
   tags: string[];
   createdAt: Date;
   updatedAt: Date;
-  assignedTo?: AssignedAgentInfo | string | null;
+  assignedTo?: AssignedAgentInfo | null;
+  queue?: { id: string; name: string; color?: string } | null;
   sentiment?: string | null;
+  sentimentScore?: number | null;
 }
 
 export interface InteractiveMessage {
   type: 'button' | 'buttons' | 'list';
-  header?: { type: 'text' | 'image' | 'video'; text?: string; media_url?: string; mediaUrl?: string } | string;
+  header?: { type: 'text' | 'image' | 'video'; text?: string; media_url?: string; mediaUrl?: string };
   body: string;
   footer?: string;
   buttons?: InteractiveButton[];
@@ -80,7 +86,7 @@ export interface InteractiveMessage {
 
 export interface InteractiveButton {
   id: string;
-  text: string;
+  text?: string;
   title?: string;
   type?: 'reply' | 'url' | 'call' | 'phone';
   url?: string;
