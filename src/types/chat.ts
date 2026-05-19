@@ -11,9 +11,30 @@ export interface Message extends MessageRow {
   isEdited?: boolean;
 }
 
+export interface ConversationContact {
+  id: string;
+  name: string;
+  surname: string | null;
+  nickname: string | null;
+  phone: string;
+  email: string | null;
+  avatar_url: string | null;
+  tags: string[] | null;
+  company: string | null;
+  job_title: string | null;
+  assigned_to: string | null;
+  queue_id: string | null;
+  created_at: string;
+  updated_at: string;
+  whatsapp_connection_id: string | null;
+  contact_type: string | null;
+  group_category: string | null;
+  ai_sentiment: string | null;
+}
+
 export interface Conversation {
   id: string;
-  contact: any;
+  contact: ConversationContact;
   lastMessage?: any;
   unreadCount: number;
   status: 'open' | 'closed' | 'pending' | 'waiting' | 'resolved';
