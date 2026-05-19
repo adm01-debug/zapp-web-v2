@@ -34,6 +34,10 @@
        queuesStats: [],
        recentActivity: [],
      };
+   }, [agents, contacts]);
+ 
+   return { stats, isLoading, error, refetch };
+ };
  
  export const formatResponseTime = (seconds: number | null): string => {
    if (seconds === null) return 'N/A';
@@ -44,8 +48,4 @@
    const hours = Math.floor(minutes / 60);
    const remainingMinutes = minutes % 60;
    return `${hours}h ${remainingMinutes}min`;
- };
-   }, [agents, contacts]);
- 
-   return { stats, isLoading, error, refetch };
  };
