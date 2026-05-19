@@ -4,6 +4,10 @@ export type MessageRow = Database['public']['Tables']['messages']['Row'];
 export type MessageInsert = Database['public']['Tables']['messages']['Insert'];
 export type MessageUpdate = Database['public']['Tables']['messages']['Update'];
 
+export type ContactRow = Database['public']['Tables']['contacts']['Row'];
+export type ContactInsert = Database['public']['Tables']['contacts']['Insert'];
+export type ContactUpdate = Database['public']['Tables']['contacts']['Update'];
+
 export interface MessageReaction {
   id: string;
   emoji: string;
