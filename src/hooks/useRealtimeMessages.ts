@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { getLogger } from '@/lib/logger';
-import { MessageRow, ContactRow } from '@/types/chat';
+import { MessageRow } from '@/types/chat';
+import { ContactRow } from '@/types/contact';
 import { sendMessageToContact } from './realtime/messageSender';
 import {
   normalizeMessage, buildConversation, dedupeContacts, buildConversations,
