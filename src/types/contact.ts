@@ -1,6 +1,8 @@
 import type { Database } from '@/integrations/supabase/client';
 
 export type ContactRow = Database['public']['Tables']['contacts']['Row'];
+export type ContactInsert = Database['public']['Tables']['contacts']['Insert'];
+export type ContactUpdate = Database['public']['Tables']['contacts']['Update'];
 
 export interface Contact extends ContactRow {
   createdAt?: Date;
