@@ -2,6 +2,8 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 import type { Queue } from '@/types';
 
+export type { Queue };
+
 export class QueueService {
   static async fetchQueues() {
     return supabase
