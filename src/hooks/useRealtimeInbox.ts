@@ -32,7 +32,7 @@ export function useRealtimeInbox() {
   const { sendMessage, markAsRead } = localRealtime;
    const { newMessageNotification, dismissNotification, setSelectedContact, setSoundEnabled } = localRealtime;
    const uiState = useInboxUIState();
-   const { selectedContactId, setSelectedContactId, soundOn, setSoundOn } = uiState;
+   const { selectedContactId, setSelectedContactId, soundOn, setSoundOn, setPendingContactId } = uiState;
    const [selectedContactFallback, setSelectedContactFallback] = useState<ConversationContact | null>(null);
    const [isOnline, setIsOnline] = useState(true);
   const { profile } = useAuth();
