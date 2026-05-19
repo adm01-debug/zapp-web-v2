@@ -1,8 +1,9 @@
-import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+ import { useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@/hooks/useAuth';
-import { toast } from '@/hooks/use-toast';
+ import { toast } from '@/hooks/use-toast';
+ import { ContactService } from '@/services/contact.service';
+ import { AuthService } from '@/services/auth.service';
+ import { useAuth } from '@/hooks/useAuth';
 import { log } from '@/lib/logger';
 
 export interface ContactNote {
@@ -23,77 +24,19 @@ export function useContactNotes(contactId: string) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Get current user's profile
-  const { data: profile } = useQuery({
-    queryKey: ['my-profile', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, name, avatar_url')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
+   const { profile } = useAuth();
+ 
+   const { data: notes = [], isLoading, error, refetch } = useQuery({
+     queryKey: ['contact-notes', contactId],
+     queryFn: () => ContactService.fetchNotes(contactId),
+     enabled: !!contactId,
+   });
 
-  // Fetch notes for this contact
-  const { data: notes = [], isLoading, error, refetch } = useQuery({
-    queryKey: ['contact-notes', contactId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('contact_notes')
-        .select(`
-          id,
-          contact_id,
-          author_id,
-          content,
-          created_at,
-          updated_at
-        `)
-        .eq('contact_id', contactId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      // Fetch author profiles separately
-      const authorIds = [...new Set(data?.map(n => n.author_id) || [])];
-      const { data: authors } = await supabase
-        .from('profiles')
-        .select('id, name, avatar_url')
-        .in('id', authorIds);
-
-      const authorsMap = new Map(authors?.map(a => [a.id, a]) || []);
-
-      return (data || []).map(note => ({
-        ...note,
-        author: authorsMap.get(note.author_id),
-      })) as ContactNote[];
-    },
-    enabled: !!contactId,
-  });
-
-  // Add note mutation
-  const addNoteMutation = useMutation({
-    mutationFn: async (content: string) => {
-      if (!profile?.id) throw new Error('Perfil não encontrado');
-
-      const { data, error } = await supabase
-        .from('contact_notes')
-        .insert({
-          contact_id: contactId,
-          author_id: profile.id,
-          content,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
+   const addNoteMutation = useMutation({
+     mutationFn: (content: string) => {
+       if (!profile?.id) throw new Error('Perfil não encontrado');
+       return ContactService.addNote(contactId, profile.id, content);
+     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-notes', contactId] });
       toast({
@@ -111,16 +54,8 @@ export function useContactNotes(contactId: string) {
     },
   });
 
-  // Delete note mutation
-  const deleteNoteMutation = useMutation({
-    mutationFn: async (noteId: string) => {
-      const { error } = await supabase
-        .from('contact_notes')
-        .delete()
-        .eq('id', noteId);
-
-      if (error) throw error;
-    },
+   const deleteNoteMutation = useMutation({
+     mutationFn: (noteId: string) => ContactService.deleteNote(noteId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-notes', contactId] });
       toast({
