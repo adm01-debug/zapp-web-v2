@@ -1,3 +1,44 @@
+   static async fetchNotes(contactId: string) {
+     const { data, error } = await supabase
+       .from('contact_notes')
+       .select(`
+         id,
+         contact_id,
+         author_id,
+         content,
+         created_at,
+         updated_at
+       `)
+       .eq('contact_id', contactId)
+       .order('created_at', { ascending: false });
+ 
+     if (error) throw error;
+ 
+     const authorIds = [...new Set(data?.map(n => n.author_id) || [])];
+     const { data: authors } = await supabase
+       .from('profiles')
+       .select('id, name, avatar_url')
+       .in('id', authorIds);
+ 
+     const authorsMap = new Map(authors?.map(a => [a.id, a]) || []);
+ 
+     return (data || []).map(note => ({
+       ...note,
+       author: authorsMap.get(note.author_id),
+     }));
+   }
+ 
+   static async addNote(contactId: string, authorId: string, content: string) {
+     return supabase
+       .from('contact_notes')
+       .insert({ contact_id: contactId, author_id: authorId, content })
+       .select()
+       .single();
+   }
+ 
+   static async deleteNote(noteId: string) {
+     return supabase.from('contact_notes').delete().eq('id', noteId);
+   }
  import { supabase } from '@/integrations/supabase/client';
  import type { Database } from '@/integrations/supabase/types';
  
