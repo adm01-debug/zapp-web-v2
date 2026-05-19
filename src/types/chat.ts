@@ -1,4 +1,4 @@
-import type { Database } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
 export type MessageRow = Database['public']['Tables']['messages']['Row'];
 export type MessageInsert = Database['public']['Tables']['messages']['Insert'];
