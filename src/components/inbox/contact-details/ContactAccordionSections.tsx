@@ -3,7 +3,7 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Plus, Tag, Sparkles, User, FileText, Clock, BarChart3, Brain, Info, TagsIcon, Smartphone, Image, ListTodo, Bell, TrendingUp, ShoppingBag, GitBranch, X } from 'lucide-react';
-import { Conversation, Contact } from '@/types/chat';
+import { Conversation, ConversationContact as Contact } from '@/types/chat';
 
 import { ContactInfoSection } from './ContactInfoSection';
 import { AssignmentSection } from './AssignmentSection';

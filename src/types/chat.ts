@@ -12,10 +12,10 @@ export interface MessageReaction {
   createdAt?: string;
 }
 
-export interface Message extends Partial<Omit<MessageRow, 'id' | 'content' | 'sender' | 'created_at'>> {
+export interface Message extends Partial<Omit<MessageRow, 'id' | 'content' | 'sender'>> {
   id: string;
   content: string;
-  created_at: string;
+  created_at?: string;
   sender: 'agent' | 'contact';
   senderName?: string;
   timestamp: Date;
@@ -31,8 +31,6 @@ export interface Message extends Partial<Omit<MessageRow, 'id' | 'content' | 'se
   conversationId?: string;
 }
 
-// Backward-compat alias (Contact is re-exported as ConversationContact)
-export type { ConversationContact as Contact };
 
 export interface ConversationContact {
   id: string;

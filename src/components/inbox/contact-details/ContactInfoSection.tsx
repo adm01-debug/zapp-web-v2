@@ -12,8 +12,8 @@ interface ContactInfoSectionProps {
   contact: {
     id: string;
     phone: string;
-    email?: string;
-    createdAt: Date;
+    email?: string | null;
+    createdAt?: Date;
   };
   enrichedData: EnrichedContactData | null | undefined;
 }
