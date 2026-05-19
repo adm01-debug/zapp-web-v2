@@ -31,6 +31,9 @@ export function evolutionToRealtimeMessage(evo: EvolutionMessage): RealtimeMessa
     updated_at: evo.created_at,
     external_id: evo.message_id,
     whatsapp_connection_id: null,
+    channel_connection_id: null,
+    channel_type: 'whatsapp',
+    is_edited: false,
     transcription: null,
     transcription_status: null,
     is_deleted: evo.deleted_at != null,
@@ -131,9 +134,17 @@ export function derivedToConversationContact(dc: DerivedContact): ConversationCo
     created_at: dc.lastMessageAt,
     updated_at: dc.lastMessageAt,
     whatsapp_connection_id: null,
+    channel_connection_id: null,
+    channel_type: 'whatsapp',
     contact_type: 'whatsapp',
     group_category: null,
     ai_sentiment: null,
+    ai_priority: 'medium',
+    consent_status: 'opt_in',
+    lead_origin: null,
+    lead_score: 0,
+    notes: null,
+    risk_score: 0,
   };
 }
 
