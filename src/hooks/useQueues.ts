@@ -1,20 +1,21 @@
  import { useState, useEffect, useCallback } from 'react';
- import { QueueService, Queue } from '@/services/queue.service';
+ import { supabase } from '@/integrations/supabase/client';
+ import { QueueService, Queue as ServiceQueue } from '@/services/queue.service';
  import { useSupabaseRealtime } from '@/hooks/realtime/useSupabaseRealtime';
-import { useToast } from '@/hooks/use-toast';
-import { log } from '@/lib/logger';
-
-export interface Queue {
-  id: string;
-  name: string;
-  description: string | null;
-  color: string;
-  is_active: boolean;
-  max_wait_time_minutes: number;
-  priority: number;
-  created_at: string;
-  updated_at: string;
-}
+ import { useToast } from '@/hooks/use-toast';
+ import { log } from '@/lib/logger';
+ 
+ export interface Queue {
+   id: string;
+   name: string;
+   description: string | null;
+   color: string;
+   is_active: boolean;
+   max_wait_time_minutes: number;
+   priority: number;
+   created_at: string;
+   updated_at: string;
+ }
 
 export interface QueueMember {
   id: string;
