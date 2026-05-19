@@ -10,7 +10,7 @@
  
  export const useDashboardData = (filters: DashboardFilters = getDefaultFilters()) => {
    const mergedFilters = { ...getDefaultFilters(), ...filters };
-   const { agents, contacts, isLoading, error, refetch } = useDashboardStats(mergedFilters);
+   const { agents, contacts, queues, sla, isLoading, error, refetch } = useDashboardStats(mergedFilters);
  
    const stats = useMemo(() => {
      if (!agents || !contacts) return null;
@@ -23,6 +23,19 @@
        return updatedAt >= today && !c.assigned_to;
      }).length;
  
+     const queuesStats = (queues || []).map(queue => {
+       const members = (queue as any).queue_members || [];
+       const onlineMembers = members.filter((m: any) => m.is_active && m.profiles?.is_active).length;
+       return {
+         id: queue.id,
+         name: queue.name,
+         color: (queue as any).color,
+         waitingCount: 0,
+         onlineAgents: onlineMembers,
+         totalAgents: members.length,
+       };
+     });
+ 
      return {
        openConversations,
        pendingConversations,
@@ -30,11 +43,11 @@
        totalConversations: contacts.length,
        onlineAgents: agents.onlineAgents,
        totalAgents: agents.totalAgents,
-       avgResponseTime: null,
-       queuesStats: [],
+       avgResponseTime: sla?.avgResponseTime || null,
+       queuesStats,
        recentActivity: [],
      };
-   }, [agents, contacts]);
+   }, [agents, contacts, queues, sla]);
  
    return { stats, isLoading, error, refetch };
  };

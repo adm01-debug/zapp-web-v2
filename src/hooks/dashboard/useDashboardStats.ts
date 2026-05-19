@@ -47,11 +47,50 @@
      },
    });
  
+   const queuesQuery = useQuery({
+     queryKey: ['dashboard-queues'],
+     queryFn: async () => {
+       const { data, error } = await supabase
+         .from('queues')
+         .select(`id, name, color, queue_members (profile_id, is_active, profiles (id, is_active))`)
+         .eq('is_active', true);
+       if (error) throw error;
+       return data || [];
+     },
+   });
+ 
+   const slaQuery = useQuery({
+     queryKey: ['dashboard-sla'],
+     queryFn: async () => {
+       const { data, error } = await supabase
+         .from('conversation_sla')
+         .select('first_message_at, first_response_at')
+         .not('first_response_at', 'is', null)
+         .order('created_at', { ascending: false })
+         .limit(50);
+       if (error) throw error;
+       if (!data || data.length === 0) return { avgResponseTime: null };
+       const responseTimes = data.map(sla => {
+         const messageTime = new Date(sla.first_message_at).getTime();
+         const responseTime = new Date(sla.first_response_at!).getTime();
+         return (responseTime - messageTime) / 1000;
+       });
+       return { avgResponseTime: Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length) };
+     },
+   });
+ 
    return {
      agents: agentsQuery.data,
      contacts: contactsQuery.data,
-     isLoading: agentsQuery.isLoading || contactsQuery.isLoading,
-     error: agentsQuery.error || contactsQuery.error,
-     refetch: () => { agentsQuery.refetch(); contactsQuery.refetch(); }
+     queues: queuesQuery.data,
+     sla: slaQuery.data,
+     isLoading: agentsQuery.isLoading || contactsQuery.isLoading || queuesQuery.isLoading || slaQuery.isLoading,
+     error: agentsQuery.error || contactsQuery.error || queuesQuery.error || slaQuery.error,
+     refetch: () => {
+       agentsQuery.refetch();
+       contactsQuery.refetch();
+       queuesQuery.refetch();
+       slaQuery.refetch();
+     }
    };
  }
