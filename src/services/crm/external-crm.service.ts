@@ -1,3 +1,30 @@
+   static async getContact360Batch(phones: string[]) {
+     const cleanedPhones = [...new Set(phones.map(p => p.replace(/[^0-9]/g, '')).filter(p => p.length >= 8))];
+     if (cleanedPhones.length === 0) return new Map();
+ 
+     const { data, error } = await getExternalSupabase().rpc('get_companies_by_phones_batch', {
+       p_phones: cleanedPhones,
+     });
+ 
+     if (error) {
+       log.error('[ExternalCRMService] Batch CRM lookup error:', error);
+       return new Map();
+     }
+ 
+     const map = new Map<string, any>();
+     if (data && typeof data === 'object') {
+       for (const [phone, info] of Object.entries(data)) {
+         map.set(phone, info);
+         const clean = phone.replace(/[^0-9]/g, '');
+         if (clean !== phone) map.set(clean, info);
+         if (!phone.startsWith('55') && clean.length <= 11) {
+           map.set('55' + clean, info);
+         }
+       }
+     }
+     return map;
+   }
+ 
  import { getExternalSupabase } from '@/integrations/supabase/externalClient';
  import { queryExternalProxy } from '@/lib/externalProxy';
  import { log } from '@/lib/logger';
