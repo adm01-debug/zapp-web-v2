@@ -1,3 +1,18 @@
+   static async getContact360(phone: string) {
+     const cleanedPhone = phone.replace(/[^0-9]/g, '');
+     if (cleanedPhone.length < 8) return null;
+ 
+     const { data, error } = await getExternalSupabase().rpc('get_contact_360_by_phone', {
+       p_phone: cleanedPhone,
+     });
+ 
+     if (error) {
+       log.error('[ExternalCRMService] Error fetching contact 360:', error);
+       return null;
+     }
+ 
+     return data;
+   }
  import { getExternalSupabase } from '@/integrations/supabase/externalClient';
  import { log } from '@/lib/logger';
  
