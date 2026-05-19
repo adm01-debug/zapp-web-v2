@@ -1,28 +1,8 @@
  import { useState, useEffect, useCallback, useRef } from 'react';
  import { useSupabaseRealtime } from '@/hooks/realtime/useSupabaseRealtime';
-import { supabase } from '@/integrations/supabase/client';
-import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
-import { log } from '@/lib/logger';
-
-export interface Message {
-  id: string;
-  contact_id: string | null;
-  agent_id: string | null;
-  content: string;
-  sender: string;
-  message_type: string;
-  media_url: string | null;
-  is_read: boolean | null;
-  status: 'sent' | 'delivered' | 'read' | 'failed' | null;
-  status_updated_at: string | null;
-  created_at: string;
-  updated_at: string;
-  external_id: string | null;
-  whatsapp_connection_id: string | null;
-  transcription: string | null;
-  transcription_status: string | null;
-  is_deleted: boolean | null;
-}
+ import { ChatService, Message } from '@/services/chat.service';
+ import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+ import { log } from '@/lib/logger';
 
 interface UseMessagesOptions {
   contactId: string | null;
@@ -50,47 +30,18 @@ export function useMessages({ contactId, enabled = true }: UseMessagesOptions) {
       return;
     }
 
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Fetch all messages using pagination to bypass the 1000 row default limit
-      type MessageRow = Omit<Message, 'isEdited'>;
-      let allData: MessageRow[] = [];
-      let from = 0;
-      const PAGE_SIZE = 1000;
-      let hasMore = true;
-
-      while (hasMore) {
-        const { data: page, error: fetchError } = await supabase
-          .from('messages')
-          .select('*')
-          .eq('contact_id', contactId)
-          .order('created_at', { ascending: true })
-          .range(from, from + PAGE_SIZE - 1);
-
-        if (fetchError) throw fetchError;
-
-        if (page && page.length > 0) {
-          allData = allData.concat(page as MessageRow[]);
-          from += PAGE_SIZE;
-          hasMore = page.length === PAGE_SIZE;
-        } else {
-          hasMore = false;
-        }
-      }
-
-      const mappedMessages: Message[] = allData.map((m) => ({
-        ...m,
-        isEdited: !!(m as any).is_edited,
-      }));
-      if (mountedRef.current) setMessages(mappedMessages);
-    } catch (err) {
-      log.error('Error fetching messages:', err);
-      if (mountedRef.current) setError(err instanceof Error ? err.message : 'Failed to fetch messages');
-    } finally {
-      if (mountedRef.current) setLoading(false);
-    }
+     try {
+       setLoading(true);
+       setError(null);
+       const { data, error: fetchError } = await ChatService.fetchMessages(contactId);
+       if (fetchError) throw fetchError;
+       if (mountedRef.current) setMessages(data as Message[]);
+     } catch (err) {
+       log.error('Error fetching messages:', err);
+       if (mountedRef.current) setError(err instanceof Error ? err.message : 'Failed to fetch messages');
+     } finally {
+       if (mountedRef.current) setLoading(false);
+     }
   }, [contactId]);
 
   // Handle new message from realtime
