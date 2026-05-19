@@ -4,4 +4,5 @@ export * from './contact.service';
 export * from './queue.service';
 export * from './role.service';
 export * from './navigation.service';
+export * from './realtime.service';
 export * from './crm/external-crm.service';

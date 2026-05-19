@@ -3,7 +3,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { getLogger } from '@/lib/logger';
 
 const log = getLogger('ChatMessagesArea');
-import { supabase } from '@/integrations/supabase/client';
+import { ChatService } from '@/services/chat.service';
+import { RealtimeService } from '@/services/realtime.service';
 import { ChatWatermark } from './ChatWatermark';
 import { cn } from '@/lib/utils';
 import { Message, InteractiveButton } from '@/types/chat';
@@ -54,7 +55,7 @@ export const ChatMessagesArea = memo(forwardRef<ChatMessagesAreaRef, ChatMessage
 
   const handleMessageDeleted = useCallback(async (messageId: string) => {
     try {
-      await supabase.from('messages').update({ is_deleted: true, content: '[Mensagem apagada]' }).eq('id', messageId);
+      await ChatService.deleteMessage(messageId);
     } catch {
       log.error('Failed to mark message as deleted in DB');
     }
@@ -89,24 +90,17 @@ export const ChatMessagesArea = memo(forwardRef<ChatMessagesAreaRef, ChatMessage
   useEffect(() => {
     if (messageIds.length === 0) return;
 
-    const channel = supabase
-      .channel(`chat-reactions:${messageIds[0] ?? 'empty'}`)
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'message_reactions',
-      }, (payload) => {
-        const nextMessageId = (payload.new as { message_id?: string } | null)?.message_id;
-        const prevMessageId = (payload.old as { message_id?: string } | null)?.message_id;
-        const reactionMessageId = nextMessageId ?? prevMessageId;
+    const channel = RealtimeService.subscribeToReactions(messageIds[0] ?? 'empty', (payload) => {
+      const nextMessageId = (payload.new as { message_id?: string } | null)?.message_id;
+      const prevMessageId = (payload.old as { message_id?: string } | null)?.message_id;
+      const reactionMessageId = nextMessageId ?? prevMessageId;
 
-        if (!reactionMessageId || !messageIdsSet.has(reactionMessageId)) return;
+      if (!reactionMessageId || !messageIdsSet.has(reactionMessageId)) return;
 
-        queryClient.invalidateQueries({ queryKey: ['message-reactions', reactionMessageId] });
-      })
-      .subscribe();
+      queryClient.invalidateQueries({ queryKey: ['message-reactions', reactionMessageId] });
+    });
 
-    return () => { void supabase.removeChannel(channel); };
+    return () => { void RealtimeService.removeChannel(channel); };
   }, [messageIds.length, messageIdsKey, messageIdsSet, queryClient]);
 
   const groupedMessages = useMemo(() => {

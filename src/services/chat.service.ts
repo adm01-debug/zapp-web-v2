@@ -24,6 +24,13 @@ export class ChatService {
     return supabase.from('messages').update({ is_read: true }).eq('id', messageId);
   }
 
+  static async deleteMessage(messageId: string) {
+    return supabase
+      .from('messages')
+      .update({ is_deleted: true, content: '[Mensagem apagada]' })
+      .eq('id', messageId);
+  }
+
   static async uploadAudio(contactId: string, blob: Blob) {
     const fileName = `${contactId}/${Date.now()}.webm`;
     const { error: uploadError } = await supabase.storage
