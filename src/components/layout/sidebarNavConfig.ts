@@ -10,4 +10,4 @@
  export const analyticsNav = sidebarGroups[2].items;
  export const connectionsNav = sidebarGroups[3].items;
  export const systemNav = sidebarGroups[4].items;
- export const advancedNav: any[] = []; // Advanced is now mixed or handled via search
+ export const advancedNav = NavigationService.getAdvancedNav();
