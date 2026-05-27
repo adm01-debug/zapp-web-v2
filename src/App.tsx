@@ -185,14 +185,6 @@ function AppContent() {
                 }
               />
               <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <Index />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
                 path="/queue/:id"
                 element={
                   <ProtectedRoute>
