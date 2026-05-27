@@ -168,6 +168,7 @@ function AppContent() {
         >
           <Suspense fallback={<RouteLoadingFallback />}>
             <Routes>
+              <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
