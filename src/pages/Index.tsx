@@ -73,12 +73,11 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
 
    const hasLoggedAudit = useRef(false);
    useEffect(() => {
-     if (!loading && !user) navigate('/auth');
-     else if (user && !loading && !hasLoggedAudit.current) {
+     if (user && !loading && !hasLoggedAudit.current) {
        hasLoggedAudit.current = true;
        logAudit({ action: 'login', details: { email: user.email } });
      }
-   }, [user, loading, navigate]);
+   }, [user, loading]);
  
    useGmailOAuth(user, loading, setCurrentView);
 
