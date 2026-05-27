@@ -157,7 +157,7 @@ function AppContent() {
       <GlobalKeyboardProvider>
         {deferredReady && <DeferredProviders />}
         {deferredReady && (
-          <Suspense fallback={null}>
+          <Suspense fallback={<div className="sr-only">Carregando hooks...</div>}>
             <DeferredHooks />
           </Suspense>
         )}
@@ -168,6 +168,7 @@ function AppContent() {
         >
           <Suspense fallback={<RouteLoadingFallback />}>
             <Routes>
+              <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
@@ -180,14 +181,6 @@ function AppContent() {
                 element={
                   <ProtectedRoute>
                     <ChatPopup />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <Index />
                   </ProtectedRoute>
                 }
               />
