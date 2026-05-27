@@ -115,19 +115,10 @@
 
   <body>
     <div id="root">
-      <div style="min-height:100vh;background:#0a0a0a;color:#f4f4f5;display:flex;align-items:center;justify-content:center;padding:24px;font-family:Outfit,system-ui,sans-serif;">
-        <div style="width:100%;max-width:420px;text-align:center;">
-          <div style="width:72px;height:72px;margin:0 auto 24px;border-radius:22px;background:linear-gradient(135deg,#2563eb,#4f46e5);display:flex;align-items:center;justify-content:center;box-shadow:0 18px 45px rgba(37,99,235,.35);">
-            <span style="font-size:34px;line-height:1;">▯</span>
-          </div>
-          <h1 style="font-size:28px;line-height:1.15;margin:0 0 10px;font-weight:800;">ZAPP Web</h1>
-          <p style="margin:0 0 22px;color:#a1a1aa;font-size:15px;line-height:1.5;">Carregando a plataforma omnichannel...</p>
-          <div style="height:4px;width:100%;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.08);">
-            <div style="height:100%;width:42%;border-radius:999px;background:#2563eb;animation:zappFallbackLoad 1.1s ease-in-out infinite alternate;"></div>
-          </div>
-        </div>
+      <div style="min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:Outfit,system-ui,sans-serif;">
+        <div style="width:38px;height:38px;border:3px solid rgba(37,99,235,.25);border-top-color:#2563eb;border-radius:50%;animation:zappSpin .8s linear infinite;"></div>
       </div>
-      <style>@keyframes zappFallbackLoad{from{transform:translateX(-60%)}to{transform:translateX(170%)}}</style>
+      <style>@keyframes zappSpin{to{transform:rotate(360deg)}}</style>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
