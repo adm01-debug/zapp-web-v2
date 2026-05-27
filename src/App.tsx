@@ -157,11 +157,9 @@ function AppContent() {
       <GlobalKeyboardProvider>
         {deferredReady && <DeferredProviders />}
         {deferredReady && (
-        {deferredReady && (
           <Suspense fallback={<div className="sr-only">Carregando hooks...</div>}>
             <DeferredHooks />
           </Suspense>
-        )}
         )}
         <Toaster />
         <Sonner />
