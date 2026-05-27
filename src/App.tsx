@@ -168,6 +168,7 @@ function AppContent() {
         >
           <Suspense fallback={<RouteLoadingFallback />}>
             <Routes>
+              {/* Rota principal restaurada com o componente Index dentro do ProtectedRoute */}
               <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />

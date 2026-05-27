@@ -73,12 +73,11 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
 
    const hasLoggedAudit = useRef(false);
    useEffect(() => {
-     if (!loading && !user) navigate('/auth');
-     else if (user && !loading && !hasLoggedAudit.current) {
+     if (user && !loading && !hasLoggedAudit.current) {
        hasLoggedAudit.current = true;
        logAudit({ action: 'login', details: { email: user.email } });
      }
-   }, [user, loading, navigate]);
+   }, [user, loading]);
  
    useGmailOAuth(user, loading, setCurrentView);
 
@@ -171,11 +170,13 @@ const Index = memo(forwardRef<HTMLDivElement>(function Index(_props, _ref) {
   const { completeOnboarding } = useOnboarding();
   const navigate = useNavigate();
 
+  // O ProtectedRoute já garante que o usuário esteja autenticado,
+  // mas mantemos um log para depuração se necessário.
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth', { replace: true });
+    if (user) {
+      console.log('[Index] Usuário autenticado:', user.email);
     }
-  }, [user, loading, navigate]);
+  }, [user]);
 
   if (loading) {
     return <LoadingSplash />;
