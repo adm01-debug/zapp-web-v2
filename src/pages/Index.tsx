@@ -92,7 +92,7 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
     return <LoadingSplash />;
   }
 
-  if (!user) return null;
+  if (!user) return <LoadingSplash />;
 
   return (
     <SLANotificationProvider>
@@ -181,7 +181,7 @@ const Index = memo(forwardRef<HTMLDivElement>(function Index(_props, _ref) {
     return <LoadingSplash />;
   }
 
-  if (!user) return null;
+  if (!user) return <LoadingSplash />;
 
   return (
     <TourProvider onComplete={completeOnboarding}>
