@@ -113,12 +113,31 @@
   <meta name="twitter:description" content="Plataforma completa de multiatendimento WhatsApp para equipes comerciais. Inbox unificada, gestão de filas, dashboard com métricas e muito mais.">
 </head>
 
-  <body>
+  <body class="bg-background antialiased selection:bg-primary/20">
     <div id="root">
-      <div style="min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:Outfit,system-ui,sans-serif;">
-        <div style="width:38px;height:38px;border:3px solid rgba(37,99,235,.25);border-top-color:#2563eb;border-radius:50%;animation:zappSpin .8s linear infinite;"></div>
+      <!-- Loading Fallback Optimized for First Paint -->
+      <div id="zapp-loading-screen" style="position:fixed;inset:0;background:#030712;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;font-family:'Outfit',sans-serif;color:white;overflow:hidden">
+        <div style="position:absolute;inset:0;opacity:0.4;background:radial-gradient(circle at 50% 50%, #2563eb1a 0%, transparent 70%)"></div>
+        <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:32px;animation:zappFadeIn 0.8s ease-out">
+          <div style="width:80px;height:80px;background:linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);border-radius:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 20px 40px -10px rgba(37,99,235,0.4);position:relative">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:white"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path><path d="M19 3v4"></path><path d="M21 5h-4"></path></svg>
+            <div style="position:absolute;inset:-4px;border:2px solid #2563eb;border-radius:28px;opacity:0.3;animation:zappPulse 2s infinite"></div>
+          </div>
+          <div style="text-align:center">
+            <h1 style="font-size:32px;font-weight:700;margin:0 0 8px;letter-spacing:-0.02em;background:linear-gradient(to bottom, #ffffff, #94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent">ZAPP Web</h1>
+            <p style="font-size:16px;color:#94a3b8;margin:0;font-weight:400">Carregando a plataforma omnichannel...</p>
+          </div>
+          <div style="width:180px;height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;position:relative">
+            <div style="position:absolute;inset:0;width:30%;background:#2563eb;border-radius:2px;animation:zappLoading 1.5s infinite ease-in-out;box-shadow:0 0 15px #2563eb"></div>
+          </div>
+        </div>
       </div>
-      <style>@keyframes zappSpin{to{transform:rotate(360deg)}}</style>
+      <style>
+        @keyframes zappFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes zappPulse{0%{transform:scale(1);opacity:0.3}50%{transform:scale(1.1);opacity:0.1}100%{transform:scale(1);opacity:0.3}}
+        @keyframes zappLoading{0%{left:-30%}100%{left:100%}}
+        body{margin:0;padding:0}
+      </style>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
