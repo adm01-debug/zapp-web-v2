@@ -10,7 +10,6 @@ const log = getLogger('App');
 if (window.performance && window.performance.mark) {
   performance.mark('main-init');
 }
-console.log('[BOOT] src/main.tsx loaded');
 log.info('Initialized at', new Date().toISOString());
 
 // Global unhandled error handlers for resilience
@@ -25,20 +24,31 @@ window.addEventListener('error', (event) => {
 // Initialize Web Vitals monitoring
 initWebVitals();
 
-// Accessibility auditing in development mode
-if (import.meta.env.DEV) {
-  import('@axe-core/react').then((axe) => {
-    axe.default(React, ReactDOM, 1000, undefined, undefined, (results) => {
-      const violations = results?.violations;
-      if (violations?.length) {
-        log.warn(`[A11Y] ${violations.length} accessibility violation(s) detected`);
-        violations.forEach((v) => {
-          log.warn(`[A11Y] ${String(v.impact || 'UNKNOWN').toUpperCase()}: ${v.id} — ${v.description} (${v.nodes.length} element(s))`);
-        });
-      }
-    });
-    log.info('[A11Y] axe-core accessibility auditing enabled');
-  });
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  throw new Error('Root element not found');
 }
 
-ReactDOM.createRoot(document.getElementById("root")!).render(<App />);
+(window as Window & { __ZAPP_MARK_APP_MOUNTED__?: () => void }).__ZAPP_MARK_APP_MOUNTED__?.();
+ReactDOM.createRoot(rootElement).render(<App />);
+
+// Accessibility auditing in development mode, deferred so it never blocks preview boot.
+if (import.meta.env.DEV) {
+  window.setTimeout(() => {
+    import('@axe-core/react').then((axe) => {
+      axe.default(React, ReactDOM, 1000, undefined, undefined, (results) => {
+        const violations = results?.violations;
+        if (violations?.length) {
+          log.warn(`[A11Y] ${violations.length} accessibility violation(s) detected`);
+          violations.forEach((v) => {
+            log.warn(`[A11Y] ${String(v.impact || 'UNKNOWN').toUpperCase()}: ${v.id} — ${v.description} (${v.nodes.length} element(s))`);
+          });
+        }
+      });
+      log.info('[A11Y] axe-core accessibility auditing enabled');
+    }).catch((error) => {
+      log.warn('[A11Y] Failed to load axe-core accessibility auditing', error);
+    });
+  }, 3000);
+}
