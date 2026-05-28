@@ -33,19 +33,15 @@ export default defineConfig(({ mode }) => ({
     target: "esnext",
     minify: "esbuild",
     cssMinify: true,
-    chunkSizeWarningLimit: 1700,
+    chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
         manualChunks(id) {
           // Core React
           if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router')) {
-            return 'vendor-react';
+            return 'vendor-core';
           }
-          // UI framework
-          if (id.includes('framer-motion') || id.includes('class-variance-authority') || id.includes('clsx') || id.includes('tailwind-merge')) {
-            return 'vendor-ui';
-          }
-          // Lucide icons - consolidate all into one chunk
+          // Lucide icons - split into a separate chunk to avoid bloating other chunks
           if (id.includes('lucide-react')) {
             return 'vendor-icons';
           }
@@ -53,26 +49,17 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('@tanstack/react-query') || id.includes('@supabase/supabase-js')) {
             return 'vendor-data';
           }
+          // UI components from node_modules
+          if (id.includes('@radix-ui') || id.includes('framer-motion') || id.includes('class-variance-authority') || id.includes('clsx') || id.includes('tailwind-merge')) {
+            return 'vendor-ui';
+          }
           // Date utilities
           if (id.includes('date-fns')) {
-            return 'vendor-date-fns';
+            return 'vendor-utils';
           }
           // Charts
           if (id.includes('recharts') || id.includes('d3-')) {
             return 'vendor-charts';
-          }
-          // i18n
-          if (id.includes('i18next') || id.includes('react-i18next')) {
-            return 'vendor-i18n';
-          }
-          // Heavy libs - lazy loaded
-          if (id.includes('xlsx')) return 'vendor-xlsx';
-          if (id.includes('jspdf')) return 'vendor-pdf';
-          if (id.includes('mapbox-gl')) return 'vendor-mapbox';
-          if (id.includes('@elevenlabs')) return 'vendor-elevenlabs';
-          // Radix UI components
-          if (id.includes('@radix-ui')) {
-            return 'vendor-radix';
           }
         },
       },
