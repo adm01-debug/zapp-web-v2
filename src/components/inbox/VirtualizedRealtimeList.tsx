@@ -245,7 +245,3 @@ const ConversationRow = memo(({
     </div>
   );
 });
-      </div>
-    </div>
-  );
-}
