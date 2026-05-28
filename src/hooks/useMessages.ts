@@ -50,14 +50,16 @@ export function useMessages({ contactId, enabled = true }: UseMessagesOptions) {
     (payload: RealtimePostgresChangesPayload<Message>) => {
       const newMessage = mapMessageRowToMessage(payload.new as any);
       
-      // Only add if it's for the current contact
+      // Only add if it's for the current contact and not already present
       if (newMessage.contact_id === contactId) {
         setMessages((prev) => {
-          // Check if message already exists
           if (prev.some((m) => m.id === newMessage.id)) {
             return prev;
           }
-          return [...prev, newMessage];
+          // Sort after adding just in case of race conditions
+          return [...prev, newMessage].sort((a, b) => 
+            new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()
+          );
         });
       }
     },

@@ -114,15 +114,26 @@ export function useRealtimeMessages() {
       const builtConversations = await RealtimeService.fetchInitialConversations();
       commitConversations(builtConversations);
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Falha ao carregar conversas';
       log.error('Error fetching conversations:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch conversations');
+      setError(errorMessage);
+      import('sonner').then(({ toast }) => {
+        toast.error('Erro de conexão', {
+          description: 'Não foi possível carregar suas conversas. Verifique sua conexão.'
+        });
+      });
     } finally { setLoading(false); }
   }, [commitConversations]);
 
   useEffect(() => {
     fetchConversations();
-    const channel = RealtimeService.subscribeToMessages(handleNewMessage, handleMessageUpdate);
-    return () => { supabase.removeChannel(channel); };
+    // Use a unique channel name per session to avoid collisions
+    const channelId = `messages-realtime-${Date.now()}`;
+    const channel = RealtimeService.subscribeToMessages(handleNewMessage, handleMessageUpdate, channelId);
+    return () => { 
+      log.debug('Cleaning up realtime channel:', channelId);
+      supabase.removeChannel(channel); 
+    };
   }, [fetchConversations, handleNewMessage, handleMessageUpdate]);
 
   const sendMessage = async (contactId: string, content: string, messageType: string = 'text', mediaUrl?: string, mediaPayload?: string) => {

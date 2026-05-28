@@ -51,7 +51,9 @@ export function useAuthForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (user) navigate('/');
+    if (user && window.location.pathname === '/auth') {
+      navigate('/');
+    }
   }, [user, navigate]);
 
   useEffect(() => {
