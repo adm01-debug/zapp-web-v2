@@ -3,11 +3,16 @@
 import { useNavigationHistory } from '@/hooks/useNavigationHistory';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { CommandPalette } from '@/components/CommandPalette';
+// Lazy load non-critical secondary components
+const CommandPalette = lazy(() => import('@/components/CommandPalette').then(m => ({ default: m.CommandPalette })));
+const WelcomeModal = lazy(() => import('@/components/onboarding/WelcomeModal').then(m => ({ default: m.WelcomeModal })));
+const OfflineIndicator = lazy(() => import('@/components/ui/offline-indicator').then(m => ({ default: m.OfflineIndicator })));
+const ConnectionToast = lazy(() => import('@/components/ui/offline-indicator').then(m => ({ default: m.ConnectionToast })));
+const EvolutionDisconnectBanner = lazy(() => import('@/components/alerts/EvolutionDisconnectBanner').then(m => ({ default: m.EvolutionDisconnectBanner })));
+
 import { SLANotificationProvider } from '@/components/notifications/SLANotificationProvider';
 import { GoalNotificationProvider } from '@/components/notifications/GoalNotificationProvider';
 import { TourProvider, DEFAULT_ONBOARDING_STEPS, useTour } from '@/components/onboarding/OnboardingTour';
-import { WelcomeModal } from '@/components/onboarding/WelcomeModal';
 import { useGlobalKeyboard } from '@/components/keyboard/GlobalKeyboardProvider';
 import { useAuth } from '@/hooks/useAuth';
 import { useOnboarding } from '@/hooks/useOnboarding';
@@ -18,8 +23,8 @@ import { logAudit } from '@/lib/audit';
  import { useGmailOAuth } from '@/hooks/useGmailOAuth';
 import { Sparkles } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
-import { OfflineIndicator, ConnectionToast } from '@/components/ui/offline-indicator';
-import { EvolutionDisconnectBanner } from '@/components/alerts/EvolutionDisconnectBanner';
+// Critical indicators (import directly if needed, but let's try lazy first)
+import { lazy, Suspense } from 'react';
 import { toast } from 'sonner';
 
 const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _ref) {
@@ -114,21 +119,21 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
           loading={loading}
         />
 
-        <CommandPalette onNavigate={setCurrentView} />
-
-        <OfflineIndicator />
-        <ConnectionToast />
-        <EvolutionDisconnectBanner />
-
-        <WelcomeModal
-          isOpen={showWelcome}
-          onClose={() => { setShowWelcome(false); completeOnboarding(); }}
-          onStartTour={() => {
-            setShowWelcome(false);
-            setTimeout(() => startTour(DEFAULT_ONBOARDING_STEPS), 400);
-          }}
-          userName={profile?.name}
-        />
+        <Suspense fallback={null}>
+          <CommandPalette onNavigate={setCurrentView} />
+          <OfflineIndicator />
+          <ConnectionToast />
+          <EvolutionDisconnectBanner />
+          <WelcomeModal
+            isOpen={showWelcome}
+            onClose={() => { setShowWelcome(false); completeOnboarding(); }}
+            onStartTour={() => {
+              setShowWelcome(false);
+              setTimeout(() => startTour(DEFAULT_ONBOARDING_STEPS), 400);
+            }}
+            userName={profile?.name}
+          />
+        </Suspense>
       </GoalNotificationProvider>
     </SLANotificationProvider>
   );
