@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { getLogger } from '@/lib/logger';
+import { getFileExtensionWithDefault } from '@/utils/fileExtensions';
 
 const log = getLogger('TeamFileUploader');
 import { supabase } from '@/integrations/supabase/client';
@@ -61,7 +62,7 @@ export function TeamFileUploader({ conversationId, onFileSent, disabled }: TeamF
     setUploading(true);
     try {
       const { file } = preview;
-      const ext = file.name.split('.').pop() || 'bin';
+      const ext = getFileExtensionWithDefault(file.name, 'bin');
       const path = `${profile.id}/${conversationId}/${Date.now()}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
