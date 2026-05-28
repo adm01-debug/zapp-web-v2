@@ -8,7 +8,7 @@ import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist
 import { ViewRouter } from '@/pages/ViewRouter';
 import { ViewLoadingFallback } from '@/components/layout/ViewLoadingFallback';
 import { RouteLoadingBar } from '@/components/ui/route-loading-bar';
- import { MobileShell } from '@/components/mobile/MobileShell';
+ const MobileShell = lazy(() => import('@/components/mobile/MobileShell').then(m => ({ default: m.MobileShell })));
  import { A11yBoilerplate } from '@/components/layout/A11yBoilerplate';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
@@ -85,14 +85,16 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
 
       {/* Mobile wrapper */}
       {isMobile && (
-        <MobileShell
-          currentView={currentView}
-          setCurrentView={setCurrentView}
-          profile={profile}
-          userEmail={userEmail}
-          signOut={signOut}
-          unreadNotifications={unreadNotifications}
-        />
+        <Suspense fallback={null}>
+          <MobileShell
+            currentView={currentView}
+            setCurrentView={setCurrentView}
+            profile={profile}
+            userEmail={userEmail}
+            signOut={signOut}
+            unreadNotifications={unreadNotifications}
+          />
+        </Suspense>
       )}
 
       {/* Desktop Sidebar — hidden in zen mode */}
