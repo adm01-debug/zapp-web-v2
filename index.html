@@ -73,8 +73,6 @@
 
     <script>
       (function(){
-        window.__APP_START_TIME__ = performance.now();
-
         try {
           var t = localStorage.getItem('theme');
           var isDark = t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -97,44 +95,7 @@
       })();
     </script>
     <script>
-      (function(){
-        var RETRY_FLAG = 'zapp-preview-boot-retry-done';
-        var BOOT_TIMEOUT_MS = 12000;
-
-        window.__ZAPP_MARK_APP_MOUNTED__ = function() {
-          var root = document.getElementById('root');
-          if (root) root.setAttribute('data-app-mounted', 'true');
-          try { sessionStorage.removeItem(RETRY_FLAG); } catch(e) {}
-        };
-
-        setTimeout(function() {
-          var root = document.getElementById('root');
-          if (!root || root.getAttribute('data-app-mounted') === 'true') return;
-
-          try {
-            if (sessionStorage.getItem(RETRY_FLAG) !== '1') {
-              sessionStorage.setItem(RETRY_FLAG, '1');
-              var url = new URL(window.location.href);
-              url.searchParams.set('preview_boot_retry', String(Date.now()));
-              window.location.replace(url.toString());
-              return;
-            }
-          } catch(e) {}
-
-          root.innerHTML = '';
-          var shell = document.createElement('div');
-          shell.style.cssText = 'min-height:100vh;background:#030712;color:#f8fafc;display:flex;align-items:center;justify-content:center;font-family:Outfit,system-ui,sans-serif;text-align:center;padding:24px;';
-          shell.innerHTML = '<div style="max-width:360px"><div style="width:52px;height:52px;border-radius:16px;background:#2563eb;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-weight:800">Z</div><h1 style="font-size:20px;margin:0 0 8px">Preview demorou para carregar</h1><p style="margin:0 0 18px;color:#cbd5e1;font-size:14px;line-height:1.5">Atualize o preview para limpar o carregamento travado.</p><button id="zapp-boot-retry" style="border:0;border-radius:12px;background:#2563eb;color:white;font-weight:700;padding:12px 18px;cursor:pointer">Recarregar preview</button></div>';
-          root.appendChild(shell);
-          var button = document.getElementById('zapp-boot-retry');
-          if (button) {
-            button.onclick = function() {
-              try { sessionStorage.removeItem(RETRY_FLAG); } catch(e) {}
-              window.location.reload();
-            };
-          }
-        }, BOOT_TIMEOUT_MS);
-      })();
+      try { sessionStorage.removeItem('zapp-preview-boot-retry-done'); } catch(e) {}
     </script>
     
   
