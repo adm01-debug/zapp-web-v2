@@ -99,7 +99,6 @@ export function useDiagnosticsData() {
       .limit(10);
 
     const recentFailures = [];
-    const recentFailures = [];
     if (failures && failures.length > 0) {
       const contactIds = Array.from(new Set(failures.map(f => f.contact_id).filter(Boolean)));
       const { data: contacts } = await supabase
