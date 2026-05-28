@@ -70,6 +70,10 @@ export function useDiagnosticsData() {
   const fetchMessageDiagnostics = async () => {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
+    // Optimize by grouping or reducing query count if possible, 
+    // but head: true is already quite fast for counts.
+    // However, we can use a single query for statuses if we fetch data, 
+    // but for large datasets head: true is better.
     const [
       { count: totalCount },
       { count: sentCount },
@@ -78,12 +82,12 @@ export function useDiagnosticsData() {
       { count: failedCount },
       { count: pendingCount },
     ] = await Promise.all([
-      supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent'),
-      supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'sent'),
-      supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'delivered'),
-      supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'read'),
-      supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'failed'),
-      supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'sending'),
+      supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent'),
+      supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'sent'),
+      supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'delivered'),
+      supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'read'),
+      supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'failed'),
+      supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'sending'),
     ]);
 
     const { data: failures } = await supabase
