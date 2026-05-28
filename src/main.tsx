@@ -46,5 +46,5 @@ if (!rootElement) {
   throw new Error('Root element not found');
 }
 
-window.__ZAPP_MARK_APP_MOUNTED__?.();
+(window as Window & { __ZAPP_MARK_APP_MOUNTED__?: () => void }).__ZAPP_MARK_APP_MOUNTED__?.();
 ReactDOM.createRoot(rootElement).render(<App />);
