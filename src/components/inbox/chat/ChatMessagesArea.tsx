@@ -1,5 +1,6 @@
 import { useRef, forwardRef, useImperativeHandle, useCallback, useMemo, memo, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { getLogger } from '@/lib/logger';
 
 const log = getLogger('ChatMessagesArea');
@@ -8,9 +9,9 @@ import { RealtimeService } from '@/services/realtime.service';
 import { ChatWatermark } from './ChatWatermark';
 import { cn } from '@/lib/utils';
 import { Message, InteractiveButton } from '@/types/chat';
-import { motion, StaggeredList, StaggeredItem } from '@/components/ui/motion';
+import { motion } from '@/components/ui/motion';
 import { TypingIndicator } from '../TypingIndicator';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { formatDateSeparator } from './messageUtils';
 import { MessageBubble } from './MessageBubble';
 
@@ -61,24 +62,28 @@ export const ChatMessagesArea = memo(forwardRef<ChatMessagesAreaRef, ChatMessage
     }
   }, []);
 
+  const virtualizer = useVirtualizer({
+    count: messages.length,
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: () => 100,
+    overscan: 10,
+  });
+
   useImperativeHandle(ref, () => ({
     scrollToBottom: () => {
       const container = scrollContainerRef.current;
-      if (container) container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+      if (container) {
+        virtualizer.scrollToIndex(messages.length - 1, { align: 'end', behavior: 'smooth' });
+      }
     },
     registerMessageRef: (messageId: string, el: HTMLDivElement | null) => {
       messageRefs.current[messageId] = el;
     },
     scrollToMessage: (messageId: string) => {
-      const element = messageRefs.current[messageId];
-      const container = scrollContainerRef.current;
-      if (element && container) {
-        const elementTop = element.offsetTop - container.offsetTop;
-        container.scrollTo({ top: elementTop - (container.clientHeight / 2) + (element.clientHeight / 2), behavior: 'smooth' });
-        if (!element.dataset.searchHighlight) {
-          element.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
-          setTimeout(() => element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2'), 2000);
-        }
+      const index = messages.findIndex(m => m.id === messageId);
+      if (index !== -1) {
+        virtualizer.scrollToIndex(index, { align: 'center', behavior: 'smooth' });
+        // Highlighting after scroll is handled via highlightedMessageIds prop
       }
     },
   }));
@@ -113,58 +118,75 @@ export const ChatMessagesArea = memo(forwardRef<ChatMessagesAreaRef, ChatMessage
   }, [messages]);
 
   return (
-    <div ref={scrollContainerRef} role="log" aria-label="Mensagens da conversa" aria-live="polite" className="flex-1 min-h-0 min-w-0 overflow-y-auto px-4 py-6 md:px-8 space-y-4 scrollbar-thin bg-background/50 relative">
+    <div ref={scrollContainerRef} role="log" aria-label="Mensagens da conversa" aria-live="polite" className="flex-1 min-h-0 min-w-0 overflow-y-auto px-4 py-6 md:px-8 scrollbar-thin bg-background/50 relative">
       <ChatWatermark />
 
-      {Object.entries(groupedMessages).map(([dateKey, dayMessages]) => (
-        <div key={dateKey}>
-          <div className="flex justify-center my-5">
-            <motion.span initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground/80 bg-muted/50 backdrop-blur-sm px-4 py-1 rounded-full border border-border/30 shadow-sm">
-              {formatDateSeparator(new Date(dateKey))}
-            </motion.span>
-          </div>
+      <div
+        style={{
+          height: `${virtualizer.getTotalSize()}px`,
+          width: '100%',
+          position: 'relative',
+        }}
+      >
+        {virtualizer.getVirtualItems().map((virtualRow) => {
+          const message = messages[virtualRow.index];
+          const prevMsg = messages[virtualRow.index - 1];
+          const nextMsg = messages[virtualRow.index + 1];
 
-          <StaggeredList className="space-y-3">
-            {dayMessages.map((message, idx) => {
-              const nextMsg = dayMessages[idx + 1];
-              const prevMsg = dayMessages[idx - 1];
-              const isLastInGroup = !nextMsg || nextMsg.sender !== message.sender;
-              const isFirstInGroup = !prevMsg || prevMsg.sender !== message.sender;
+          const showDateSeparator = !prevMsg || !isSameDay(message.timestamp, prevMsg.timestamp);
+          const isFirstInGroup = !prevMsg || prevMsg.sender !== message.sender || showDateSeparator;
+          const isLastInGroup = !nextMsg || nextMsg.sender !== message.sender || !isSameDay(message.timestamp, nextMsg.timestamp);
 
-              return (
-                <StaggeredItem key={message.id}>
-                  <MessageBubble
-                    message={message}
-                    isFirstInGroup={isFirstInGroup}
-                    isLastInGroup={isLastInGroup}
-                    contactAvatar={contactAvatar}
-                    instanceName={instanceName}
-                    contactJid={contactJid}
-                    ttsLoading={ttsLoading}
-                    ttsPlaying={ttsPlaying}
-                    ttsMessageId={ttsMessageId}
-                    highlightedMessageIds={highlightedMessageIds}
-                    activeHighlightId={activeHighlightId}
-                    searchQuery={searchQuery}
-                    onSpeak={onSpeak}
-                    onStop={onStop}
-                    onReply={onReply}
-                    onForward={onForward}
-                    onCopy={onCopy}
-                    onScrollToMessage={onScrollToMessage}
-                    onInteractiveButtonClick={onInteractiveButtonClick}
-                    onEditStart={onEditStart}
-                    onMessageDeleted={handleMessageDeleted}
-                    registerRef={(el) => { messageRefs.current[message.id] = el; }}
-                  />
-                </StaggeredItem>
-              );
-            })}
-          </StaggeredList>
-        </div>
-      ))}
+          return (
+            <div
+              key={message.id}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+              className="py-1"
+            >
+              {showDateSeparator && (
+                <div className="flex justify-center my-5">
+                  <motion.span initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground/80 bg-muted/50 backdrop-blur-sm px-4 py-1 rounded-full border border-border/30 shadow-sm">
+                    {formatDateSeparator(message.timestamp)}
+                  </motion.span>
+                </div>
+              )}
 
-      <div className="flex justify-start pl-10">
+              <MessageBubble
+                message={message}
+                isFirstInGroup={isFirstInGroup}
+                isLastInGroup={isLastInGroup}
+                contactAvatar={contactAvatar}
+                instanceName={instanceName}
+                contactJid={contactJid}
+                ttsLoading={ttsLoading}
+                ttsPlaying={ttsPlaying}
+                ttsMessageId={ttsMessageId}
+                highlightedMessageIds={highlightedMessageIds}
+                activeHighlightId={activeHighlightId}
+                searchQuery={searchQuery}
+                onSpeak={onSpeak}
+                onStop={onStop}
+                onReply={onReply}
+                onForward={onForward}
+                onCopy={onCopy}
+                onScrollToMessage={onScrollToMessage}
+                onInteractiveButtonClick={onInteractiveButtonClick}
+                onEditStart={onEditStart}
+                onMessageDeleted={handleMessageDeleted}
+                registerRef={(el) => { messageRefs.current[message.id] = el; }}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex justify-start pl-10 mt-4">
         <TypingIndicator isVisible={isContactTyping} userName={typingUserName} />
       </div>
       <div ref={messagesEndRef} />

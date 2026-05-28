@@ -50,7 +50,9 @@ interface MessageBubbleProps {
   registerRef: (el: HTMLDivElement | null) => void;
 }
 
-export function MessageBubble({
+import { memo } from 'react';
+
+export const MessageBubble = memo(function MessageBubble({
   message, isFirstInGroup, isLastInGroup, contactAvatar, instanceName, contactJid,
   ttsLoading, ttsPlaying, ttsMessageId, highlightedMessageIds, activeHighlightId, searchQuery,
   onSpeak, onStop, onReply, onForward, onCopy, onScrollToMessage, onInteractiveButtonClick,
@@ -261,4 +263,4 @@ export function MessageBubble({
         </div>
       </SwipeableMessage>
   );
-}
+});
