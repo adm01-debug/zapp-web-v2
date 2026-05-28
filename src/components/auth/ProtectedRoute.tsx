@@ -48,7 +48,7 @@
      return <Navigate to="/auth" state={{ from: location }} replace />;
    }
  
-   if (requiredRoles?.length && !requiredRoles.some(role => hasRole(role as any))) {
+   if (requiredRoles?.length && !requiredRoles.some(role => hasRole(role))) {
      if (fallback) return <>{fallback}</>;
      return <Navigate to="/" replace />;
    }
