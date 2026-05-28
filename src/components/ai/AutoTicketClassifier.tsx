@@ -46,6 +46,7 @@ export function AutoTicketClassifier() {
 
   useEffect(() => {
     loadClassifiedTickets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadClassifiedTickets = async () => {
