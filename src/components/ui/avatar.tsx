@@ -83,7 +83,7 @@ const statusSizes = {
   lg: 'w-4 h-4',
 };
 
-function StatusIndicator({ status, size = 'default', pulse = true, className }: StatusIndicatorProps) {
+const StatusIndicator = React.memo(function StatusIndicator({ status, size = 'default', pulse = true, className }: StatusIndicatorProps) {
   return (
     <span className={cn("relative flex", className)}>
       <span className={cn(
@@ -103,7 +103,7 @@ function StatusIndicator({ status, size = 'default', pulse = true, className }: 
       )}
     </span>
   );
-}
+});
 
 // Avatar with status indicator
 interface AvatarWithStatusProps extends AvatarProps {

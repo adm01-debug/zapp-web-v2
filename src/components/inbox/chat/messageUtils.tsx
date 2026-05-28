@@ -1,6 +1,7 @@
 import { format, isToday, isYesterday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Check, CheckCheck, Clock, AlertCircle } from 'lucide-react';
+import { memo } from 'react';
 import { cn } from '@/lib/utils';
 import { Message } from '@/types/chat';
 
@@ -22,7 +23,7 @@ export function formatDateSeparator(date: Date): string {
  * - read: Double check ✓✓ in blue
  * - failed: Alert circle in red
  */
-export function MessageStatusIcon({ status, className }: { status: Message['status']; className?: string }) {
+export const MessageStatusIcon = memo(function MessageStatusIcon({ status, className }: { status: Message['status']; className?: string }) {
   switch (status) {
     case 'sent':
       return (
@@ -75,4 +76,4 @@ export function MessageStatusIcon({ status, className }: { status: Message['stat
         />
       );
   }
-}
+});
