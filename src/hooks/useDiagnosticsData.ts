@@ -99,23 +99,23 @@ export function useDiagnosticsData() {
       .limit(10);
 
     const recentFailures = [];
-    if (failures) {
+    const recentFailures = [];
+    if (failures && failures.length > 0) {
+      const contactIds = Array.from(new Set(failures.map(f => f.contact_id).filter(Boolean)));
+      const { data: contacts } = await supabase
+        .from('contacts')
+        .select('id, name')
+        .in('id', contactIds);
+      
+      const contactMap = new Map(contacts?.map(c => [c.id, c.name]) || []);
+
       for (const f of failures) {
-        let contactName = 'Desconhecido';
-        if (f.contact_id) {
-          const { data: contact } = await supabase
-            .from('contacts')
-            .select('name')
-            .eq('id', f.contact_id)
-            .single();
-          if (contact) contactName = contact.name;
-        }
         recentFailures.push({
           id: f.id,
           content: f.content,
           status: f.status || 'unknown',
           created_at: f.created_at,
-          contact_name: contactName,
+          contact_name: contactMap.get(f.contact_id!) || 'Desconhecido',
         });
       }
     }
