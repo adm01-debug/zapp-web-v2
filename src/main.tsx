@@ -10,7 +10,6 @@ const log = getLogger('App');
 if (window.performance && window.performance.mark) {
   performance.mark('main-init');
 }
-console.log('[BOOT] src/main.tsx loaded');
 log.info('Initialized at', new Date().toISOString());
 
 // Global unhandled error handlers for resilience
@@ -41,4 +40,11 @@ if (import.meta.env.DEV) {
   });
 }
 
-ReactDOM.createRoot(document.getElementById("root")!).render(<App />);
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  throw new Error('Root element not found');
+}
+
+window.__ZAPP_MARK_APP_MOUNTED__?.();
+ReactDOM.createRoot(rootElement).render(<App />);
