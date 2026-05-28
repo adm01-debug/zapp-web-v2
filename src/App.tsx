@@ -55,9 +55,9 @@ function lazyWithRetry<T extends React.ComponentType<any>>(
   });
 }
 
-// Lazy-load ALL page routes for optimal initial bundle
-const Index = lazyWithRetry(() => import("./pages/Index"));
-const Auth = lazyWithRetry(() => import("./pages/Auth"));
+// Import critical page routes directly to ensure they load immediately
+import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const ForgotPassword = lazyWithRetry(() => import("./pages/ForgotPassword"));
