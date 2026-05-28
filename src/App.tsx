@@ -155,12 +155,14 @@ function AppContent() {
       <SkipLinks />
       <LiveRegion />
       <GlobalKeyboardProvider>
-        {deferredReady && <DeferredProviders />}
-        {deferredReady && (
-          <Suspense fallback={<div className="sr-only">Carregando hooks...</div>}>
-            <DeferredHooks />
-          </Suspense>
-        )}
+        <ErrorBoundary fallback={null}>
+          {deferredReady && <DeferredProviders />}
+          {deferredReady && (
+            <Suspense fallback={null}>
+              <DeferredHooks />
+            </Suspense>
+          )}
+        </ErrorBoundary>
         <Toaster />
         <Sonner />
         <ErrorBoundary
