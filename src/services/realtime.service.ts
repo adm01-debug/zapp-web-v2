@@ -71,8 +71,8 @@ export class RealtimeService {
     return buildConversations([...seededContactRows, ...messageContacts], normalizedMessages);
   }
 
-  static subscribeToMessages(onInsert: (payload: any) => void, onUpdate: (payload: any) => void) {
-    return supabase.channel('messages-realtime')
+  static subscribeToMessages(onInsert: (payload: any) => void, onUpdate: (payload: any) => void, channelName = 'messages-realtime') {
+    return supabase.channel(channelName)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, onInsert)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, onUpdate)
       .subscribe();

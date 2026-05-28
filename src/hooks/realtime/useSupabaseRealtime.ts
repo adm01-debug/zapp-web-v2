@@ -53,9 +53,16 @@
            },
            handlePayload
          )
-         .subscribe((status) => {
-           log.debug(`Realtime status (${channelName}):`, status);
-         });
+          .subscribe((status, err) => {
+            if (status === 'SUBSCRIBED') {
+              log.debug(`Realtime subscribed: ${channelName}`);
+            } else if (status === 'CHANNEL_ERROR') {
+              log.error(`Realtime channel error (${channelName}):`, err);
+            } else if (status === 'CLOSED') {
+              log.debug(`Realtime channel closed: ${channelName}`);
+            }
+            log.debug(`Realtime status (${channelName}):`, status);
+          });
      } catch (err) {
        log.error(`Failed to subscribe to realtime (${channelName}):`, err);
        return;

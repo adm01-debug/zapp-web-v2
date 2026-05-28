@@ -33,35 +33,52 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
    }, []);
 
   useEffect(() => {
-     console.log('[BOOT] AuthProvider initialized, starting session check');
-     const subscription = AuthService.onAuthStateChange((event, session) => {
-       console.log('[BOOT] Auth state change:', event, session ? 'Authenticated' : 'Unauthenticated');
-       setSession(session);
-       setUser(session?.user ?? null);
-       if (session?.user) {
-         fetchProfile(session.user.id);
-       } else {
-         setProfile(null);
-       }
-     });
- 
-     AuthService.getSession()
-       .then((session) => {
-         console.log('[BOOT] Initial session retrieved:', session ? 'User Found' : 'No User');
-         setSession(session);
-         setUser(session?.user ?? null);
-         if (session?.user) {
-           fetchProfile(session.user.id);
-         }
-         setLoading(false);
-         console.log('[BOOT] Auth loading finished');
-       })
-       .catch((err) => {
-         console.error('[BOOT] Error fetching session:', err);
-         setLoading(false);
-       });
- 
-     return () => subscription.unsubscribe();
+    console.log('[BOOT] AuthProvider initialized, starting session check');
+    
+    // Check for existing session first to prevent flickering
+    AuthService.getSession()
+      .then(async (session) => {
+        console.log('[BOOT] Initial session retrieved:', session ? 'User Found' : 'No User');
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+        } else {
+          setProfile(null);
+        }
+      })
+      .catch((err) => {
+        console.error('[BOOT] Error fetching session:', err);
+      })
+      .finally(() => {
+        setLoading(false);
+        console.log('[BOOT] Auth initial load finished');
+      });
+
+    const subscription = AuthService.onAuthStateChange(async (event, session) => {
+      console.log('[BOOT] Auth state change:', event, session ? 'Authenticated' : 'Unauthenticated');
+      
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        await fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
+      
+      // Handle login/logout specific UI feedback if needed
+      if (event === 'SIGNED_IN') {
+        console.log('[AUTH] User signed in');
+      } else if (event === 'SIGNED_OUT') {
+        console.log('[AUTH] User signed out');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [fetchProfile]);
 
   const refreshProfile = useCallback(async () => {
