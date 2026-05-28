@@ -74,8 +74,15 @@ export function TeamChatPanel({ conversation, onBack, onToggleDetails, showDetai
   useEffect(() => { if (s.showSearch) s.searchInputRef.current?.focus(); }, [s.showSearch]);
 
   const dateFirstIndexes = useMemo(() => {
-    const seen = new Set<string>(); const result = new Set<number>();
-    s.filteredMessages.forEach((msg, idx) => { const k = format(new Date(msg.created_at), 'yyyy-MM-dd'); if (!seen.has(k)) { seen.add(k); result.add(idx); } });
+    const seen = new Set<string>();
+    const result = new Set<number>();
+    s.filteredMessages.forEach((msg, idx) => {
+      const k = format(new Date(msg.created_at), 'yyyy-MM-dd');
+      if (!seen.has(k)) {
+        seen.add(k);
+        result.add(idx);
+      }
+    });
     return result;
   }, [s.filteredMessages]);
 

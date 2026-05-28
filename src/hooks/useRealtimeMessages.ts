@@ -125,11 +125,15 @@ export function useRealtimeMessages() {
     } finally { setLoading(false); }
   }, [commitConversations]);
 
+  // Channel ID should be stable per hook instance unless we want to force re-subscribe
+  const channelIdRef = useRef(`messages-realtime-${crypto.randomUUID().slice(0, 8)}`);
+
   useEffect(() => {
     fetchConversations();
-    // Use a unique channel name per session to avoid collisions
-    const channelId = `messages-realtime-${Date.now()}`;
+    
+    const channelId = channelIdRef.current;
     const channel = RealtimeService.subscribeToMessages(handleNewMessage, handleMessageUpdate, channelId);
+    
     return () => { 
       log.debug('Cleaning up realtime channel:', channelId);
       supabase.removeChannel(channel); 
@@ -141,6 +145,10 @@ export function useRealtimeMessages() {
   };
 
   const markAsRead = async (contactId: string) => {
+    // Optimization: Check if there are actually unread messages before hitting the DB
+    const conv = conversationsRef.current.find(c => c.contact.id === contactId);
+    if (conv && conv.unreadCount === 0) return;
+
     try {
       await RealtimeService.markMessagesAsRead(contactId);
       commitConversations((prev) =>

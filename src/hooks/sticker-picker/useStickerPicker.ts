@@ -3,6 +3,7 @@ import { getLogger } from '@/lib/logger';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { type StickerItem, type PendingUpload, CATEGORY_LABELS } from '@/components/inbox/stickers/StickerTypes';
+import { getFileExtensionWithDefault } from '@/utils/fileExtensions';
 
 const log = getLogger('StickerPicker');
 const RECENT_LIMIT = 8;
@@ -48,7 +49,7 @@ export function useStickerPicker(onSendSticker: (url: string) => void) {
     if (file.size > 500 * 1024) { toast.error('Arquivo excede 500KB.'); return; }
     setUploading(true);
     try {
-      const ext = file.name.split('.').pop() || 'webp';
+      const ext = getFileExtensionWithDefault(file.name, 'webp');
       const storagePath = `sticker_${Date.now()}_${crypto.randomUUID()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from('stickers').upload(storagePath, file, { contentType: file.type, cacheControl: '31536000' });
       if (uploadError) { toast.error('Erro ao enviar arquivo'); return; }

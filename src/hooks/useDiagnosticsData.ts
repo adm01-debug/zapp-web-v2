@@ -70,6 +70,10 @@ export function useDiagnosticsData() {
   const fetchMessageDiagnostics = async () => {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
+    // Optimize by grouping or reducing query count if possible, 
+    // but head: true is already quite fast for counts.
+    // However, we can use a single query for statuses if we fetch data, 
+    // but for large datasets head: true is better.
     const [
       { count: totalCount },
       { count: sentCount },
@@ -78,12 +82,12 @@ export function useDiagnosticsData() {
       { count: failedCount },
       { count: pendingCount },
     ] = await Promise.all([
-      supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent'),
-      supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'sent'),
-      supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'delivered'),
-      supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'read'),
-      supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'failed'),
-      supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'sending'),
+      supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent'),
+      supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'sent'),
+      supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'delivered'),
+      supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'read'),
+      supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'failed'),
+      supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', since).eq('sender', 'agent').eq('status', 'sending'),
     ]);
 
     const { data: failures } = await supabase
@@ -95,23 +99,22 @@ export function useDiagnosticsData() {
       .limit(10);
 
     const recentFailures = [];
-    if (failures) {
+    if (failures && failures.length > 0) {
+      const contactIds = Array.from(new Set(failures.map(f => f.contact_id).filter(Boolean)));
+      const { data: contacts } = await supabase
+        .from('contacts')
+        .select('id, name')
+        .in('id', contactIds);
+      
+      const contactMap = new Map(contacts?.map(c => [c.id, c.name]) || []);
+
       for (const f of failures) {
-        let contactName = 'Desconhecido';
-        if (f.contact_id) {
-          const { data: contact } = await supabase
-            .from('contacts')
-            .select('name')
-            .eq('id', f.contact_id)
-            .single();
-          if (contact) contactName = contact.name;
-        }
         recentFailures.push({
           id: f.id,
           content: f.content,
           status: f.status || 'unknown',
           created_at: f.created_at,
-          contact_name: contactName,
+          contact_name: contactMap.get(f.contact_id!) || 'Desconhecido',
         });
       }
     }

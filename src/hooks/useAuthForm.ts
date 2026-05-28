@@ -167,10 +167,12 @@ export function useAuthForm() {
         email: result.userEmail,
         options: { shouldCreateUser: false },
       });
-      if (error) {
+      if (!error) {
         toast({ title: 'Autenticado com Passkey!', description: 'Redirecionando...' });
+        navigate('/');
+      } else {
+        toast({ title: 'Erro ao entrar com Passkey', description: error.message, variant: 'destructive' });
       }
-      navigate('/');
     }
   };
 

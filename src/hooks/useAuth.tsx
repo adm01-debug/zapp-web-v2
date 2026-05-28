@@ -43,7 +43,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          await fetchProfile(session.user.id);
+          void fetchProfile(session.user.id);
         } else {
           setProfile(null);
         }
@@ -63,7 +63,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        await fetchProfile(session.user.id);
+        void fetchProfile(session.user.id);
       } else {
         setProfile(null);
       }
