@@ -36,7 +36,7 @@ export function useMessages({ contactId, enabled = true }: UseMessagesOptions) {
        setError(null);
        const { data, error: fetchError } = await ChatService.fetchMessages(contactId);
        if (fetchError) throw fetchError;
-        if (mountedRef.current) setMessages((data || []).map(mapMessageRowToMessage));
+        if (mountedRef.current) setMessages((data || []).map(mapMessageRowToMessage as any));
      } catch (err) {
        log.error('Error fetching messages:', err);
        if (mountedRef.current) setError(err instanceof Error ? err.message : 'Failed to fetch messages');
