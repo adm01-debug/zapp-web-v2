@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getLogger } from '@/lib/logger';
 import { toast } from 'sonner';
+import { getFileExtensionWithDefault } from '@/utils/fileExtensions';
 
 const log = getLogger('useAudioMemes');
 
@@ -87,7 +88,7 @@ export function useAudioMemes(open: boolean) {
 
     setUploading(true);
     try {
-      const ext = file.name.split('.').pop() || 'mp3';
+      const ext = getFileExtensionWithDefault(file.name, 'mp3');
       const storagePath = `meme_${Date.now()}_${crypto.randomUUID()}.${ext}`;
 
       const { error: uploadError } = await supabase.storage

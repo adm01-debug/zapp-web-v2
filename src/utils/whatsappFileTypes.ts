@@ -102,9 +102,11 @@ export interface FileValidationResult {
   maxSizeMB?: number;
 }
 
+import { getFileExtensionWithDefault } from './fileExtensions';
+
 export const validateFile = (file: File): FileValidationResult => {
   const mimeType = file.type.toLowerCase();
-  const extension = '.' + file.name.split('.').pop()?.toLowerCase();
+  const extension = '.' + getFileExtensionWithDefault(file.name, '');
   const fileSizeMB = file.size / (1024 * 1024);
 
   // Find matching file type config

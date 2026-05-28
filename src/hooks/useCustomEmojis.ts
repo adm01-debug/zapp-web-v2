@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { CATEGORY_LABELS } from '@/components/inbox/emojiConstants';
+import { getFileExtensionWithDefault } from '@/utils/fileExtensions';
 
 import { getLogger } from '@/lib/logger';
 const log = getLogger('useCustomEmojis');
@@ -63,7 +64,7 @@ export function useCustomEmojis(open: boolean) {
 
     setUploading(true);
     try {
-      const ext = file.name.split('.').pop() || 'png';
+      const ext = getFileExtensionWithDefault(file.name, 'png');
       const storagePath = `emoji_${Date.now()}_${crypto.randomUUID()}.${ext}`;
 
       const { error: uploadError } = await supabase.storage

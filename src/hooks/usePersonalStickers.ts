@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { StickerItem } from '@/components/inbox/stickers/StickerTypes';
+import { getFileExtensionWithDefault } from '@/utils/fileExtensions';
 
 export function usePersonalStickers() {
   const queryClient = useQueryClient();
@@ -37,7 +38,7 @@ export function usePersonalStickers() {
       for (const file of Array.from(files)) {
         if (!file.type.startsWith('image/')) { toast.error(`${file.name} não é uma imagem`); continue; }
         if (file.size > 10 * 1024 * 1024) { toast.error(`${file.name} excede 10MB`); continue; }
-        const ext = file.name.split('.').pop() || 'png';
+        const ext = getFileExtensionWithDefault(file.name, 'png');
         const path = `pessoal/${profile.id}/${crypto.randomUUID()}.${ext}`;
         const { error: uploadError } = await supabase.storage.from('stickers').upload(path, file, { contentType: file.type });
         if (uploadError) { toast.error(`Erro ao enviar ${file.name}: ${uploadError.message}`); continue; }
