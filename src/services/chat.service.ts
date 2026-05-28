@@ -10,7 +10,7 @@ export class ChatService {
     
     return supabase
       .from('messages')
-      .select('id, contact_id, content, sender, message_type, media_url, is_read, agent_id, external_id, created_at, updated_at, transcription, transcription_status, status, is_deleted, channel_type, channel_connection_id, is_edited, payload')
+      .select('*')
       .eq('contact_id', contactId)
       .order('created_at', { ascending: true })
       .range(from, to);
