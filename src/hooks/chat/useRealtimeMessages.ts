@@ -5,12 +5,12 @@ import { getLogger } from '@/lib/logger';
 import { MessageRow } from '@/types/chat';
 import { ContactRow } from '@/types/contact';
 import { RealtimeService } from '@/services/realtime.service';
-import { sendMessageToContact } from './realtime/messageSender';
+import { sendMessageToContact } from '../realtime/messageSender';
 import {
   normalizeMessage, buildConversation, buildConversations,
-} from './realtime/realtimeUtils';
-import { useRealtimeNotifications } from './realtime/useRealtimeNotifications';
-import { useMessageUpdateBatcher } from './realtime/useMessageUpdateBatcher';
+} from '../realtime/realtimeUtils';
+import { useRealtimeNotifications } from '../realtime/useRealtimeNotifications';
+import { useMessageUpdateBatcher } from '../realtime/useMessageUpdateBatcher';
 
 const log = getLogger('RealtimeMessages');
 

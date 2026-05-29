@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { normalizeMessage, buildConversation } from './realtimeUtils';
-import type { ConversationWithMessages, RealtimeMessage } from '../useRealtimeMessages';
+import type { ConversationWithMessages, RealtimeMessage } from '../chat/useRealtimeMessages';
 
 /**
  * Batches rapid message UPDATE events (e.g. status changes) to reduce renders.
