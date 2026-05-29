@@ -29,7 +29,7 @@ import { toast } from 'sonner';
 
 const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _ref) {
    const navigate = useNavigate();
-   const { user, profile, loading, signOut } = useAuth();
+   const { user, profile, signOut } = useAuth();
   const { hasCompletedOnboarding, loading: loadingOnboarding, completeOnboarding } = useOnboarding();
   const { startTour } = useTour();
   const { currentView, navigateTo: rawNavigateTo, goBack: rawGoBack, goForward: rawGoForward, canGoBack, canGoForward, breadcrumbTrail } = useNavigationHistory('inbox');
@@ -64,7 +64,8 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
     return () => unregisterNavigationHandler();
   }, [registerNavigationHandler, unregisterNavigationHandler, setCurrentView]);
 
-   useKeyboardNavigation({ goBack, goForward, setCurrentView, canGoBack });
+  const canGoBackMemo = useMemo(() => canGoBack, [canGoBack]);
+  useKeyboardNavigation({ goBack, goForward, setCurrentView, canGoBack: canGoBackMemo });
 
   // Defer transcription notifications by 2s after mount to not block first paint
   const [notifReady, setNotifReady] = useState(false);
@@ -78,23 +79,19 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
 
    const hasLoggedAudit = useRef(false);
    useEffect(() => {
-     if (user && !loading && !hasLoggedAudit.current) {
+     if (user && !hasLoggedAudit.current) {
        hasLoggedAudit.current = true;
        logAudit({ action: 'login', details: { email: user.email } });
      }
-   }, [user, loading]);
+   }, [user]);
  
-   useGmailOAuth(user, loading, setCurrentView);
+   useGmailOAuth(user, false, setCurrentView);
 
   useEffect(() => {
     if (!loadingOnboarding && hasCompletedOnboarding === false && user) {
       setShowWelcome(true);
     }
   }, [loadingOnboarding, hasCompletedOnboarding, user]);
-
-  if (loading) {
-    return <LoadingSplash />;
-  }
 
   if (!user) return <LoadingSplash />;
 
@@ -116,7 +113,7 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
           signOut={signOut}
           unreadNotifications={0}
           showChecklist={showChecklist}
-          loading={loading}
+          loading={false}
         />
 
         <Suspense fallback={null}>
@@ -183,11 +180,9 @@ const Index = memo(forwardRef<HTMLDivElement>(function Index(_props, _ref) {
     }
   }, [user]);
 
-  if (loading) {
+  if (!user) {
     return <LoadingSplash />;
   }
-
-  if (!user) return <LoadingSplash />;
 
   return (
     <TourProvider onComplete={completeOnboarding}>

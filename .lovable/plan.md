@@ -1,35 +1,39 @@
+The objective is to perform a deep technical audit and stabilization of the entire system, focusing on fixing redundant logic, improving auth reliability, and enhancing the realtime experience.
 
+### Technical Analysis of Identified Issues
 
-## Plan: Unificar TODAS as Ferramentas no Padrão Modal (como o print de referência)
+1. **Auth & Onboarding Redundancy**: `Index.tsx` and `useOnboarding` perform overlapping checks, causing multiple "Loading" flashes. `useOnboarding` also redundantely queries the database even when local cache is present.
+2. **Realtime Instability**: `useSupabaseRealtime` lacks a retry mechanism for `CHANNEL_ERROR`, which can lead to silent disconnections in unstable networks.
+3. **Navigation Architecture**: `useNavigationHistory` uses a custom stack and manual `pushState` for hashes. While functional, it needs to be more resilient to browser-native navigation events (back/forward).
+4. **Deferred Loading Complexity**: `App.tsx` uses a complex "ready" state for deferred providers that can be simplified using standard React patterns.
+5. **Realtime Inbox Side Effects**: `RealtimeInboxView` has effects that may trigger multiple times during state transitions, leading to inconsistent UI states (e.g., selecting contacts).
 
-### Problema
-- **Visão (AIConversationAssistant)** ainda usa o padrão antigo de **painel lateral** (`w-80`, slide-in da direita, sem backdrop)
-- Os outros 3 tools (Objeções, Universitários, Resumo) já usam o `ToolPanel` com modal centralizado + backdrop
-- O resultado é inconsistência visual — e o Visão não tem o efeito "primeiro plano + fundo translúcido"
+### Implementation Steps
 
-### Solução
-Migrar o **AIConversationAssistant (Visão)** para usar o `ToolPanel` wrapper, igual aos outros 3 tools. Assim todas as 4 ferramentas ficam idênticas ao print de referência: **modal centralizado com backdrop translúcido**.
+#### 1. Authentication & Onboarding Optimization
+- **useAuth.tsx**: Implement a singleton/ref guard in `AuthService.getSession` to prevent multiple simultaneous requests during bootstrap.
+- **useOnboarding.ts**: Optimize to skip database checks if a valid `localStorage` flag is found. Ensure state transitions are atomic.
+- **Index.tsx**: Remove redundant `loading` and `user` checks. Let `ProtectedRoute` handle the gate and `Index` handle the layout.
 
-### Alterações
+#### 2. Realtime Reliability
+- **useSupabaseRealtime.ts**: Add a backoff retry logic for `CHANNEL_ERROR` status.
+- **useRealtimeNotifications.ts**: Ensure notification permissions are requested only once and handled gracefully if denied.
 
-**1. `src/components/inbox/AIConversationAssistant.tsx`**
-- Remover o wrapper `AnimatePresence` + `motion.div` próprio (linhas 332-339) e o header interno (linhas 341-373)
-- Exportar apenas o conteúdo interno (PeriodFilter, botão analisar, resultados, tabs)
-- Aceitar prop `headerRight` para os botões extras (TTS/Ouvir) que ficam no header do ToolPanel
+#### 3. Navigation Stabilization
+- **useNavigationHistory.ts**: Refine the hash sync logic to avoid race conditions when clicking the browser back button.
+- **AppShell.tsx**: Ensure the `navDirectionRef` is correctly updated across all navigation types (keyboard, sidebar, mobile gestures).
 
-**2. `src/components/inbox/ChatPanel.tsx`**
-- Envolver `AIConversationAssistant` no `ToolPanel` wrapper, igual Objeções/Universitários/Resumo
-- Passar `icon={<VisionIcon>}`, `title="Visão"`, `subtitle="Análise Profunda"`, e `headerRight` com botão TTS
+#### 4. Frontend Resilience
+- **App.tsx**: Simplify `DeferredProviders` and `DeferredHooks` usage. Remove the manual `deferredReady` timer in favor of standard lazy loading and `Suspense`.
+- **RealtimeInboxView.tsx**: Consolidate side-effects and ensure `pendingContactId` is handled atomically.
 
-### Resultado
-Todas as 4 ferramentas usam o mesmo componente `ToolPanel`:
-- Modal centralizado (`max-w-lg`, `max-h-[85vh]`)
-- Backdrop `bg-black/50 backdrop-blur-[2px]`
-- Header padronizado (ícone + título + subtítulo + ações + X)
-- ScrollArea no corpo
-- Animação `scale 0.95→1` + `opacity`
+#### 5. System-wide Audit
+- Review `ErrorBoundary` implementation to ensure it catches and reports errors without crashing the entire tab.
+- Standardize the `LoadingSplash` usage across the app.
 
-### Arquivos Modificados
-1. `src/components/inbox/AIConversationAssistant.tsx` — remover wrapper/header próprio
-2. `src/components/inbox/ChatPanel.tsx` — envolver Visão no ToolPanel
+### Technical Details (For Developers)
 
+- **Auth**: Use a promise-memoization pattern for `AuthService.getSession`.
+- **Realtime**: Implement `setTimeout` based retry with a max-attempt limit in `useSupabaseRealtime`.
+- **State**: Use `React.useTransition` where applicable to keep the UI responsive during view swaps.
+- **Navigation**: Use `replace: true` in `window.history.pushState` when updating hashes if it's just a view change, to avoid bloating the browser history unless it's a "meaningful" navigation.

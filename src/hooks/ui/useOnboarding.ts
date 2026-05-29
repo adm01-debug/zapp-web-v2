@@ -18,7 +18,10 @@ export function useOnboarding() {
 
     // Check localStorage first for quick response
     let localCompleted: string | null = null;
-    try { localCompleted = localStorage.getItem(`${ONBOARDING_KEY}_${user.id}`); } catch { /* storage unavailable */ }
+    try { 
+      localCompleted = localStorage.getItem(`${ONBOARDING_KEY}_${user.id}`); 
+    } catch { /* storage unavailable */ }
+    
     if (localCompleted === 'true') {
       setHasCompletedOnboarding(true);
       setLoading(false);
@@ -26,6 +29,7 @@ export function useOnboarding() {
     }
 
     // Check user_settings in database
+    let isSubscribed = true;
     const checkOnboarding = async () => {
       try {
         const { data, error } = await supabase
@@ -33,6 +37,8 @@ export function useOnboarding() {
           .select('id')
           .eq('user_id', user.id)
           .maybeSingle();
+
+        if (!isSubscribed) return;
 
         // If user has settings, they've been here before
         if (data) {
@@ -42,14 +48,16 @@ export function useOnboarding() {
           setHasCompletedOnboarding(false);
         }
       } catch (error) {
+        if (!isSubscribed) return;
         log.error('Error checking onboarding status:', error);
         setHasCompletedOnboarding(true); // Default to completed on error
       } finally {
-        setLoading(false);
+        if (isSubscribed) setLoading(false);
       }
     };
 
     checkOnboarding();
+    return () => { isSubscribed = false; };
   }, [user]);
 
   const completeOnboarding = () => {
