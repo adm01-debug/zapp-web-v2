@@ -3,13 +3,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigationHistory } from '@/hooks/system/useNavigationHistory';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-// Lazy load non-critical secondary components
-const CommandPalette = lazy(() => import('@/components/CommandPalette').then(m => ({ default: m.CommandPalette })));
-const WelcomeModal = lazy(() => import('@/components/onboarding/WelcomeModal').then(m => ({ default: m.WelcomeModal })));
-const OfflineIndicator = lazy(() => import('@/components/ui/offline-indicator').then(m => ({ default: m.OfflineIndicator })));
-const ConnectionToast = lazy(() => import('@/components/ui/offline-indicator').then(m => ({ default: m.ConnectionToast })));
-const EvolutionDisconnectBanner = lazy(() => import('@/components/alerts/EvolutionDisconnectBanner').then(m => ({ default: m.EvolutionDisconnectBanner })));
-
 import { SLANotificationProvider } from '@/components/notifications/SLANotificationProvider';
 import { GoalNotificationProvider } from '@/components/notifications/GoalNotificationProvider';
 import { TourProvider, DEFAULT_ONBOARDING_STEPS, useTour } from '@/components/onboarding/OnboardingTour';
@@ -19,12 +12,18 @@ import { useOnboarding } from '@/hooks/ui/useOnboarding';
 import { useOnboardingChecklist } from '@/hooks/ui/useOnboardingChecklist';
 import { useTranscriptionNotifications } from '@/hooks/communication/useTranscriptionNotifications';
 import { logAudit } from '@/lib/audit';
- import { useKeyboardNavigation } from '@/hooks/ui/useKeyboardNavigation';
- import { useGmailOAuth } from '@/hooks/integrations/useGmailOAuth';
+import { useKeyboardNavigation } from '@/hooks/ui/useKeyboardNavigation';
+import { useGmailOAuth } from '@/hooks/integrations/useGmailOAuth';
 import { Sparkles } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
-// Critical indicators (import directly if needed, but let's try lazy first)
 import { toast } from 'sonner';
+
+// Lazy load non-critical secondary components
+const CommandPalette = lazy(() => import('@/components/CommandPalette').then(m => ({ default: m.CommandPalette })));
+const WelcomeModal = lazy(() => import('@/components/onboarding/WelcomeModal').then(m => ({ default: m.WelcomeModal })));
+const OfflineIndicator = lazy(() => import('@/components/ui/offline-indicator').then(m => ({ default: m.OfflineIndicator })));
+const ConnectionToast = lazy(() => import('@/components/ui/offline-indicator').then(m => ({ default: m.ConnectionToast })));
+const EvolutionDisconnectBanner = lazy(() => import('@/components/alerts/EvolutionDisconnectBanner').then(m => ({ default: m.EvolutionDisconnectBanner })));
 
 const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _ref) {
    const navigate = useNavigate();
@@ -167,9 +166,8 @@ function LoadingSplash() {
 }
 
 const Index = memo(forwardRef<HTMLDivElement>(function Index(_props, _ref) {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const { completeOnboarding } = useOnboarding();
-  const navigate = useNavigate();
 
   // O ProtectedRoute já garante que o usuário esteja autenticado,
   // mas mantemos um log para depuração se necessário.
