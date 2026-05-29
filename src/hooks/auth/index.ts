@@ -1,4 +1,4 @@
-export * from './useAuth';
+export * from '../auth/useAuth';
 export * from './useAuthForm';
 export * from './useMFA';
 export * from './useReauthentication';
