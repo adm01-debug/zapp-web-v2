@@ -118,9 +118,120 @@ const hookGroups = {
     'useGoalNotifications.ts',
     'useGoalsDashboard.ts',
     'usePerformance.ts',
-    'usePerformanceSnapshots.ts'
+    'usePerformanceSnapshots.ts',
+    'usePerformanceOptimizations.ts'
+  ],
+  communication: [
+    'useCalls.ts',
+    'useCampaigns.ts',
+    'useSipClient.ts',
+    'useVoiceAgent.ts',
+    'useIncomingCallListener.ts',
+    'useAudioPlayer.ts',
+    'useAudioRecorder.ts',
+    'useAudioMemes.ts',
+    'useSpeechToText.ts',
+    'useTextToSpeech.ts',
+    'useTranscriptionNotifications.ts'
+  ],
+  business: [
+    'useBusinessHours.ts',
+    'useBusinessHoursCheck.ts',
+    'useCSAT.ts',
+    'useNPSSurveys.ts',
+    'useDemandPrediction.ts',
+    'useQueueAnalytics.ts',
+    'useQueueGoals.ts',
+    'useQueues.ts',
+    'useQueuesComparison.ts',
+    'useWarRoomAlerts.ts',
+    'useWarRoomData.ts',
+    'useClientWallet.ts',
+    'useShoppingCart.ts'
+  ],
+  gamification: [
+    'useLeaderboard.ts',
+    'useAgentGamification.ts'
+  ],
+  inbox: [
+    'useInboxBulkActions.ts',
+    'useInboxFilters.ts',
+    'useRealtimeInbox.ts',
+    'useRealtimeSentimentAlerts.ts',
+    'useSentimentAlerts.ts',
+    'useObjectionDetector.ts',
+    'useAutoCloseConversations.ts',
+    'useBulkActions.ts',
+    'useConnectionQueues.ts',
+    'useConnectionsManager.ts'
+  ],
+  system: [
+    'useDebounce.ts',
+    'useInfiniteScroll.ts',
+    'useNetworkStatus.ts',
+    'useServiceWorker.ts',
+    'useOfflineCache.ts',
+    'useCRUD.ts',
+    'useDuplicate.ts',
+    'useUndoableAction.ts',
+    'useVersions.ts',
+    'useExportData.ts',
+    'useImportData.ts',
+    'useIdleCallback.ts',
+    'usePrefetch.ts',
+    'useResourcePrefetch.ts',
+    'usePermissions.ts',
+    'useUserRole.ts',
+    'useUserSettings.ts',
+    'useGlobalSettings.ts',
+    'useNotifications.ts',
+    'usePushNotifications.ts',
+    'useSecurityPushNotifications.ts',
+    'useNotificationSettings.ts',
+    'useDownloadPermission.ts',
+    'useSupabaseMutation.ts',
+    'useNavigationHistory.ts',
+    'useUrlFilters.ts',
+    'useSearch.ts',
+    'useSearchHistory.ts'
+  ],
+  ui: [
+    'useTheme.ts',
+    'useSidebarCollapse.ts',
+    'useSidebarFavorites.ts',
+    'useLoadingState.ts',
+    'useKeyboardShortcuts.ts',
+    'useGlobalKeyboardShortcuts.ts',
+    'useGlobalSearchShortcut.ts',
+    'useDeviceDetection.ts',
+    'useScreenProtection.ts',
+    'useViewTransition.ts',
+    'useParallax.ts',
+    'usePullToRefresh.ts',
+    'useSwipeGesture.ts',
+    'useSwipeNavigation.ts',
+    'useDensity.ts',
+    'useDocumentTitle.ts',
+    'useZenMode.ts',
+    'use-mobile.tsx',
+    'use-toast.ts',
+    'useKeyboardHeight.ts',
+    'useKeyboardNavigation.ts',
+    'usePrefetchOnHover.ts',
+    'useAmbientColor.ts',
+    'useAriaAnnouncer.ts',
+    'useDeepLinks.ts',
+    'useActionFeedback.ts',
+    'useOnboarding.ts',
+    'useOnboardingChecklist.ts'
   ]
 };
+
+// Special case for non-hook files in hooks folder
+if (fs.existsSync('src/hooks/evolutionApi.types.ts')) {
+    fs.renameSync('src/hooks/evolutionApi.types.ts', 'src/hooks/integrations/evolutionApi.types.ts');
+}
+
 
 // Create directories
 for (const group of Object.keys(hookGroups)) {
