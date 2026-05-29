@@ -51,13 +51,18 @@ export function RealtimeInboxView() {
 
   useEffect(() => {
     if (!inbox.pendingContactId || inbox.loading) return;
-    inboxFilters.setMainTab('search');
-    inboxFilters.setSubTab('attending');
-    inbox.setSelectedContactId(inbox.pendingContactId);
-    inbox.setSelectedContact(inbox.pendingContactId);
-    inbox.markAsRead(inbox.pendingContactId);
-    inbox.setPendingContactId(null);
-  }, [inbox.pendingContactId, inbox.loading, inbox.conversations]);
+    
+    const handlePendingContact = async () => {
+      inboxFilters.setMainTab('search');
+      inboxFilters.setSubTab('attending');
+      await inbox.setSelectedContactId(inbox.pendingContactId);
+      await inbox.setSelectedContact(inbox.pendingContactId!);
+      await inbox.markAsRead(inbox.pendingContactId!);
+      inbox.setPendingContactId(null);
+    };
+
+    handlePendingContact();
+  }, [inbox.pendingContactId, inbox.loading]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
