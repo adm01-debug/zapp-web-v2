@@ -86,7 +86,8 @@ export function usePerformanceMetrics() {
 }
 
 // Re-export from usePerformance for backwards compatibility
-export { useDebounce, useThrottle } from '../usePerformance';
+export { useDebounce } from '../system/useDebounce';
+export { useThrottle } from '../performance/useTimingHooks';
 
 // Throttled callback hook (different signature - for callbacks)
 type AnyFunction = (...args: unknown[]) => unknown;
