@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import type { WarRoomQueue } from '@/hooks/useWarRoomData';
+import type { WarRoomQueue } from '@/hooks/business/useWarRoomData';
 
 interface QueueRowProps {
   queue: WarRoomQueue;

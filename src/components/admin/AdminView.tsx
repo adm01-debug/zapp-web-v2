@@ -13,7 +13,7 @@ import {
   Shield, Users, Search, Crown, UserCog, User, History, RefreshCw,
   UserPlus, Building, Eye, Loader2, Brain,
 } from 'lucide-react';
-import { useUserRole, AppRole } from '@/hooks/useUserRole';
+import { useUserRole, AppRole } from '@/hooks/system/useUserRole';
 import { AdminCRMDashboard } from './AdminCRMDashboard';
 import { PlaybooksManager } from './PlaybooksManager';
 import { SupervisorCopilot } from './SupervisorCopilot';

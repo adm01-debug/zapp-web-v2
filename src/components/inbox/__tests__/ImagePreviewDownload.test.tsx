@@ -4,7 +4,7 @@ import React from 'react';
 
 // Mock useDownloadPermission
 const mockCanDownload = vi.fn(() => false);
-vi.mock('@/hooks/useDownloadPermission', () => ({
+vi.mock('@/hooks/system/useDownloadPermission', () => ({
   useDownloadPermission: () => ({ canDownload: mockCanDownload(), isLoading: false }),
 }));
 

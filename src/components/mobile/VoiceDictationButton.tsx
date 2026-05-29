@@ -1,7 +1,7 @@
 import { Mic, MicOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useSpeechToText } from '@/hooks/useSpeechToText';
+import { useSpeechToText } from '@/hooks/communication/useSpeechToText';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 

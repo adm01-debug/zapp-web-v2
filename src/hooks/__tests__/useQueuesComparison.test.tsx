@@ -14,7 +14,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn() },
 }));
 
-import { useQueuesComparison } from '@/hooks/useQueuesComparison';
+import { useQueuesComparison } from '@/hooks/business/useQueuesComparison';
 
 const dateRange = {
   from: new Date('2024-01-01'),

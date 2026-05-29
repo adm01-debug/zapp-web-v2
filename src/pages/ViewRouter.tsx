@@ -3,7 +3,7 @@ import React, { useEffect, useMemo } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useCurrentModule } from '@/hooks/useCurrentModule';
 import { useDocumentTitle } from '@/hooks/ui/useDocumentTitle';
-import { useAriaAnnouncer } from '@/hooks/useAriaAnnouncer';
+import { useAriaAnnouncer } from '@/hooks/ui/useAriaAnnouncer';
 import { ErrorBoundaryWithRetry } from '@/components/ui/error-boundary-retry';
 
 import * as Views from './lazyViews';

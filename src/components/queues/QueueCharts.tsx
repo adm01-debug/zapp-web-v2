@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, MessageSquare, Clock, Users } from 'lucide-react';
-import { useQueueAnalytics } from '@/hooks/useQueueAnalytics';
+import { useQueueAnalytics } from '@/hooks/business/useQueueAnalytics';
 import { PeriodSelector, PeriodOption } from './PeriodSelector';
 import { TOOLTIP_STYLE, AXIS_PROPS, GRID_PROPS } from './chartConfig';
 

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { useWarRoomAlerts } from '@/hooks/useWarRoomAlerts';
-import { useWarRoomData, useWarRoomMetrics } from '@/hooks/useWarRoomData';
-import type { WarRoomAgent, WarRoomQueue, WarRoomAlert } from '@/hooks/useWarRoomData';
+import { useWarRoomAlerts } from '@/hooks/business/useWarRoomAlerts';
+import { useWarRoomData, useWarRoomMetrics } from '@/hooks/business/useWarRoomData';
+import type { WarRoomAgent, WarRoomQueue, WarRoomAlert } from '@/hooks/business/useWarRoomData';
 import {
   AlertTriangle, Clock, Users, MessageSquare, TrendingUp,
   CheckCircle, XCircle, Activity, Bell, Volume2,

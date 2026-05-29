@@ -24,7 +24,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
 
-import { useOnboardingChecklist } from '@/hooks/useOnboardingChecklist';
+import { useOnboardingChecklist } from '@/hooks/ui/useOnboardingChecklist';
 
 describe('useOnboardingChecklist', () => {
   beforeEach(() => {

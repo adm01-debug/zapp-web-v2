@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Star, TrendingUp, MessageSquareHeart, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useCSAT } from '@/hooks/useCSAT';
+import { useCSAT } from '@/hooks/business/useCSAT';
 import { motion } from 'framer-motion';
 
 const ratingColors: Record<number, string> = {

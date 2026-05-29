@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { playNotificationSound } from '@/utils/notificationSound';
 import { showBrowserNotification, requestNotificationPermission } from '@/utils/notificationSound';
-import { useNotificationSettings } from '@/hooks/useNotificationSettings';
+import { useNotificationSettings } from '@/hooks/system/useNotificationSettings';
 import { log } from '@/lib/logger';
 
 interface SentimentAlertData {

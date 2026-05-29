@@ -16,7 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/ui/use-toast';
 import { motion } from 'framer-motion';
 import { BusinessHoursIndicator } from './BusinessHoursIndicator';
-import type { WhatsAppConnection } from '@/hooks/useConnectionsManager';
+import type { WhatsAppConnection } from '@/hooks/inbox/useConnectionsManager';
 
 const statusConfig: Record<string, { label: string; color: string; icon: typeof Wifi }> = {
   connected: { label: 'Conectado', color: 'bg-status-online', icon: Wifi },

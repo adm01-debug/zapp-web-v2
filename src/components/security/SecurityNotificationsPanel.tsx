@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { usePushNotifications } from '@/hooks/usePushNotifications';
-import { useSecurityPushNotifications } from '@/hooks/useSecurityPushNotifications';
+import { usePushNotifications } from '@/hooks/system/usePushNotifications';
+import { useSecurityPushNotifications } from '@/hooks/system/useSecurityPushNotifications';
 
 export function SecurityNotificationsPanel() {
   const {

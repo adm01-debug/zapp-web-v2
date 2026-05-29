@@ -12,7 +12,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer,
   ReferenceLine, Tooltip as RechartsTooltip,
 } from 'recharts';
-import { useDemandPrediction, PredictionPoint } from '@/hooks/useDemandPrediction';
+import { useDemandPrediction, PredictionPoint } from '@/hooks/business/useDemandPrediction';
 
 interface DemandPredictionProps {
   data?: PredictionPoint[];

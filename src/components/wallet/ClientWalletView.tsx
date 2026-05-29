@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Wallet, Plus, Trash2, Users, Phone, ArrowUpDown, UserCheck } from 'lucide-react';
-import { useClientWallet } from '@/hooks/useClientWallet';
+import { useClientWallet } from '@/hooks/business/useClientWallet';
 
 export function ClientWalletView() {
   const w = useClientWallet();

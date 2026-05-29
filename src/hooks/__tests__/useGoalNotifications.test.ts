@@ -19,7 +19,7 @@ vi.mock('@/hooks/auth/useAuth', () => ({
   AuthProvider: ({ children }: any) => children,
 }));
 
-vi.mock('@/hooks/useNotificationSettings', () => ({
+vi.mock('@/hooks/system/useNotificationSettings', () => ({
   useNotificationSettings: () => ({
     settings: { soundEnabled: false, browserNotifications: false },
     isQuietHours: () => false,

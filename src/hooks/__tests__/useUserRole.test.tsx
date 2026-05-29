@@ -21,7 +21,7 @@ vi.mock('@/hooks/auth/useAuth', () => ({
   AuthProvider: ({ children }: any) => children,
 }));
 
-import { useUserRole } from '@/hooks/useUserRole';
+import { useUserRole } from '@/hooks/system/useUserRole';
 
 describe('useUserRole', () => {
   beforeEach(() => {

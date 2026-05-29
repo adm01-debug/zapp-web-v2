@@ -42,7 +42,7 @@ const mockCreateCampaign = { mutate: vi.fn(), isPending: false };
 const mockUpdateCampaign = { mutate: vi.fn() };
 const mockDeleteCampaign = { mutate: vi.fn() };
 
-vi.mock('@/hooks/useCampaigns', () => ({
+vi.mock('@/hooks/communication/useCampaigns', () => ({
   useCampaigns: () => ({
     campaigns: [],
     isLoading: false,

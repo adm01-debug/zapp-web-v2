@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { AlertTriangle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { WarRoomAlert } from '@/hooks/useWarRoomData';
+import type { WarRoomAlert } from '@/hooks/business/useWarRoomData';
 
 interface AlertRowProps {
   alert: WarRoomAlert;

@@ -28,7 +28,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn() },
 }));
 
-import { useCalls } from '@/hooks/useCalls';
+import { useCalls } from '@/hooks/communication/useCalls';
 
 describe('useCalls', () => {
   beforeEach(() => {

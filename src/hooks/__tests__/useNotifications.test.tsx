@@ -33,7 +33,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn() },
 }));
 
-import { useNotifications } from '@/hooks/useNotifications';
+import { useNotifications } from '@/hooks/system/useNotifications';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

@@ -20,7 +20,7 @@ vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
 
-import { useBulkActions } from '@/hooks/useBulkActions';
+import { useBulkActions } from '@/hooks/inbox/useBulkActions';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

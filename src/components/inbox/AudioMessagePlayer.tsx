@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/ui/use-toast';
 import { cn } from '@/lib/utils';
 import { log } from '@/lib/logger';
-import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { useAudioPlayer } from '@/hooks/communication/useAudioPlayer';
 
 interface AudioMessagePlayerProps {
   audioUrl: string;

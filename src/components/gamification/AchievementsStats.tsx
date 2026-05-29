@@ -4,8 +4,8 @@ import { Award, Zap, BarChart3, Sparkles, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { AchievementBadgeMini } from './AchievementBadge';
-import type { Achievement } from '@/hooks/useAgentGamification';
-import { levelProgress, xpForNextLevel } from '@/hooks/useAgentGamification';
+import type { Achievement } from '@/hooks/gamification/useAgentGamification';
+import { levelProgress, xpForNextLevel } from '@/hooks/gamification/useAgentGamification';
 
 interface AchievementsStatsProps {
   achievements: Achievement[];

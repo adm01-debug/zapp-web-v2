@@ -10,7 +10,7 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
-import { useCampaigns } from '@/hooks/useCampaigns';
+import { useCampaigns } from '@/hooks/communication/useCampaigns';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

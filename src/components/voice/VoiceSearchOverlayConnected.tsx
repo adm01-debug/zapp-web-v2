@@ -1,4 +1,4 @@
-import { useVoiceAgent, type VoiceAgentAction } from '@/hooks/useVoiceAgent';
+import { useVoiceAgent, type VoiceAgentAction } from '@/hooks/communication/useVoiceAgent';
 import { VoiceSearchOverlay } from './VoiceSearchOverlay';
 
 interface Props {

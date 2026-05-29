@@ -21,7 +21,7 @@ vi.mock('@/hooks/ui/use-toast', () => ({
   useToast: () => ({ toast: vi.fn() }),
 }));
 
-import { useAutoCloseConversations } from '@/hooks/useAutoCloseConversations';
+import { useAutoCloseConversations } from '@/hooks/inbox/useAutoCloseConversations';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

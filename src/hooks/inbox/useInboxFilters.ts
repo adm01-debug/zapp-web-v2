@@ -1,7 +1,7 @@
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useUrlFilters } from '@/hooks/useUrlFilters';
+import { useUrlFilters } from '@/hooks/system/useUrlFilters';
 import { InboxFiltersState } from '@/components/inbox/InboxFilters';
 import { ConversationWithMessages } from '@/hooks/chat/useRealtimeMessages';
 import { filterByContactType } from '@/components/inbox/ContactTypeFilter';

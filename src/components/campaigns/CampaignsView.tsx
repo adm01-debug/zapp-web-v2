@@ -1,5 +1,5 @@
 import { useState, lazy, Suspense } from 'react';
-import { useCampaigns, Campaign } from '@/hooks/useCampaigns';
+import { useCampaigns, Campaign } from '@/hooks/communication/useCampaigns';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

@@ -8,7 +8,7 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 vi.mock('@/lib/logger', () => ({ log: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } }));
 
-import { useConnectionQueues } from '@/hooks/useConnectionQueues';
+import { useConnectionQueues } from '@/hooks/inbox/useConnectionQueues';
 
 describe('useConnectionQueues', () => {
   beforeEach(() => {

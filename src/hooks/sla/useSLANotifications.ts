@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/ui/use-toast';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { useNotificationSettings } from '@/hooks/useNotificationSettings';
+import { useNotificationSettings } from '@/hooks/system/useNotificationSettings';
 import { playNotificationSound, showBrowserNotification } from '@/utils/notificationSounds';
 import { getLogger } from '@/lib/logger';
 

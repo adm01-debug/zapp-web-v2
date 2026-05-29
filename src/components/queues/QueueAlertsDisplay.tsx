@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, X, Users, Clock, TrendingDown, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { QueueAlert } from '@/hooks/useQueueGoals';
+import { QueueAlert } from '@/hooks/business/useQueueGoals';
 
 interface QueueAlertsDisplayProps {
   alerts: QueueAlert[];

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import type { WarRoomAgent } from '@/hooks/useWarRoomData';
+import type { WarRoomAgent } from '@/hooks/business/useWarRoomData';
 
 const statusColors = {
   online: 'bg-success',

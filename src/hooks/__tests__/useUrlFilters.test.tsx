@@ -9,7 +9,7 @@ vi.mock('react-router-dom', () => ({
   useSearchParams: () => [mockSearchParams, mockSetSearchParams],
 }));
 
-import { useUrlFilters } from '@/hooks/useUrlFilters';
+import { useUrlFilters } from '@/hooks/system/useUrlFilters';
 
 describe('useUrlFilters', () => {
   beforeEach(() => {

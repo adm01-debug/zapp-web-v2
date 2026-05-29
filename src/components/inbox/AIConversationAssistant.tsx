@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useConversationAnalyses } from '@/hooks/chat/useConversationAnalyses';
-import { useSentimentAlerts } from '@/hooks/useSentimentAlerts';
+import { useSentimentAlerts } from '@/hooks/inbox/useSentimentAlerts';
 import { withRetry } from '@/lib/retry';
 import { VisionIcon } from './ai-tools/VisionIcon';
 import { useAnalysisTts } from './ai-tools/useAnalysisTts';

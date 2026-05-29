@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/ui/use-toast';
 import { playNotificationSound, showBrowserNotification, requestNotificationPermission } from '@/utils/notificationSound';
-import { useNotificationSettings } from '@/hooks/useNotificationSettings';
+import { useNotificationSettings } from '@/hooks/system/useNotificationSettings';
 
 interface TranscriptionNotificationOptions {
   enabled?: boolean;

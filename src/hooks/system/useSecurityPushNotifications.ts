@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { usePushNotifications } from '@/hooks/system/usePushNotifications';
 import { toast } from 'sonner';
 import { log } from '@/lib/logger';
 

@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { playNotificationSound, showBrowserNotification, requestNotificationPermission } from '@/utils/notificationSound';
-import { useNotificationSettings } from '@/hooks/useNotificationSettings';
+import { useNotificationSettings } from '@/hooks/system/useNotificationSettings';
 import type { ConversationContact, RealtimeMessage, NewMessageNotification } from '../chat/useRealtimeMessages';
 
 export function useRealtimeNotifications() {

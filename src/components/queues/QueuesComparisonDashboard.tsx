@@ -26,7 +26,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { QueuesComparisonCharts } from './QueuesComparisonCharts';
-import { useQueuesComparison } from '@/hooks/useQueuesComparison';
+import { useQueuesComparison } from '@/hooks/business/useQueuesComparison';
 import { PeriodSelector, PeriodOption } from './PeriodSelector';
 
 export function QueuesComparisonDashboard() {

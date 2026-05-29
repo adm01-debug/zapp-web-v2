@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { useMFA } from '@/hooks/auth/useMFA';
 import { useDeviceDetection } from '@/hooks/ui/useDeviceDetection';
-import { useUserRole } from '@/hooks/useUserRole';
+import { useUserRole } from '@/hooks/system/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 import { SecurityAlertsPanel, SecurityDevicesPanel } from './SecurityPanels';
 

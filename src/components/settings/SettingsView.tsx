@@ -29,8 +29,8 @@ import { MessagesSettings } from '@/components/settings/MessagesSettings';
 import { AutomationSettings } from '@/components/settings/AutomationSettings';
 import { AppearanceSettings } from '@/components/settings/AppearanceSettings';
 import { PageTemplate } from '@/components/layout/PageTemplate';
-import { useUserSettings } from '@/hooks/useUserSettings';
-import { useOnboarding } from '@/hooks/useOnboarding';
+import { useUserSettings } from '@/hooks/system/useUserSettings';
+import { useOnboarding } from '@/hooks/ui/useOnboarding';
 import { toast } from 'sonner';
 
 export function SettingsView() {

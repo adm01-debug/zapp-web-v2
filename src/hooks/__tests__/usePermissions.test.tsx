@@ -20,7 +20,7 @@ vi.mock('@/hooks/auth/useAuth', () => ({
   AuthProvider: ({ children }: any) => children,
 }));
 
-import { usePermissions } from '@/hooks/usePermissions';
+import { usePermissions } from '@/hooks/system/usePermissions';
 
 function makeSelectChain(data: any[] = [], error: any = null) {
   return {

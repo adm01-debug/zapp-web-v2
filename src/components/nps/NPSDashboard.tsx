@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { motion } from '@/components/ui/motion';
-import { useNPSSurveys } from '@/hooks/useNPSSurveys';
+import { useNPSSurveys } from '@/hooks/business/useNPSSurveys';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';

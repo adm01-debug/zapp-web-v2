@@ -6,7 +6,7 @@ vi.mock('@/lib/logger', () => ({
   log: { debug: vi.fn(), info: vi.fn(), error: vi.fn() },
 }));
 
-import { useShoppingCart } from '@/hooks/useShoppingCart';
+import { useShoppingCart } from '@/hooks/business/useShoppingCart';
 
 const mockProduct = (overrides = {}) => ({
   id: 'p1',

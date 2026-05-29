@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { useNotificationSettings } from '@/hooks/useNotificationSettings';
-import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { useNotificationSettings } from '@/hooks/system/useNotificationSettings';
+import { usePushNotifications } from '@/hooks/system/usePushNotifications';
 import { getLogger } from '@/lib/logger';
 
 const log = getLogger('TeamChatNotifications');

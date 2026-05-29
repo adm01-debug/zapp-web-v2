@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Volume2, VolumeX, Bell, MessageSquare, AlertTriangle, Trophy, Clock, Moon, Upload } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useUserSettings } from '@/hooks/useUserSettings';
+import { useUserSettings } from '@/hooks/system/useUserSettings';
 import { toast } from 'sonner';
 import { SoundCategoryCard } from './SoundCategoryCard';
 

@@ -4,7 +4,7 @@
 
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-import { useDownloadPermission } from '@/hooks/useDownloadPermission';
+import { useDownloadPermission } from '@/hooks/system/useDownloadPermission';
 
 export type ExportFormat = 'csv' | 'xlsx' | 'pdf';
 

@@ -26,7 +26,7 @@ vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: vi.fn(() => ({ user: mockUser })),
 }));
 
-import { useDownloadPermission } from '@/hooks/useDownloadPermission';
+import { useDownloadPermission } from '@/hooks/system/useDownloadPermission';
 import { useAuth } from '@/hooks/auth/useAuth';
 
 function createWrapper() {

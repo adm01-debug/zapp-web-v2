@@ -23,7 +23,7 @@ import { InstanceSettingsDialog } from './InstanceSettingsDialog';
 import { IntegrationsPanel } from './IntegrationsPanel';
 import { NumberReputationMonitor } from './NumberReputationMonitor';
 import { ConnectionCard } from './ConnectionCard';
-import { useConnectionsManager } from '@/hooks/useConnectionsManager';
+import { useConnectionsManager } from '@/hooks/inbox/useConnectionsManager';
 
 export function ConnectionsView() {
   const {

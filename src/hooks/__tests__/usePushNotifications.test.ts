@@ -9,7 +9,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
 
-import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { usePushNotifications } from '@/hooks/system/usePushNotifications';
 
 describe('usePushNotifications', () => {
   beforeEach(() => {

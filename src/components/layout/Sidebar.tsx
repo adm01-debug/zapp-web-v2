@@ -12,7 +12,7 @@ import { SidebarNavItem } from './SidebarNavItem';
 import { SidebarNavGroup } from './SidebarNavGroup';
 import { AgentProfilePopover } from './AgentProfilePopover';
  import { primaryNav, sidebarGroups, advancedNav } from './sidebarNavConfig';
- import { useUserRole } from '@/hooks/useUserRole';
+ import { useUserRole } from '@/hooks/system/useUserRole';
  import { NavigationService } from '@/services/navigation.service';
 
 interface SidebarProps {

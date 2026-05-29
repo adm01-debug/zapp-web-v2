@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Camera, Loader2, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { useActionFeedback } from '@/hooks/useActionFeedback';
+import { useActionFeedback } from '@/hooks/ui/useActionFeedback';
 import { getLogger } from '@/lib/logger';
 
 const log = getLogger('AvatarUpload');

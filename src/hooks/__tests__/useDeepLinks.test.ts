@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useDeepLinks } from '@/hooks/useDeepLinks';
+import { useDeepLinks } from '@/hooks/ui/useDeepLinks';
 
 describe('useDeepLinks', () => {
   beforeEach(() => {

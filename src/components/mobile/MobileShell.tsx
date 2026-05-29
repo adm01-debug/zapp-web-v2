@@ -4,7 +4,7 @@ import { MobileDrawerMenu } from '@/components/mobile/MobileDrawerMenu';
 import { NotificationsPanel, Notification } from '@/components/mobile/NotificationsPanel';
 import { MobileFAB } from '@/components/mobile/MobileFAB';
 import { BottomNavigation } from '@/components/ui/mobile-components';
-import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
+import { useKeyboardHeight } from '@/hooks/ui/useKeyboardHeight';
 import { MessageSquare, BarChart3, Users, MessagesSquare, Mail, Menu } from 'lucide-react';
 
 interface MobileShellProps {

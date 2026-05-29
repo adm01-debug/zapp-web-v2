@@ -3,7 +3,7 @@ import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Mic, Square, X, Send, Pause, Play, Lock, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAudioRecorder } from '@/hooks/useAudioRecorder';
+import { useAudioRecorder } from '@/hooks/communication/useAudioRecorder';
 import { VoiceChanger } from './VoiceChanger';
 import { useIsMobile } from '@/hooks/ui/use-mobile';
 
