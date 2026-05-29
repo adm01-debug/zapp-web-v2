@@ -3,9 +3,9 @@ import { getLogger } from '@/lib/logger';
 import { UserAgent, Inviter, SessionState, Web } from 'sip.js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useSipConnection } from './sip/useSipConnection';
+import { useSipConnection } from '../sip/useSipConnection';
 
-export type { SipStatus } from './sip/useSipConnection';
+export type { SipStatus } from '../sip/useSipConnection';
 export type CallStatus = 'idle' | 'calling' | 'ringing' | 'active' | 'on-hold' | 'ended';
 
 const log = getLogger('SipClient');

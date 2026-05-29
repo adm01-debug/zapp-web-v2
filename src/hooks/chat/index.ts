@@ -1,5 +1,5 @@
 export * from './useMessages';
-export * from '../chat/useRealtimeMessages';
+export * from '../useRealtimeMessages';
 export * from './useMessageStatus';
 export * from './useMessageTemplates';
 export * from './useMessageReactions';

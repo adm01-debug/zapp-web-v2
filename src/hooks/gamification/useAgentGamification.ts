@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { useGamificationMutations } from './gamification/mutations';
-import type { AgentStats, Achievement } from './gamification/types';
+import { useGamificationMutations } from './mutations';
+import type { AgentStats, Achievement } from './types';
 
 // Re-export types and utilities for external consumers
-export type { AgentStats, Achievement } from './gamification/types';
-export { ACHIEVEMENT_TYPES } from './gamification/types';
-export { calculateLevel, xpForNextLevel, levelProgress } from './gamification/levelUtils';
+export type { AgentStats, Achievement } from './types';
+export { ACHIEVEMENT_TYPES } from './types';
+export { calculateLevel, xpForNextLevel, levelProgress } from './levelUtils';
 
 export const useAgentGamification = () => {
   const { user } = useAuth();

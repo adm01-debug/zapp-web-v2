@@ -1,14 +1,14 @@
-import { useEvolutionApiCore } from '../evolution/useEvolutionApiCore';
-import { useEvolutionInstance } from '../evolution/useEvolutionInstance';
-import { useEvolutionMessaging } from '../evolution/useEvolutionMessaging';
-import { useEvolutionGroups } from '../evolution/useEvolutionGroups';
-import { useEvolutionIntegrations } from '../evolution/useEvolutionIntegrations';
+import { useEvolutionApiCore } from '.../evolution/useEvolutionApiCore';
+import { useEvolutionInstance } from '.../evolution/useEvolutionInstance';
+import { useEvolutionMessaging } from '.../evolution/useEvolutionMessaging';
+import { useEvolutionGroups } from '.../evolution/useEvolutionGroups';
+import { useEvolutionIntegrations } from '.../evolution/useEvolutionIntegrations';
 
 export type {
   SendMessageParams, ContactCard, PollParams, ListSection, ButtonItem,
   WebhookConfig, SettingsConfig, PrivacySettings, TypebotConfig, OpenAIConfig,
   DifyConfig, FlowiseConfig, EvolutionBotConfig, ChatwootConfig, CreateInstanceParams,
-} from './integrations/evolutionApi.types';
+} from './evolutionApi.types';
 
 /**
  * Unified Evolution API hook — thin orchestrator that composes domain-specific sub-hooks.

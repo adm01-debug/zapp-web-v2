@@ -3,11 +3,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { createGmailOAuthState, storeGmailOAuthReturnContext } from '@/lib/gmailOAuth';
-import { callGmailFunction } from '../gmail/gmailApi';
+import { callGmailFunction } from '.../gmail/gmailApi';
 
 // Re-export types
-export type { GmailAccount, EmailThread, EmailMessage, EmailAttachment, EmailLabel } from '../gmail/gmailTypes';
-import type { GmailAccount, EmailThread, EmailMessage, EmailLabel } from '../gmail/gmailTypes';
+export type { GmailAccount, EmailThread, EmailMessage, EmailAttachment, EmailLabel } from '.../gmail/gmailTypes';
+import type { GmailAccount, EmailThread, EmailMessage, EmailLabel } from '.../gmail/gmailTypes';
 
 export function useGmail(accountId?: string) {
   const queryClient = useQueryClient();

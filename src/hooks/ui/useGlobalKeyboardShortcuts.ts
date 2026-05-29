@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useCustomShortcuts } from '../shortcuts/useCustomShortcuts';
+import { useCustomShortcuts } from '.../shortcuts/useCustomShortcuts';
 
 interface GlobalShortcutAction {
   id: string;
