@@ -5,7 +5,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
 
-import { useCustomShortcuts } from '@/hooks/useCustomShortcuts';
+import { useCustomShortcuts } from '@/hooks/ui/useCustomShortcuts';
 
 describe('useCustomShortcuts', () => {
   beforeEach(() => {

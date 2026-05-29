@@ -15,12 +15,12 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 
 const mockUseAuth = vi.fn();
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: () => mockUseAuth(),
   AuthProvider: ({ children }: any) => children,
 }));
 
-vi.mock('@/hooks/use-toast', () => ({
+vi.mock('@/hooks/ui/use-toast', () => ({
   toast: vi.fn(),
   useToast: () => ({ toast: vi.fn() }),
 }));
@@ -29,7 +29,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
 
-import { useUserSettings } from '@/hooks/useUserSettings';
+import { useUserSettings } from '@/hooks/system/useUserSettings';
 
 const mockSettings = {
   id: 's1',

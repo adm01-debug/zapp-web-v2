@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { useRealtimeSentimentAlerts } from '@/hooks/useRealtimeSentimentAlerts';
+import { useRealtimeSentimentAlerts } from '@/hooks/inbox/useRealtimeSentimentAlerts';
 
 export const RealtimeSentimentAlertProvider = forwardRef<HTMLDivElement>(
   function RealtimeSentimentAlertProvider(_props, _ref) {

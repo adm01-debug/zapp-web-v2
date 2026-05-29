@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Confetti, useCelebration } from './Confetti';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 import { Sparkles, PartyPopper, Rocket, Ghost, Music } from 'lucide-react';
 
 interface EasterEggsProviderProps {

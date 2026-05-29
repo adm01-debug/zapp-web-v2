@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Gamepad2, Star, Trophy } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 import { useCelebration } from '@/components/effects/Confetti';
 import { GAMES, type GameType } from './miniGamesData';
 import { SpeedTypingGame, QuizGame, EmojiDecodeGame } from './MiniGameDialogs';

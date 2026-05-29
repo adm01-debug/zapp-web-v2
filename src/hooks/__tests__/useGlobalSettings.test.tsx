@@ -8,7 +8,7 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 vi.mock('@/lib/logger', () => ({ log: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } }));
 
-import { useGlobalSettings } from '@/hooks/useGlobalSettings';
+import { useGlobalSettings } from '@/hooks/system/useGlobalSettings';
 
 describe('useGlobalSettings', () => {
   beforeEach(() => {

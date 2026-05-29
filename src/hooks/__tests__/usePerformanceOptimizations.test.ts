@@ -12,7 +12,7 @@ import {
   useMemoryPressure,
   useNetworkStatus,
   useReducedMotion,
-} from '@/hooks/usePerformanceOptimizations';
+} from '@/hooks/analytics/usePerformanceOptimizations';
 
 describe('useThrottledCallback', () => {
   beforeEach(() => { vi.useFakeTimers(); });

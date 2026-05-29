@@ -15,17 +15,17 @@ vi.mock('@/integrations/supabase/client', () => ({
     removeChannel: vi.fn(),
   },
 }));
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: () => ({ user: { id: 'user-1' } }),
 }));
-vi.mock('@/hooks/usePushNotifications', () => ({
+vi.mock('@/hooks/system/usePushNotifications', () => ({
   usePushNotifications: () => ({
     showNotification: vi.fn(),
     permission: 'granted',
   }),
 }));
 
-import { useWarRoomAlerts } from '@/hooks/useWarRoomAlerts';
+import { useWarRoomAlerts } from '@/hooks/business/useWarRoomAlerts';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

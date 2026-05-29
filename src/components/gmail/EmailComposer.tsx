@@ -10,7 +10,7 @@ import {
   Send, X, Paperclip, ChevronDown, ChevronUp,
   Bold, Italic, Link2, List, Loader2, Minimize2, Maximize2
 } from 'lucide-react';
-import { useGmail, type EmailMessage } from '@/hooks/useGmail';
+import { useGmail, type EmailMessage } from '@/hooks/integrations/useGmail';
 
 interface EmailComposerProps {
   mode: 'new' | 'reply' | 'reply-all' | 'forward';

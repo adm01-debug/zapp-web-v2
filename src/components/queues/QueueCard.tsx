@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Plus, MoreVertical, Edit, Trash2, Users, Clock, MessageSquare, UserMinus, Eye, Target } from 'lucide-react';
-import type { QueueWithMembers } from '@/hooks/useQueues';
+import type { QueueWithMembers } from '@/hooks/business/useQueues';
 
 interface QueueCardProps {
   queue: QueueWithMembers;

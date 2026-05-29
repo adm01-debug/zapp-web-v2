@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 
-import { useSearchHistory } from '@/hooks/useSearchHistory';
+import { useSearchHistory } from '@/hooks/system/useSearchHistory';
 
 describe('useSearchHistory', () => {
   beforeEach(() => {

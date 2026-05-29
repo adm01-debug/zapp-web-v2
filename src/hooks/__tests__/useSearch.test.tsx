@@ -15,7 +15,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn() },
 }));
 
-import { useSearch } from '@/hooks/useSearch';
+import { useSearch } from '@/hooks/system/useSearch';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

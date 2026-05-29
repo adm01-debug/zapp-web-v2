@@ -15,7 +15,7 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 
 const mockUseAuth = vi.fn();
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: () => mockUseAuth(),
   AuthProvider: ({ children }: any) => children,
 }));
@@ -24,7 +24,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn() },
 }));
 
-import { useOnboarding } from '@/hooks/useOnboarding';
+import { useOnboarding } from '@/hooks/ui/useOnboarding';
 
 describe('useOnboarding', () => {
   beforeEach(() => {

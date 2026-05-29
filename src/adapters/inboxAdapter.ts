@@ -1,5 +1,5 @@
 import { Message, Conversation, ConversationContact, MessageRow } from '@/types/chat';
-import { RealtimeMessage, ConversationWithMessages, ConversationContact as RealtimeContact } from '@/hooks/useRealtimeMessages';
+import { RealtimeMessage, ConversationWithMessages, ConversationContact as RealtimeContact } from '@/hooks/chat/useRealtimeMessages';
 
 export function mapMessageRowToMessage(row: MessageRow): Message {
   return {

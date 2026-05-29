@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { useSLACalculation, formatTimeRemaining, SLAStatus } from '@/hooks/useSLACalculation';
+import { useSLACalculation, formatTimeRemaining, SLAStatus } from '@/hooks/sla/useSLACalculation';
 
 interface SLAIndicatorProps {
   firstMessageAt: Date;

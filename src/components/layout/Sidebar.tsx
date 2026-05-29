@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Search, Moon, Sun, PanelLeftClose, PanelLeftOpen, Star } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useTheme } from '@/hooks/useTheme';
-import { useSidebarCollapse } from '@/hooks/useSidebarCollapse';
-import { useSidebarFavorites } from '@/hooks/useSidebarFavorites';
+import { useTheme } from '@/hooks/ui/useTheme';
+import { useSidebarCollapse } from '@/hooks/ui/useSidebarCollapse';
+import { useSidebarFavorites } from '@/hooks/ui/useSidebarFavorites';
 import { PushNotificationToggle } from '@/components/notifications/PushNotificationToggle';
 import { ScreenProtectionToggle } from '@/components/notifications/ScreenProtectionToggle';
 import { SoundMuteToggle } from '@/components/notifications/SoundMuteToggle';
@@ -12,7 +12,7 @@ import { SidebarNavItem } from './SidebarNavItem';
 import { SidebarNavGroup } from './SidebarNavGroup';
 import { AgentProfilePopover } from './AgentProfilePopover';
  import { primaryNav, sidebarGroups, advancedNav } from './sidebarNavConfig';
- import { useUserRole } from '@/hooks/useUserRole';
+ import { useUserRole } from '@/hooks/system/useUserRole';
  import { NavigationService } from '@/services/navigation.service';
 
 interface SidebarProps {

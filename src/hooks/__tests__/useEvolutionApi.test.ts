@@ -18,7 +18,7 @@ vi.mock('@/lib/logger', () => ({
   getLogger: () => ({ error: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn() }),
 }));
 
-import { useEvolutionApi } from '@/hooks/useEvolutionApi';
+import { useEvolutionApi } from '@/hooks/integrations/useEvolutionApi';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 

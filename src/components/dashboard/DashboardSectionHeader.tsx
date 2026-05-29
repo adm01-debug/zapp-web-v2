@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ChevronDown, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { DashboardWidget } from '@/hooks/useDashboardWidgets';
+import { DashboardWidget } from '@/hooks/analytics/useDashboardWidgets';
 
 export interface WidgetSection {
   id: string;

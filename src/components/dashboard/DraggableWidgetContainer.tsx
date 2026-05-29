@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { DashboardWidget, WidgetSize } from '@/hooks/useDashboardWidgets';
+import { DashboardWidget, WidgetSize } from '@/hooks/analytics/useDashboardWidgets';
 import React, { useState } from 'react';
 import { WidgetConfigSheet } from './WidgetConfigSheet';
 

@@ -13,7 +13,7 @@ import {
   Paperclip, ChevronDown, ChevronUp, MoreHorizontal,
   Mail, MailOpen, Tag, Clock, Loader2, ArrowLeft
 } from 'lucide-react';
-import { useGmail, type EmailThread, type EmailMessage } from '@/hooks/useGmail';
+import { useGmail, type EmailThread, type EmailMessage } from '@/hooks/integrations/useGmail';
 import { EmailComposer } from './EmailComposer';
 
 interface EmailThreadViewProps {

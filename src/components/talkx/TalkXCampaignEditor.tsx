@@ -15,7 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { TalkXCampaign } from '@/hooks/useTalkX';
+import { TalkXCampaign } from '@/hooks/integrations/useTalkX';
 import { TalkXMessagePreview } from './TalkXMessagePreview';
 import { TalkXContactSelector } from './TalkXContactSelector';
 import { useCampaignEditor, VARIABLES, MESSAGE_TEMPLATES, MEDIA_TYPES } from './useCampaignEditor';

@@ -21,7 +21,7 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: () => ({ user: { id: 'user-1' }, session: {}, profile: null, loading: false }),
   AuthProvider: ({ children }: any) => children,
 }));
@@ -42,7 +42,7 @@ const mockCreateCampaign = { mutate: vi.fn(), isPending: false };
 const mockUpdateCampaign = { mutate: vi.fn() };
 const mockDeleteCampaign = { mutate: vi.fn() };
 
-vi.mock('@/hooks/useCampaigns', () => ({
+vi.mock('@/hooks/communication/useCampaigns', () => ({
   useCampaigns: () => ({
     campaigns: [],
     isLoading: false,

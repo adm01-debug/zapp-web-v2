@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from '@/components/ui/motion';
 import { Sparkles, Loader2, Undo2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 
 interface ToneOption {
   id: string;

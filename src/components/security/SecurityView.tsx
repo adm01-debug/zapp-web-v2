@@ -16,8 +16,8 @@ import { PasswordResetRequestsPanel } from './PasswordResetRequestsPanel';
 import { RateLimitRealtimeAlerts } from './RateLimitRealtimeAlerts';
 import { RateLimitConfigPanel } from './RateLimitConfigPanel';
 import { AuditLogDashboard } from './AuditLogDashboard';
-import { useUserRole } from '@/hooks/useUserRole';
-import { useSecurityPushNotifications } from '@/hooks/useSecurityPushNotifications';
+import { useUserRole } from '@/hooks/system/useUserRole';
+import { useSecurityPushNotifications } from '@/hooks/system/useSecurityPushNotifications';
 
 export function SecurityView() {
   const { hasRole } = useUserRole();

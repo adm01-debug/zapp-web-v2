@@ -5,7 +5,7 @@ import { Conversation } from '@/types/chat';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { BrowserRouter } from 'react-router-dom';
 
-vi.mock('@/hooks/use-mobile', () => ({ useIsMobile: () => false }));
+vi.mock('@/hooks/ui/use-mobile', () => ({ useIsMobile: () => false }));
 vi.mock('@/lib/popupManager', () => ({ openChatPopup: vi.fn() }));
 vi.mock('@/components/inbox/SLAIndicator', () => ({ SLAIndicator: () => null }));
 vi.mock('@/components/inbox/VoiceSelector', () => ({ VoiceSelector: () => null }));

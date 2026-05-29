@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { Message } from '@/types/chat';
-import { useForwardMessage } from '@/hooks/useForwardMessage';
+import { useForwardMessage } from '@/hooks/chat/useForwardMessage';
 
 interface ForwardMessageDialogProps {
   open: boolean;

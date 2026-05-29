@@ -20,8 +20,8 @@ import {
 } from '@/components/ui/select';
 import { User, Users, Send, ArrowRight, Loader2, Smartphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAgents } from '@/hooks/useAgents';
-import { useQueues } from '@/hooks/useQueues';
+import { useAgents } from '@/hooks/crm/useAgents';
+import { useQueues } from '@/hooks/business/useQueues';
 import { supabase } from '@/integrations/supabase/client';
 
 interface TransferDialogProps {

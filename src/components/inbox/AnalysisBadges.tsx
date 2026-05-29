@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useLatestAnalysis } from '@/hooks/useLatestAnalysis';
+import { useLatestAnalysis } from '@/hooks/chat/useLatestAnalysis';
 import { AlertTriangle, ThumbsUp, ThumbsDown, Minus, Zap } from 'lucide-react';
 
 const sentimentMap: Record<string, { icon: typeof ThumbsUp; color: string; label: string }> = {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Mail } from 'lucide-react';
-import { useGmail, type EmailThread } from '@/hooks/useGmail';
+import { useGmail, type EmailThread } from '@/hooks/integrations/useGmail';
 import { EmailThreadList } from './EmailThreadList';
 import { EmailChatThread } from './EmailChatThread';
 import { EmailContactPanel } from './EmailContactPanel';

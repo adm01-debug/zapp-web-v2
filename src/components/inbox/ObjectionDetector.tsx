@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { ToneSelector } from './ai-tools/ToneSelector';
 import { PeriodFilterSelector } from './ai-tools/PeriodFilterSelector';
-import { useObjectionDetector } from '@/hooks/useObjectionDetector';
+import { useObjectionDetector } from '@/hooks/inbox/useObjectionDetector';
 
 interface Objection {
   objection: string;

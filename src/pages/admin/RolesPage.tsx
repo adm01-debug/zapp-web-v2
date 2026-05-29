@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Shield, Users, UserPlus, Trash2, Search, Loader2, Crown, Eye, Headphones, Star } from 'lucide-react';
-import { useUserRole } from '@/hooks/useUserRole';
+import { useUserRole } from '@/hooks/system/useUserRole';
 import { useRolesPageState, type UserWithRole } from './useRolesPageState';
 import { PermissionMatrix } from '@/components/permissions/PermissionMatrix';
 import { VisibilityGrantsManager } from '@/components/admin/VisibilityGrantsManager';

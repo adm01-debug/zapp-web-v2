@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Calendar, Clock, Paperclip, Send } from 'lucide-react';
 import { format, addDays, addHours, setHours, setMinutes } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 
 interface ScheduleMessageDialogProps {
   open: boolean;

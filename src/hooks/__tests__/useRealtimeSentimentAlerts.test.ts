@@ -10,7 +10,7 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-vi.mock('@/hooks/useNotificationSettings', () => ({
+vi.mock('@/hooks/system/useNotificationSettings', () => ({
   useNotificationSettings: () => ({
     settings: { soundEnabled: true, browserNotifications: false },
     isQuietHours: () => false,
@@ -31,7 +31,7 @@ vi.mock('@/lib/logger', () => ({
   getLogger: () => ({ error: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn() }),
 }));
 
-const { useRealtimeSentimentAlerts } = await import('@/hooks/useRealtimeSentimentAlerts');
+const { useRealtimeSentimentAlerts } = await import('@/hooks/inbox/useRealtimeSentimentAlerts');
 const { renderHook } = await import('@testing-library/react');
 
 describe('useRealtimeSentimentAlerts', () => {

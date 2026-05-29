@@ -25,7 +25,7 @@ import { ConversationTimeline } from '../ConversationTimeline';
 
 import { isExternalConfigured } from '@/integrations/supabase/externalClient';
 import { log } from '@/lib/logger';
-import type { EnrichedContactData, AIConversationTag, SLAInfo } from '@/hooks/useContactEnrichedData';
+import type { EnrichedContactData, AIConversationTag, SLAInfo } from '@/hooks/crm/useContactEnrichedData';
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 12 },

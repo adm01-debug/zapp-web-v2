@@ -3,7 +3,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ScrollToTopButton } from '@/components/ui/scroll-to-top';
 import { TagsEmptyState } from '@/components/ui/contextual-empty-states';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { useActionFeedback } from '@/hooks/useActionFeedback';
+import { useActionFeedback } from '@/hooks/ui/useActionFeedback';
 import { motion, StaggeredList, StaggeredItem } from '@/components/ui/motion';
 import { FloatingParticles } from '@/components/dashboard/FloatingParticles';
 import { AuroraBorealis } from '@/components/effects/AuroraBorealis';
@@ -34,7 +34,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useTags, Tag as TagType } from '@/hooks/useTags';
+import { useTags, Tag as TagType } from '@/hooks/crm/useTags';
 
 const COLORS = [
   '#ef4444', // red

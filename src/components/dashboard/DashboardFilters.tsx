@@ -27,8 +27,8 @@ import {
 import { format, subDays, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import { useQueues } from '@/hooks/useQueues';
-import { useAgents } from '@/hooks/useAgents';
+import { useQueues } from '@/hooks/business/useQueues';
+import { useAgents } from '@/hooks/crm/useAgents';
 
 export interface DashboardFiltersState {
   dateRange: {

@@ -1,4 +1,4 @@
-import { ChatbotNode } from '@/hooks/useChatbotFlows';
+import { ChatbotNode } from '@/hooks/integrations/useChatbotFlows';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

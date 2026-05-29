@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   BarChart3, TrendingUp, Users, CheckCircle2, XCircle, Zap, Target
 } from 'lucide-react';
-import type { TalkXCampaign } from '@/hooks/useTalkX';
+import type { TalkXCampaign } from '@/hooks/integrations/useTalkX';
 
 interface Props {
   campaigns: TalkXCampaign[];

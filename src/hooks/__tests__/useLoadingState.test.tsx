@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 
-import { useLoadingState } from '@/hooks/useLoadingState';
+import { useLoadingState } from '@/hooks/ui/useLoadingState';
 
 import { getLogger } from '@/lib/logger';
 const log = getLogger('useLoadingState.test');

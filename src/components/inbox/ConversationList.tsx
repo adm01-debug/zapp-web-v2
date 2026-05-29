@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, StaggeredList, StaggeredItem } from '@/components/ui/motion';
 import { SLAIndicator } from './SLAIndicator';
 import { ConversationContextMenu } from './ConversationContextMenu';
-import { useExternalContact360Batch, CRMBatchResult } from '@/hooks/useExternalContact360Batch';
+import { useExternalContact360Batch, CRMBatchResult } from '@/hooks/crm/useExternalContact360Batch';
 import { isExternalConfigured } from '@/integrations/supabase/externalClient';
 import {
   Search,

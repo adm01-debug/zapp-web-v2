@@ -11,7 +11,7 @@ import { MarkdownPreview } from './MarkdownPreview';
 import { SlashCommands, SlashCommand } from '../SlashCommands';
 import { AudioRecorder } from '../AudioRecorder';
 import { FileUploaderRef } from '../FileUploader';
-import { ExternalProduct } from '@/hooks/useExternalCatalog';
+import { ExternalProduct } from '@/hooks/integrations/useExternalCatalog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { SecondaryToolbar, TertiaryToolsMenu } from './ChatInputToolbars';
 import { StickerPicker } from '../StickerPicker';
@@ -19,7 +19,7 @@ import { CustomEmojiPicker } from '../CustomEmojiPicker';
 import { RichTextToggle } from './RichTextToolbar';
 import { FileUploader } from '../FileUploader';
 import { Send, Mic, Check, Plus, Loader2 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 import { InputPreviewBars } from './InputPreviewBars';
 import { useChatInputLogic, setNativeValue } from './useChatInputLogic';
 

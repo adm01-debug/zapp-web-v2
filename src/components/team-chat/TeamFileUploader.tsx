@@ -4,7 +4,7 @@ import { getFileExtensionWithDefault } from '@/utils/fileExtensions';
 
 const log = getLogger('TeamFileUploader');
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { Button } from '@/components/ui/button';
 import { Paperclip, Image as ImageIcon, FileText, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';

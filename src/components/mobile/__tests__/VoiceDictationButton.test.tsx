@@ -5,7 +5,7 @@ import { VoiceDictationButton } from '@/components/mobile/VoiceDictationButton';
 
 // Mock useSpeechToText
 const mockToggleListening = vi.fn();
-vi.mock('@/hooks/useSpeechToText', () => ({
+vi.mock('@/hooks/communication/useSpeechToText', () => ({
   useSpeechToText: vi.fn(() => ({
     isListening: false,
     isSupported: true,
@@ -39,7 +39,7 @@ describe('VoiceDictationButton', () => {
   });
 
   it('returns null when not supported', async () => {
-    const { useSpeechToText } = await import('@/hooks/useSpeechToText');
+    const { useSpeechToText } = await import('@/hooks/communication/useSpeechToText');
     (useSpeechToText as any).mockReturnValueOnce({
       isListening: false,
       isSupported: false,

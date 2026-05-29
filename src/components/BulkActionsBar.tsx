@@ -18,7 +18,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { X, Loader2 } from 'lucide-react';
-import { BulkAction } from '@/hooks/useBulkActions';
+import { BulkAction } from '@/hooks/inbox/useBulkActions';
 import { cn } from '@/lib/utils';
 
 interface BulkActionsBarProps<T> {

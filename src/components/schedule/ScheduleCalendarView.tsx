@@ -33,8 +33,8 @@ import {
   Mic,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useScheduledMessages, ScheduledMessage } from '@/hooks/useScheduledMessages';
-import { useAgents } from '@/hooks/useAgents';
+import { useScheduledMessages, ScheduledMessage } from '@/hooks/chat/useScheduledMessages';
+import { useAgents } from '@/hooks/crm/useAgents';
 
 interface ScheduleCalendarViewProps {
   onSelectMessage?: (message: ScheduledMessage) => void;

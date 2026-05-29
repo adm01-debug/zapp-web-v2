@@ -48,7 +48,7 @@ describe('useServiceWorker', () => {
   });
 
   it('registers service worker on mount', async () => {
-    const { useServiceWorker } = await import('@/hooks/useServiceWorker');
+    const { useServiceWorker } = await import('@/hooks/system/useServiceWorker');
     renderHook(() => useServiceWorker());
     
     // Allow async registration
@@ -64,7 +64,7 @@ describe('useServiceWorker', () => {
     mockCaches.keys.mockResolvedValueOnce(['whatsapp-crm-v2']);
     sessionStorage.setItem('legacy-sw-reset-done', '1');
 
-    const { useServiceWorker } = await import('@/hooks/useServiceWorker');
+    const { useServiceWorker } = await import('@/hooks/system/useServiceWorker');
     renderHook(() => useServiceWorker());
 
     await vi.advanceTimersByTimeAsync(0);
@@ -82,7 +82,7 @@ describe('useServiceWorker', () => {
       configurable: true,
     });
     
-    const { useServiceWorker } = await import('@/hooks/useServiceWorker');
+    const { useServiceWorker } = await import('@/hooks/system/useServiceWorker');
     expect(() => renderHook(() => useServiceWorker())).not.toThrow();
   });
 });

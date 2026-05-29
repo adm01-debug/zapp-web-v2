@@ -11,9 +11,9 @@ vi.mock('@/lib/logger', () => ({
 }));
 
 // Mock useRealtimeMessages type
-vi.mock('@/hooks/useRealtimeMessages', () => ({}));
+vi.mock('@/hooks/chat/useRealtimeMessages', () => ({}));
 
-import { useOfflineCache } from '@/hooks/useOfflineCache';
+import { useOfflineCache } from '@/hooks/system/useOfflineCache';
 
 function makeConversation(id: string, msgCount = 1) {
   return {

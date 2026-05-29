@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useGlobalSearchShortcut } from '@/hooks/useGlobalSearchShortcut';
+import { useGlobalSearchShortcut } from '@/hooks/ui/useGlobalSearchShortcut';
 
 describe('useGlobalSearchShortcut', () => {
   beforeEach(() => {

@@ -10,7 +10,7 @@ import {
   CommandSeparator,
 } from '@/components/ui/command';
  import { sidebarGroups, primaryNav } from '@/components/layout/sidebarNavConfig';
- import { useUserRole } from '@/hooks/useUserRole';
+ import { useUserRole } from '@/hooks/system/useUserRole';
  import { NavigationService } from '@/services/navigation.service';
 import type { NavItemConfig } from '@/components/layout/SidebarNavItem';
 

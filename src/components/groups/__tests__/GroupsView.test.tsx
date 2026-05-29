@@ -23,7 +23,7 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: () => ({ user: { id: 'user-1' }, session: {}, profile: null, loading: false }),
   AuthProvider: ({ children }: any) => children,
 }));
@@ -40,7 +40,7 @@ vi.mock('@/components/ui/empty-state', () => ({
 vi.mock('@/components/layout/PageHeader', () => ({
   PageHeader: ({ title, actions }: any) => <div><h1>{title}</h1>{actions}</div>,
 }));
-vi.mock('@/hooks/useActionFeedback', () => ({
+vi.mock('@/hooks/ui/useActionFeedback', () => ({
   useActionFeedback: () => ({
     warning: vi.fn(),
     withFeedback: vi.fn(async (fn: any, opts: any) => { try { await fn(); opts?.onSuccess?.(); } catch (err) { log.error('Unexpected error in GroupsView.test:', err); } }),

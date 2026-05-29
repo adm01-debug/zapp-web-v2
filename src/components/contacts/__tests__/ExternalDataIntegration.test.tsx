@@ -51,8 +51,8 @@ vi.mock('@/lib/logger', () => ({
   getLogger: () => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() }),
 }));
 
-import { useExternalEmpresas } from '@/hooks/useExternalEmpresas';
-import { useExternalCargos } from '@/hooks/useExternalCargos';
+import { useExternalEmpresas } from '@/hooks/crm/useExternalEmpresas';
+import { useExternalCargos } from '@/hooks/crm/useExternalCargos';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });

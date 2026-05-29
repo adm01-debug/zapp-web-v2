@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ToneSelector } from './ai-tools/ToneSelector';
 import { AIResponseCard } from './ai-tools/AIResponseCard';
 import { PeriodFilterSelector } from './ai-tools/PeriodFilterSelector';
-import { useUniversityHelp } from '@/hooks/useUniversityHelp';
+import { useUniversityHelp } from '@/hooks/ui/useUniversityHelp';
 
 interface ChatMessage {
   id: string;

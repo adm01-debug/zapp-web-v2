@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createContext, useContext, useCallback, useRef } from 'react';
-import { useGlobalKeyboardShortcuts } from '@/hooks/useGlobalKeyboardShortcuts';
+import { useGlobalKeyboardShortcuts } from '@/hooks/ui/useGlobalKeyboardShortcuts';
 import { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
 import { CommandPalette } from '@/components/ui/command-palette';
 

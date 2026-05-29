@@ -9,7 +9,7 @@ vi.mock('sonner', () => ({
   }),
 }));
 
-import { useUndoableAction } from '@/hooks/useUndoableAction';
+import { useUndoableAction } from '@/hooks/system/useUndoableAction';
 
 import { getLogger } from '@/lib/logger';
 const log = getLogger('useUndoableAction.test');

@@ -12,7 +12,7 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { useInfiniteScroll } from '@/hooks/system/useInfiniteScroll';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

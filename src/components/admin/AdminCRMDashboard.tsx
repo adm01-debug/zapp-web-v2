@@ -12,7 +12,7 @@ import {
   Building2, Users, ShoppingCart, DollarSign, BarChart3,
   TrendingUp, Package, Truck, Activity, ExternalLink,
 } from 'lucide-react';
-import { useExternalSelect } from '@/hooks/useExternalDB';
+import { useExternalSelect } from '@/hooks/integrations/useExternalDB';
 import { isExternalConfigured } from '@/integrations/supabase/externalClient';
 import { useNavigate } from 'react-router-dom';
 import type { ExtCustomer, ExtCompanyRFMScore, ExtSale } from '@/types/externalDB';

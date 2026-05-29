@@ -6,7 +6,7 @@
  * Best Contact Times, Churn Risk, DISC Communication Tips.
  */
 import { memo } from 'react';
-import { useContactIntelligence } from '@/hooks/useContactIntelligence';
+import { useContactIntelligence } from '@/hooks/crm/useContactIntelligence';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -34,7 +34,7 @@ import type {
   BestTime,
   ChurnData,
   DISCTips,
-} from '@/hooks/useContactIntelligence';
+} from '@/hooks/crm/useContactIntelligence';
 
 interface ContactIntelligencePanelProps {
   phone: string;

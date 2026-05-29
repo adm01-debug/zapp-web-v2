@@ -19,7 +19,7 @@ vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
 
-import { useDuplicate } from '@/hooks/useDuplicate';
+import { useDuplicate } from '@/hooks/system/useDuplicate';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

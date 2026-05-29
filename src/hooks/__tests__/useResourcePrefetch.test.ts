@@ -5,7 +5,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
 
-import { usePrefetch, useRoutePrefetch, useImagePrefetch, clearPrefetchCache, getPrefetchedData } from '@/hooks/useResourcePrefetch';
+import { usePrefetch, useRoutePrefetch, useImagePrefetch, clearPrefetchCache, getPrefetchedData } from '@/hooks/system/useResourcePrefetch';
 
 describe('usePrefetch', () => {
   beforeEach(() => {

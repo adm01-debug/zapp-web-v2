@@ -14,12 +14,12 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 
 const mockUseAuth = vi.fn();
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: () => mockUseAuth(),
   AuthProvider: ({ children }: any) => children,
 }));
 
-vi.mock('@/hooks/useNotificationSettings', () => ({
+vi.mock('@/hooks/system/useNotificationSettings', () => ({
   useNotificationSettings: () => ({
     settings: { soundEnabled: false, browserNotifications: false },
     isQuietHours: () => false,
@@ -39,7 +39,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
 
-import { useGoalNotifications } from '@/hooks/useGoalNotifications';
+import { useGoalNotifications } from '@/hooks/analytics/useGoalNotifications';
 
 describe('useGoalNotifications', () => {
   beforeEach(() => {

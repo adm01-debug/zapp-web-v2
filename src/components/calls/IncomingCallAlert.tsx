@@ -4,8 +4,8 @@ import { Phone, PhoneOff, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { CallDialog } from './CallDialog';
-import { useIncomingCallListener, type IncomingCall } from '@/hooks/useIncomingCallListener';
-import { useNotificationSettings } from '@/hooks/useNotificationSettings';
+import { useIncomingCallListener, type IncomingCall } from '@/hooks/communication/useIncomingCallListener';
+import { useNotificationSettings } from '@/hooks/system/useNotificationSettings';
 import { cn } from '@/lib/utils';
 
 import { getLogger } from '@/lib/logger';

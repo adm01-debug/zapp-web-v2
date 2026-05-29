@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { useGoalNotifications } from '@/hooks/useGoalNotifications';
+import { useGoalNotifications } from '@/hooks/analytics/useGoalNotifications';
 
 export const GoalNotificationProvider = forwardRef<HTMLDivElement, { children: React.ReactNode }>(
   function GoalNotificationProvider({ children }, _ref) {

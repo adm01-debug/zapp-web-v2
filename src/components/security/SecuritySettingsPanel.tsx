@@ -17,9 +17,9 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { MFASettings } from '@/components/mfa/MFASettings';
-import { useAuth } from '@/hooks/useAuth';
-import { useMFA } from '@/hooks/useMFA';
-import { useReauthentication } from '@/hooks/useReauthentication';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { useMFA } from '@/hooks/auth/useMFA';
+import { useReauthentication } from '@/hooks/auth/useReauthentication';
 import { ReauthDialog } from '@/components/auth/ReauthDialog';
 import { toast } from 'sonner';
 

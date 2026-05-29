@@ -7,7 +7,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Package, Send, Palette, Ruler, Weight, Globe, Clock, Layers, Tag, Box } from 'lucide-react';
-import { ExternalProduct, useExternalCatalog } from '@/hooks/useExternalCatalog';
+import { ExternalProduct, useExternalCatalog } from '@/hooks/integrations/useExternalCatalog';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);

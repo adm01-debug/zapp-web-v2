@@ -22,12 +22,12 @@ vi.mock('@/integrations/supabase/client', () => ({
 
 // Mock useAuth
 const mockUser = { id: 'user-123' };
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: vi.fn(() => ({ user: mockUser })),
 }));
 
-import { useDownloadPermission } from '@/hooks/useDownloadPermission';
-import { useAuth } from '@/hooks/useAuth';
+import { useDownloadPermission } from '@/hooks/system/useDownloadPermission';
+import { useAuth } from '@/hooks/auth/useAuth';
 
 function createWrapper() {
   const queryClient = new QueryClient({

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { useLeaderboard } from '@/hooks/gamification/useLeaderboard';
 import { Trophy, RefreshCw, ChevronRight } from 'lucide-react';
 import { LeaderboardRow } from './LeaderboardHelpers';
 

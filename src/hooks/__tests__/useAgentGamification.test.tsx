@@ -17,12 +17,12 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 
 const mockUseAuth = vi.fn();
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: () => mockUseAuth(),
   AuthProvider: ({ children }: any) => children,
 }));
 
-import { useAgentGamification, ACHIEVEMENT_TYPES } from '@/hooks/useAgentGamification';
+import { useAgentGamification, ACHIEVEMENT_TYPES } from '@/hooks/gamification/useAgentGamification';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

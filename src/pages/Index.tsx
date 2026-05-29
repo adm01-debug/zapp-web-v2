@@ -1,6 +1,6 @@
  import { useState, useEffect, useCallback, useRef, forwardRef, memo } from 'react';
  import { useQueryClient } from '@tanstack/react-query';
-import { useNavigationHistory } from '@/hooks/useNavigationHistory';
+import { useNavigationHistory } from '@/hooks/system/useNavigationHistory';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 // Lazy load non-critical secondary components
@@ -14,13 +14,13 @@ import { SLANotificationProvider } from '@/components/notifications/SLANotificat
 import { GoalNotificationProvider } from '@/components/notifications/GoalNotificationProvider';
 import { TourProvider, DEFAULT_ONBOARDING_STEPS, useTour } from '@/components/onboarding/OnboardingTour';
 import { useGlobalKeyboard } from '@/components/keyboard/GlobalKeyboardProvider';
-import { useAuth } from '@/hooks/useAuth';
-import { useOnboarding } from '@/hooks/useOnboarding';
-import { useOnboardingChecklist } from '@/hooks/useOnboardingChecklist';
-import { useTranscriptionNotifications } from '@/hooks/useTranscriptionNotifications';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { useOnboarding } from '@/hooks/ui/useOnboarding';
+import { useOnboardingChecklist } from '@/hooks/ui/useOnboardingChecklist';
+import { useTranscriptionNotifications } from '@/hooks/communication/useTranscriptionNotifications';
 import { logAudit } from '@/lib/audit';
- import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
- import { useGmailOAuth } from '@/hooks/useGmailOAuth';
+ import { useKeyboardNavigation } from '@/hooks/ui/useKeyboardNavigation';
+ import { useGmailOAuth } from '@/hooks/integrations/useGmailOAuth';
 import { Sparkles } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 // Critical indicators (import directly if needed, but let's try lazy first)

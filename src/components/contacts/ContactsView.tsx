@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useExternalContact360Batch } from '@/hooks/useExternalContact360Batch';
+import { useExternalContact360Batch } from '@/hooks/crm/useExternalContact360Batch';
 import { ScrollToTopButton } from '@/components/ui/scroll-to-top';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { FloatingParticles } from '@/components/dashboard/FloatingParticles';

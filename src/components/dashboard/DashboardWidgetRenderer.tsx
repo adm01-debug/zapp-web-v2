@@ -16,10 +16,10 @@ import { Leaderboard } from '@/components/leaderboard/Leaderboard';
 import { DemoAchievements } from '@/components/gamification/DemoAchievements';
 import { TrainingMiniGames } from '@/components/gamification/TrainingMiniGames';
 import { AIStatsWidget } from './AIStatsWidget';
-import { DashboardWidget } from '@/hooks/useDashboardWidgets';
+import { DashboardWidget } from '@/hooks/analytics/useDashboardWidgets';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { formatResponseTime } from '@/hooks/useDashboardData';
+import { formatResponseTime } from '@/hooks/analytics/useDashboardData';
 
 interface DashboardStats {
   openConversations: number;

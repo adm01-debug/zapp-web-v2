@@ -4,7 +4,7 @@ import { Eye, Gamepad2, TrendingUp, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import { DashboardWidget } from '@/hooks/useDashboardWidgets';
+import { DashboardWidget } from '@/hooks/analytics/useDashboardWidgets';
 import { SectionHeader, type WidgetSection } from './DashboardSectionHeader';
 import { DashboardToolbar } from './DashboardToolbar';
 

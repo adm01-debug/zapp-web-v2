@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import type { HttpMethod } from './useEvolutionApiCore';
-import type { CreateInstanceParams, SettingsConfig, WebhookConfig } from '../evolutionApi.types';
+import type { CreateInstanceParams, SettingsConfig, WebhookConfig } from '../integrations/evolutionApi.types';
 
 export function useEvolutionInstance(
   callApi: (action: string, body?: object, method?: HttpMethod) => Promise<any>,

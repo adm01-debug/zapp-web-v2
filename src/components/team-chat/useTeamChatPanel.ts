@@ -1,9 +1,9 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
 import { getLogger } from '@/lib/logger';
-import { useAuth } from '@/hooks/useAuth';
-import { useTextToSpeech } from '@/hooks/useTextToSpeech';
-import { useUserSettings } from '@/hooks/useUserSettings';
-import { useTeamMessages, useSendTeamMessage, useDeleteTeamMessage, useEditTeamMessage, useToggleMuteConversation, TeamMessage, TeamConversation } from '@/hooks/useTeamChat';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { useTextToSpeech } from '@/hooks/communication/useTextToSpeech';
+import { useUserSettings } from '@/hooks/system/useUserSettings';
+import { useTeamMessages, useSendTeamMessage, useDeleteTeamMessage, useEditTeamMessage, useToggleMuteConversation, TeamMessage, TeamConversation } from '@/hooks/chat/useTeamChat';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 

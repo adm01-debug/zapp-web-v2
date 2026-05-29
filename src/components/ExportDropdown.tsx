@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Download, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useDownloadPermission } from '@/hooks/useDownloadPermission';
+import { useDownloadPermission } from '@/hooks/system/useDownloadPermission';
 
 interface ExportDropdownProps {
   onExport?: (format: string) => void;

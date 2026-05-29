@@ -12,12 +12,12 @@ let mockData = {
   refresh: mockRefresh,
 };
 
-vi.mock('@/hooks/useWhatsAppStatus', () => ({
+vi.mock('@/hooks/integrations/useWhatsAppStatus', () => ({
   useWhatsAppStatus: () => mockData,
 }));
 
 // Mock useEvolutionApi
-vi.mock('@/hooks/useEvolutionApi', () => ({
+vi.mock('@/hooks/integrations/useEvolutionApi', () => ({
   useEvolutionApi: () => ({
     getMediaBase64: vi.fn().mockResolvedValue({ base64: '', mimetype: 'image/jpeg' }),
   }),

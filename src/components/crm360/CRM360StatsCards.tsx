@@ -8,7 +8,7 @@ import {
   Users, ShoppingCart, DollarSign, TrendingUp, Building2, Phone,
   Mail, Share2, Truck, Package, BarChart3, Activity,
 } from 'lucide-react';
-import { useExternalSelect } from '@/hooks/useExternalDB';
+import { useExternalSelect } from '@/hooks/integrations/useExternalDB';
 
 interface StatCard {
   label: string;

@@ -13,7 +13,7 @@ import {
   MousePointerClick, Search, Home, Users, 
   Settings, Moon, RefreshCw, PanelLeft
 } from 'lucide-react';
-import { useCustomShortcuts, type ShortcutBinding } from '@/hooks/useCustomShortcuts';
+import { useCustomShortcuts, type ShortcutBinding } from '@/hooks/ui/useCustomShortcuts';
 import { cn } from '@/lib/utils';
 
 interface KeyboardShortcutsDialogProps {

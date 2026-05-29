@@ -11,7 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { useCustomShortcuts } from '@/hooks/useCustomShortcuts';
+import { useCustomShortcuts } from '@/hooks/ui/useCustomShortcuts';
 
 export function KeyboardShortcutsHelp() {
   const { shortcuts, formatShortcut } = useCustomShortcuts();

@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useEvolutionApi } from '@/hooks/useEvolutionApi';
+import { useEvolutionApi } from '@/hooks/integrations/useEvolutionApi';
 import { toast } from 'sonner';
 import { Loader2, Settings, Shield, User, Tag } from 'lucide-react';
 import { getLogger } from '@/lib/logger';

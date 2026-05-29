@@ -13,7 +13,7 @@ import {
   AlertTriangle, MessageSquare, AtSign, RotateCcw,
   CheckCircle2, TrendingDown, Activity, Mic,
 } from 'lucide-react';
-import { NotificationSettings, SoundTypeOption } from '@/hooks/useNotificationSettings';
+import { NotificationSettings, SoundTypeOption } from '@/hooks/system/useNotificationSettings';
 import { playNotificationSound, SoundType, NotificationType } from '@/utils/notificationSounds';
 import { cn } from '@/lib/utils';
 

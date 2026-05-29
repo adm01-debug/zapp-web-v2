@@ -16,7 +16,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn() },
 }));
 
-import { useSLAMetrics } from '@/hooks/useSLAMetrics';
+import { useSLAMetrics } from '@/hooks/sla/useSLAMetrics';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

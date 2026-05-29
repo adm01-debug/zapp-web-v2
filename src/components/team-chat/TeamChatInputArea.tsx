@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
-import { useTeamChatDraft } from '@/hooks/useTeamChatDraft';
+import { useTeamChatDraft } from '@/hooks/chat/useTeamChatDraft';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
@@ -16,8 +16,8 @@ import { CustomEmojiPicker } from '@/components/inbox/CustomEmojiPicker';
 import { AudioRecorder } from '@/components/inbox/AudioRecorder';
 import { VoiceDictationButton } from '@/components/mobile/VoiceDictationButton';
 import { TeamFileUploader } from './TeamFileUploader';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { TeamMessage } from '@/hooks/useTeamChat';
+import { useIsMobile } from '@/hooks/ui/use-mobile';
+import { TeamMessage } from '@/hooks/chat/useTeamChat';
 import { Send, Mic, Reply, X, Loader2, Plus } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 

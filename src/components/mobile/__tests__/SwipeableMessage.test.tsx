@@ -15,7 +15,7 @@ vi.mock('framer-motion', () => ({
 }));
 
 // Mock useIsMobile
-vi.mock('@/hooks/use-mobile', () => ({
+vi.mock('@/hooks/ui/use-mobile', () => ({
   useIsMobile: vi.fn(() => false),
 }));
 
@@ -30,7 +30,7 @@ describe('SwipeableMessage', () => {
   });
 
   it('renders children on mobile with swipe container', async () => {
-    const { useIsMobile } = await import('@/hooks/use-mobile');
+    const { useIsMobile } = await import('@/hooks/ui/use-mobile');
     (useIsMobile as any).mockReturnValue(true);
 
     render(

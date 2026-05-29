@@ -3,7 +3,7 @@ import { Conversation } from '@/types/chat';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { TypingIndicatorCompact } from '../TypingIndicator';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/ui/use-mobile';
 import { SLAIndicator } from '../SLAIndicator';
 import { ChatHeaderToolbar } from './ChatHeaderToolbar';
 import {

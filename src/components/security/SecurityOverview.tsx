@@ -4,10 +4,10 @@ import { log } from '@/lib/logger';
 import { Shield, Smartphone, Key, AlertTriangle, CheckCircle2, XCircle, Monitor, Lock } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { useAuth } from '@/hooks/useAuth';
-import { useMFA } from '@/hooks/useMFA';
-import { useDeviceDetection } from '@/hooks/useDeviceDetection';
-import { useUserRole } from '@/hooks/useUserRole';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { useMFA } from '@/hooks/auth/useMFA';
+import { useDeviceDetection } from '@/hooks/ui/useDeviceDetection';
+import { useUserRole } from '@/hooks/system/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 import { SecurityAlertsPanel, SecurityDevicesPanel } from './SecurityPanels';
 

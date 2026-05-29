@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Reply, Forward, Copy, MoreVertical, Pin, Star, Trash2, Flag, Clock, CheckCheck, EyeOff, Pencil } from 'lucide-react';
 import { Message } from '@/types/chat';
 import { TextToSpeechButton } from '../TextToSpeechButton';
-import { useEvolutionApi } from '@/hooks/useEvolutionApi';
+import { useEvolutionApi } from '@/hooks/integrations/useEvolutionApi';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getLogger } from '@/lib/logger';

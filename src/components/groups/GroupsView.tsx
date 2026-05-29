@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
-import { useGroupsManager, GROUP_CATEGORIES } from '@/hooks/useGroupsManager';
+import { useGroupsManager, GROUP_CATEGORIES } from '@/hooks/chat/useGroupsManager';
 
 export function GroupsView() {
   const {

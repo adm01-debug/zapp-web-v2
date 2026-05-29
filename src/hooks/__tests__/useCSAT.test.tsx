@@ -12,7 +12,7 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-vi.mock('@/hooks/use-toast', () => ({
+vi.mock('@/hooks/ui/use-toast', () => ({
   useToast: () => ({ toast: vi.fn() }),
 }));
 
@@ -20,7 +20,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn() },
 }));
 
-import { useCSAT } from '@/hooks/useCSAT';
+import { useCSAT } from '@/hooks/business/useCSAT';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

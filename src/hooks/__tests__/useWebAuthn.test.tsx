@@ -24,12 +24,12 @@ vi.mock('@/lib/logger', () => ({
 }));
 
 const mockUseAuth = vi.fn();
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: () => mockUseAuth(),
   AuthProvider: ({ children }: any) => children,
 }));
 
-import { useWebAuthn } from '@/hooks/useWebAuthn';
+import { useWebAuthn } from '@/hooks/auth/useWebAuthn';
 
 describe('useWebAuthn', () => {
   beforeEach(() => {

@@ -7,7 +7,7 @@ import {
   normalizeStoredPresetId,
 } from '@/components/settings/theme/presets';
 import type { ThemeModeColors } from '@/components/settings/theme/presets';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 
 import { getLogger } from '@/lib/logger';
 const log = getLogger('ThemeInitializer');

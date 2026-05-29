@@ -22,8 +22,8 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Search, Package, Grid3X3, List, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from '@/hooks/use-toast';
-import { useExternalCatalog, ExternalProduct, ExternalCategory } from '@/hooks/useExternalCatalog';
+import { toast } from '@/hooks/ui/use-toast';
+import { useExternalCatalog, ExternalProduct, ExternalCategory } from '@/hooks/integrations/useExternalCatalog';
 import { ExternalProductCard } from './ExternalProductCard';
 
 interface ExternalProductCatalogProps {

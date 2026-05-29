@@ -7,8 +7,8 @@ import { CONTACT_TYPES } from '@/utils/whatsappFileTypes';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Phone, Mail, Building, Briefcase, AlertCircle, CheckCircle2, Loader2, Info, Smile } from 'lucide-react';
-import { useExternalCargos } from '@/hooks/useExternalCargos';
-import { useExternalEmpresas } from '@/hooks/useExternalEmpresas';
+import { useExternalCargos } from '@/hooks/crm/useExternalCargos';
+import { useExternalEmpresas } from '@/hooks/crm/useExternalEmpresas';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useContactFormValidation } from './useContactFormValidation';
 

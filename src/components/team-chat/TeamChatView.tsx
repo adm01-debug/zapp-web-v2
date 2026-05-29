@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useTeamConversations } from '@/hooks/useTeamChat';
+import { useTeamConversations } from '@/hooks/chat/useTeamChat';
 import { TeamConversationList } from './TeamConversationList';
 import { TeamChatPanel } from './TeamChatPanel';
 import { TeamMemberDetails } from './TeamMemberDetails';
 import { NewConversationDialog } from './NewConversationDialog';
 import { MessageSquare, Users, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useTeamChatNotifications } from '@/hooks/useTeamChatNotifications';
+import { useTeamChatNotifications } from '@/hooks/chat/useTeamChatNotifications';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 

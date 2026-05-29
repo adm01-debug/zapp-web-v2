@@ -1,4 +1,4 @@
-import { RealtimeMessage, ConversationContact, ConversationWithMessages } from '@/hooks/useRealtimeMessages';
+import { RealtimeMessage, ConversationContact, ConversationWithMessages } from '@/hooks/chat/useRealtimeMessages';
 
 export function normalizeMessage(message: RealtimeMessage): RealtimeMessage {
   return {

@@ -10,7 +10,7 @@
 import { useEffect, useRef, useMemo, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useSyncToCRM } from '@/hooks/useSyncToCRM';
+import { useSyncToCRM } from '@/hooks/integrations/useSyncToCRM';
 import { isExternalConfigured } from '@/integrations/supabase/externalClient';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';

@@ -40,7 +40,7 @@ vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));
 
-import { useTalkX } from '@/hooks/useTalkX';
+import { useTalkX } from '@/hooks/integrations/useTalkX';
 
 function createWrapper() {
   const queryClient = new QueryClient({

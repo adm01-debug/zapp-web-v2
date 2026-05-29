@@ -22,7 +22,7 @@ import { CONTACT_TYPE_CONFIG } from './contactTypeConfig';
 import { CompanyLogo } from './CompanyLogo';
 import { HighlightText } from './HighlightText';
 import type { Contact } from './types';
-import type { CRMBatchResult } from '@/hooks/useExternalContact360Batch';
+import type { CRMBatchResult } from '@/hooks/crm/useExternalContact360Batch';
 
 const CONTACT_TYPE_ICONS: Record<string, React.ReactNode> = {
   cliente: <Users className="w-4 h-4" />,

@@ -17,7 +17,7 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-vi.mock('@/hooks/use-toast', () => ({
+vi.mock('@/hooks/ui/use-toast', () => ({
   useToast: () => ({ toast: vi.fn() }),
 }));
 
@@ -25,7 +25,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn() },
 }));
 
-import { useQueueGoals } from '@/hooks/useQueueGoals';
+import { useQueueGoals } from '@/hooks/business/useQueueGoals';
 
 const mockGoals = [
   { id: 'g1', queue_id: 'q1', max_waiting_contacts: 10, max_avg_wait_minutes: 5, min_assignment_rate: 80, max_messages_pending: 50, alerts_enabled: true },

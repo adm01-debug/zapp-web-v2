@@ -11,7 +11,7 @@ import { PasswordInput } from '@/components/auth/PasswordInput';
 import { PasswordStrengthMeter } from '@/components/auth/PasswordStrengthMeter';
 import { SocialProof } from '@/components/auth/SocialProof';
 import { HeroBenefits } from '@/components/auth/HeroBenefits';
-import { useAuthForm } from '@/hooks/useAuthForm';
+import { useAuthForm } from '@/hooks/auth/useAuthForm';
 import { Link } from 'react-router-dom';
 
 export default function Auth() {

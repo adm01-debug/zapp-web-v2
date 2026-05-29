@@ -14,7 +14,7 @@ import { Phone, PhoneCall, PhoneIncoming, PhoneOutgoing, PhoneMissed, Settings, 
 import { format, formatDuration, intervalToDuration } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { DialPad } from './DialPad';
-import { useSipClient } from '@/hooks/useSipClient';
+import { useSipClient } from '@/hooks/communication/useSipClient';
 
 interface Call {
   id: string;

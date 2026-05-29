@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { useEvolutionApi } from '@/hooks/useEvolutionApi';
+import { useEvolutionApi } from '@/hooks/integrations/useEvolutionApi';
 import { toast } from 'sonner';
 import { Loader2, Bot, Brain, Workflow, MessageSquare, Zap, Boxes } from 'lucide-react';
 

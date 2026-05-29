@@ -9,13 +9,13 @@ import { ReplyPreview } from '../ReplyQuote';
 import { SlashCommands, SlashCommand } from '../SlashCommands';
 import { AudioRecorder } from '../AudioRecorder';
 import { FileUploader, FileUploaderRef } from '../FileUploader';
-import { ExternalProduct } from '@/hooks/useExternalCatalog';
+import { ExternalProduct } from '@/hooks/integrations/useExternalCatalog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Send, Smile, Plus } from 'lucide-react';
 import { AIEnhanceButton } from './AIEnhanceButton';
 import { InputExtraTools } from './InputExtraTools';
-import { toast } from '@/hooks/use-toast';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from '@/hooks/ui/use-toast';
+import { useIsMobile } from '@/hooks/ui/use-mobile';
 
 interface QuickReply {
   id: string;

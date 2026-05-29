@@ -19,7 +19,7 @@ const GRID_COLUMNS_CLASS: Record<number, string> = {
 };
 
 import type { Contact } from './types';
-import type { CRMBatchResult } from '@/hooks/useExternalContact360Batch';
+import type { CRMBatchResult } from '@/hooks/crm/useExternalContact360Batch';
 
 interface ContactContentAreaProps {
   loading: boolean;

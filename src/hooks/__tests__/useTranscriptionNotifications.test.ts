@@ -17,7 +17,7 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-vi.mock('@/hooks/useNotificationSettings', () => ({
+vi.mock('@/hooks/system/useNotificationSettings', () => ({
   useNotificationSettings: () => ({
     settings: {
       soundEnabled: true,
@@ -28,7 +28,7 @@ vi.mock('@/hooks/useNotificationSettings', () => ({
   }),
 }));
 
-vi.mock('@/hooks/use-toast', () => ({
+vi.mock('@/hooks/ui/use-toast', () => ({
   toast: vi.fn(),
   useToast: () => ({ toast: vi.fn() }),
 }));
@@ -40,7 +40,7 @@ vi.mock('@/utils/notificationSound', () => ({
 }));
 
 // Must import AFTER mocks
-const { useTranscriptionNotifications } = await import('@/hooks/useTranscriptionNotifications');
+const { useTranscriptionNotifications } = await import('@/hooks/communication/useTranscriptionNotifications');
 const { renderHook } = await import('@testing-library/react');
 
 describe('useTranscriptionNotifications', () => {

@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
-import type { TalkXRecipient } from '@/hooks/useTalkX';
+import type { TalkXRecipient } from '@/hooks/integrations/useTalkX';
 
 const STATUS_MAP: Record<string, { label: string; icon: React.ElementType; color: string }> = {
   pending: { label: 'Pendente', icon: Clock, color: 'text-muted-foreground' },

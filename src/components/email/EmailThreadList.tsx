@@ -11,7 +11,7 @@ import {
   Mail, Search, RefreshCw, Pencil, Inbox, Star,
   MailOpen, Paperclip, MailX
 } from 'lucide-react';
-import type { EmailThread } from '@/hooks/useGmail';
+import type { EmailThread } from '@/hooks/integrations/useGmail';
 import { cn } from '@/lib/utils';
 
 function getInitials(name?: string | null, email?: string): string {

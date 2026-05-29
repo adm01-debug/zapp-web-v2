@@ -15,11 +15,11 @@ import { AISuggestions } from '../AISuggestions';
 import { MessageTemplates } from '../MessageTemplates';
 import { AdvancedMessageMenu } from '../AdvancedMessageMenu';
 import { ExternalProductCatalog } from '@/components/catalog/ExternalProductCatalog';
-import { ExternalProduct } from '@/hooks/useExternalCatalog';
+import { ExternalProduct } from '@/hooks/integrations/useExternalCatalog';
 import { Message } from '@/types/chat';
 import { Package, Layers, MapPin, Clock, Zap, PenTool, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 
 type QuickReplyItem = { id: string; title: string; shortcut: string; content: string; category: string };
 

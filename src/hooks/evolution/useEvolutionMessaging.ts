@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import type { HttpMethod } from './useEvolutionApiCore';
-import type { SendMessageParams, ContactCard, PollParams, ListSection, ButtonItem } from '../evolutionApi.types';
+import type { SendMessageParams, ContactCard, PollParams, ListSection, ButtonItem } from '../integrations/evolutionApi.types';
 
 export function useEvolutionMessaging(
   callApi: (action: string, body?: object, method?: HttpMethod) => Promise<any>,

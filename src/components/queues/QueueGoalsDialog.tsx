@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
-import { useQueueGoals, QueueGoal } from '@/hooks/useQueueGoals';
+import { useQueueGoals, QueueGoal } from '@/hooks/business/useQueueGoals';
 import { Target, Bell, Users, Clock, MessageSquare, TrendingUp } from 'lucide-react';
 
 interface QueueGoalsDialogProps {

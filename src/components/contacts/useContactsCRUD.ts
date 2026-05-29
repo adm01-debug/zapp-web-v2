@@ -1,8 +1,8 @@
 import { useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { useActionFeedback } from '@/hooks/useActionFeedback';
-import { useContactsSearch } from '@/hooks/useContactsSearch';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { useActionFeedback } from '@/hooks/ui/useActionFeedback';
+import { useContactsSearch } from '@/hooks/crm/useContactsSearch';
 
 interface ContactFormData {
   name: string;

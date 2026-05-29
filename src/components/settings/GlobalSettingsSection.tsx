@@ -1,4 +1,4 @@
-import { useGlobalSettings } from '@/hooks/useGlobalSettings';
+import { useGlobalSettings } from '@/hooks/system/useGlobalSettings';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';

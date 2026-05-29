@@ -5,8 +5,8 @@ import {
   TrendingUp, TrendingDown, Clock, RefreshCw,
   BarChart3
 } from 'lucide-react';
-import { useRateLimitLogs } from '@/hooks/useRateLimitLogs';
-import { useUserRole } from '@/hooks/useUserRole';
+import { useRateLimitLogs } from '@/hooks/system/useRateLimitLogs';
+import { useUserRole } from '@/hooks/system/useUserRole';
 import { BlockedIPsPanel } from '@/components/security/BlockedIPsPanel';
 import { IPWhitelistPanel } from '@/components/security/IPWhitelistPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

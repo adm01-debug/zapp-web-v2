@@ -5,7 +5,7 @@ import {
   RealtimeMessage, 
   ConversationWithMessages, 
   ConversationContact 
-} from '@/hooks/useRealtimeMessages';
+} from '@/hooks/chat/useRealtimeMessages';
 import { 
   normalizeMessage, 
   buildConversations, 

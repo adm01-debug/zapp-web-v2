@@ -1,5 +1,5 @@
 import { useEffect, useMemo, memo } from 'react';
-import { TeamConversation } from '@/hooks/useTeamChat';
+import { TeamConversation } from '@/hooks/chat/useTeamChat';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,7 @@ import { TeamChatHeader } from './TeamChatHeader';
 import { TeamChatInputArea } from './TeamChatInputArea';
 import { useTeamChatPanel } from './useTeamChatPanel';
 
-import { TeamMessage } from '@/hooks/useTeamChat';
+import { TeamMessage } from '@/hooks/chat/useTeamChat';
 import { isToday, isYesterday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 

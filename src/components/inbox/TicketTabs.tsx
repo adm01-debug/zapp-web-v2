@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/ui/use-mobile';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -12,10 +12,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { MessageSquare, CheckCircle2, Search, Users, Headphones, Clock } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { useUserRole } from '@/hooks/useUserRole';
-import { useQueues } from '@/hooks/useQueues';
-import { ConversationWithMessages } from '@/hooks/useRealtimeMessages';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { useUserRole } from '@/hooks/system/useUserRole';
+import { useQueues } from '@/hooks/business/useQueues';
+import { ConversationWithMessages } from '@/hooks/chat/useRealtimeMessages';
 
 export type MainTab = 'open' | 'resolved' | 'search';
 export type SubTab = 'attending' | 'waiting';

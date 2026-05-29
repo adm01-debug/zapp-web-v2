@@ -4,7 +4,7 @@
 
 import { Button } from '@/components/ui/button';
 import { ShieldAlert } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ReportData } from '@/utils/exportReport';
 

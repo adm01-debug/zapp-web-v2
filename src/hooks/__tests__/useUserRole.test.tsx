@@ -16,12 +16,12 @@ vi.mock('@/integrations/supabase/client', () => ({
 
 // Mock useAuth to return controlled user
 const mockUseAuth = vi.fn();
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: () => mockUseAuth(),
   AuthProvider: ({ children }: any) => children,
 }));
 
-import { useUserRole } from '@/hooks/useUserRole';
+import { useUserRole } from '@/hooks/system/useUserRole';
 
 describe('useUserRole', () => {
   beforeEach(() => {

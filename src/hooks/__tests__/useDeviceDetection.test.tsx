@@ -18,7 +18,7 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 
 const mockUseAuth = vi.fn();
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: () => mockUseAuth(),
   AuthProvider: ({ children }: any) => children,
 }));
@@ -27,7 +27,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
 
-import { useDeviceDetection } from '@/hooks/useDeviceDetection';
+import { useDeviceDetection } from '@/hooks/ui/useDeviceDetection';
 
 describe('useDeviceDetection', () => {
   beforeEach(() => {

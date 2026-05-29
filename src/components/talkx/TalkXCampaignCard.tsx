@@ -16,7 +16,7 @@ import {
 import {
   Tooltip, TooltipContent, TooltipTrigger,
 } from '@/components/ui/tooltip';
-import type { TalkXCampaign } from '@/hooks/useTalkX';
+import type { TalkXCampaign } from '@/hooks/integrations/useTalkX';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 

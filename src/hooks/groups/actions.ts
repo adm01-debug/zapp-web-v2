@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { log } from '@/lib/logger';
 import { toast } from 'sonner';
-import { useActionFeedback } from '@/hooks/useActionFeedback';
+import { useActionFeedback } from '@/hooks/ui/useActionFeedback';
 import type { WhatsAppGroup, WhatsAppConnection } from './types';
 
 interface UseGroupActionsParams {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -11,7 +11,7 @@ import { X, Phone, Mail, Briefcase, Building2, Cake, Calendar, ChevronDown, User
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import type { TeamConversation } from '@/hooks/useTeamChat';
+import type { TeamConversation } from '@/hooks/chat/useTeamChat';
 import {
   type MemberProfile, getBirthdayInfo, getRoleBadge, InfoRow,
   DirectProfileHeader, GroupProfileHeader,

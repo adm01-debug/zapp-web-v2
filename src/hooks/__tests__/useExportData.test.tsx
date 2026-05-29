@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import React from 'react';
-import { AuthProvider } from '@/hooks/useAuth';
+import { AuthProvider } from '@/hooks/auth/useAuth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 vi.mock('@/integrations/supabase/client', () => ({
@@ -46,7 +46,7 @@ vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
 
-import { useExportData, ExportColumn } from '@/hooks/useExportData';
+import { useExportData, ExportColumn } from '@/hooks/system/useExportData';
 
 interface TestRow extends Record<string, unknown> {
   name: string;

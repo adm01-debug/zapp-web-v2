@@ -3,7 +3,7 @@ import type { HttpMethod } from './useEvolutionApiCore';
 import type {
   TypebotConfig, OpenAIConfig, DifyConfig, FlowiseConfig,
   EvolutionBotConfig, ChatwootConfig, PrivacySettings,
-} from '../evolutionApi.types';
+} from '../integrations/evolutionApi.types';
 
 export function useEvolutionIntegrations(
   callApi: (action: string, body?: object, method?: HttpMethod) => Promise<any>,

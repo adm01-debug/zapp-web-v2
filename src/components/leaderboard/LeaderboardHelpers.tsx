@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import type { LeaderboardAgent } from '@/hooks/useLeaderboard';
+import type { LeaderboardAgent } from '@/hooks/gamification/useLeaderboard';
 import {
   Trophy, Medal, Crown, Star, Flame, TrendingUp, TrendingDown, Minus,
   Sparkles, Zap, Target, Award, ChevronRight,

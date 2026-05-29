@@ -5,7 +5,7 @@ import { X, Search, Moon, Sun, LogOut, ChevronRight, Clock } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { IconButton } from '@/components/ui/icon-button';
 import {
   primaryNav,

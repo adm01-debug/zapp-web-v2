@@ -2,8 +2,8 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { log } from '@/lib/logger';
 import { supabase } from '@/integrations/supabase/client';
 import { getExternalSupabase, isExternalConfigured } from '@/integrations/supabase/externalClient';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useSearchHistory } from '@/hooks/useSearchHistory';
+import { useDebounce } from '@/hooks/system/useDebounce';
+import { useSearchHistory } from '@/hooks/system/useSearchHistory';
 import { subDays, subMonths, startOfDay } from 'date-fns';
 
 export interface SearchResult {
