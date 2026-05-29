@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { useReactionMutations } from '../reactions/useReactionMutations';
-import type { MessageReaction, UseMessageReactionsOptions } from '../reactions/types';
+import { MessageReaction, UseMessageReactionsOptions } from '../reactions/types';
 
 // Re-export types and batch hook for consumers
 export type { MessageReaction, UseMessageReactionsOptions };
