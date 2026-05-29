@@ -27,7 +27,13 @@ const hookGroups = {
     'useNewConversation.ts',
     'useConversationActions.ts',
     'useConversationAnalyses.ts',
-    'useLatestAnalysis.ts'
+    'useLatestAnalysis.ts',
+    'useTeamChat.ts',
+    'useTeamChatDraft.ts',
+    'useTeamChatNotifications.ts',
+    'useGroupsManager.ts',
+    'useSavedFilters.ts',
+    'useScheduledReports.ts'
   ],
   crm: [
     'useContactsSearch.ts',
