@@ -8,7 +8,7 @@ import { Search, Loader2, UserPlus } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { TeamConversation } from '@/hooks/useTeamChat';
+import { TeamConversation } from '@/hooks/chat/useTeamChat';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 

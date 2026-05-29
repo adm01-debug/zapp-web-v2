@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Camera, Upload, Trash2, Star, Loader2, User, ImagePlus, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { usePersonalStickers } from '@/hooks/usePersonalStickers';
+import { usePersonalStickers } from '@/hooks/integrations/usePersonalStickers';
 import type { StickerItem } from './StickerTypes';
 
 interface PersonalStickersProps { onSend?: (stickerUrl: string) => void; }

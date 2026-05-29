@@ -11,7 +11,7 @@ import { MarkdownPreview } from './MarkdownPreview';
 import { SlashCommands, SlashCommand } from '../SlashCommands';
 import { AudioRecorder } from '../AudioRecorder';
 import { FileUploaderRef } from '../FileUploader';
-import { ExternalProduct } from '@/hooks/useExternalCatalog';
+import { ExternalProduct } from '@/hooks/integrations/useExternalCatalog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { SecondaryToolbar, TertiaryToolsMenu } from './ChatInputToolbars';
 import { StickerPicker } from '../StickerPicker';

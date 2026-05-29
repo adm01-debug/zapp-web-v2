@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useGeoBlocking } from '@/hooks/useGeoBlocking';
+import { useGeoBlocking } from '@/hooks/system/useGeoBlocking';
 import { useState } from 'react';
 
 const COUNTRIES = [

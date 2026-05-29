@@ -20,7 +20,7 @@ vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
 
-import { useSavedFilters } from '@/hooks/useSavedFilters';
+import { useSavedFilters } from '@/hooks/chat/useSavedFilters';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

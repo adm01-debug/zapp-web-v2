@@ -18,7 +18,7 @@ vi.mock('@/lib/logger', () => ({
   log: { debug: vi.fn(), info: vi.fn(), error: vi.fn() },
 }));
 
-import { useExternalCatalog, ExternalProduct, ExternalCategory, ExternalSupplier, ExternalProductVariant, CatalogFilters } from '@/hooks/useExternalCatalog';
+import { useExternalCatalog, ExternalProduct, ExternalCategory, ExternalSupplier, ExternalProductVariant, CatalogFilters } from '@/hooks/integrations/useExternalCatalog';
 
 // ─── QueryClient Wrapper ──────────────────────────────────────
 function createWrapper() {

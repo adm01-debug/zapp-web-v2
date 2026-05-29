@@ -5,7 +5,7 @@ import { Cake, Shield, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, differenceInYears, isSameDay, addYears } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import type { TeamConversation } from '@/hooks/useTeamChat';
+import type { TeamConversation } from '@/hooks/chat/useTeamChat';
 
 interface MemberProfile {
   id: string;

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Keyboard, RotateCcw, AlertTriangle, Check, X, MessageSquare, Navigation, Zap, MousePointerClick } from 'lucide-react';
-import { useCustomShortcuts, type ShortcutBinding } from '@/hooks/useCustomShortcuts';
+import { useCustomShortcuts, type ShortcutBinding } from '@/hooks/ui/useCustomShortcuts';
 import { toast } from 'sonner';
 
 const categoryConfig = {

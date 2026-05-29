@@ -10,7 +10,7 @@ import { Search, User, Users, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { useCreateTeamConversation } from '@/hooks/useTeamChat';
+import { useCreateTeamConversation } from '@/hooks/chat/useTeamChat';
 import { cn } from '@/lib/utils';
 
 import { getLogger } from '@/lib/logger';

@@ -1,4 +1,4 @@
-import type { ShortcutBinding } from '@/hooks/useCustomShortcuts';
+import type { ShortcutBinding } from '@/hooks/ui/useCustomShortcuts';
 
 export const DEFAULT_SHORTCUTS: ShortcutBinding[] = [
   // Chat shortcuts

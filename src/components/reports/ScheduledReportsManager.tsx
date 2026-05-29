@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Edit2, Trash2, Mail, Clock, Loader2, Send, BarChart3, Users, MessageSquare, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useScheduledReports, REPORT_TYPES, FREQUENCIES, FORMATS } from '@/hooks/useScheduledReports';
+import { useScheduledReports, REPORT_TYPES, FREQUENCIES, FORMATS } from '@/hooks/chat/useScheduledReports';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   BarChart3, Users, MessageSquare, Target,

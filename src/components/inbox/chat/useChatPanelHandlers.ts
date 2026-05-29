@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { undoToast } from '@/lib/undoToast';
 import { Message, InteractiveMessage, InteractiveButton, LocationMessage } from '@/types/chat';
 import { SlashCommand } from '../SlashCommands';
-import { ExternalProduct } from '@/hooks/useExternalCatalog';
+import { ExternalProduct } from '@/hooks/integrations/useExternalCatalog';
 import { toast } from '@/hooks/ui/use-toast';
 
 interface UseChatPanelHandlersOptions {
