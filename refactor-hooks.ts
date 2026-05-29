@@ -28,6 +28,49 @@ const hookGroups = {
     'useConversationActions.ts',
     'useConversationAnalyses.ts',
     'useLatestAnalysis.ts'
+  ],
+  crm: [
+    'useContactsSearch.ts',
+    'useContactAssignment.ts',
+    'useContactCustomFields.ts',
+    'useContactEnrichedData.ts',
+    'useContactIntelligence.ts',
+    'useContactNotes.ts',
+    'useContactStats.ts',
+    'useAdvancedContactSearch.ts',
+    'useExternalContact360.ts',
+    'useExternalContact360Batch.ts',
+    'useTags.ts',
+    'useAgents.ts',
+    'useAgentReassignment.ts',
+    'useVisibleAgents.ts',
+    'useTeamProfiles.ts',
+    'useExternalEmpresas.ts',
+    'useExternalCargos.ts'
+  ],
+  sla: [
+    'useApplicableSLA.ts',
+    'useSLACalculation.ts',
+    'useSLAConfigurations.ts',
+    'useSLAHistory.ts',
+    'useSLAMetrics.ts',
+    'useSLANotifications.ts',
+    'useSLARules.ts'
+  ],
+  integrations: [
+    'useEvolutionApi.ts',
+    'useExternalEvolution.ts',
+    'useGmail.ts',
+    'useGmailOAuth.ts',
+    'useWhatsAppStatus.ts',
+    'useWhatsAppTemplates.ts',
+    'useBitrixApi.ts',
+    'useSyncToCRM.ts',
+    'useTalkX.ts',
+    'useChatbotFlows.ts',
+    'useKnowledgeBase.ts',
+    'useKnowledgeBaseSearch.ts',
+    'useExternalDB.ts'
   ]
 };
 
