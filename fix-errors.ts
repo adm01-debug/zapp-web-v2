@@ -84,7 +84,7 @@ for (const file of allFiles) {
       { from: "from '../useRealtimeMessages'", to: "from '../chat/useRealtimeMessages'" },
       { from: 'from "../useRealtimeMessages"', to: 'from "../chat/useRealtimeMessages"' },
       { from: "from '../useMessageStatus'", to: "from '../chat/useMessageStatus'" },
-      { from: 'from "../useMessageStatus"', to: 'from "../chat/useMessageStatus'" },
+      { from: 'from "../useMessageStatus"', to: 'from "../chat/useMessageStatus"' },
       { from: "from '../useMessageReactions'", to: "from '../chat/useMessageReactions'" },
       { from: 'from "../useMessageReactions"', to: 'from "../chat/useMessageReactions'" },
       { from: "from '../useConversationAnalyses'", to: "from '../chat/useConversationAnalyses'" },
