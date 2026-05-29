@@ -1,6 +1,6 @@
  import { useMemo } from 'react';
  import { startOfDay, endOfDay } from 'date-fns';
- import { useDashboardStats, DashboardFilters } from '.../dashboard/useDashboardStats';
+ import { useDashboardStats, DashboardFilters } from '../dashboard/useDashboardStats';
  
  const getDefaultFilters = (): DashboardFilters => ({
    dateRange: { from: startOfDay(new Date()), to: endOfDay(new Date()) },

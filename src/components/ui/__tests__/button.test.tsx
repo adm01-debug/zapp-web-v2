@@ -25,7 +25,7 @@ describe('Button Component', () => {
     render(<Button isLoading loadingText="Loading...">Submit</Button>);
     const button = screen.getByRole('button');
     expect(button).toBeDisabled();
-    expect(screen.getByText(/loading.../i)).toBeDefined();
+    expect(screen.getByText(/loading../i)).toBeDefined();
     // Lucide Loader2 should be present (aria-hidden by default usually, but we check for text)
   });
 

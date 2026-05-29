@@ -142,7 +142,7 @@ export function N8nIntegrationView() {
                   </div>
                   <div>
                     <Label>Webhook URL</Label>
-                    <Input placeholder="https://n8n.../webhook/..." value={newWorkflow.webhookUrl} onChange={e => setNewWorkflow(p => ({ ...p, webhookUrl: e.target.value }))} />
+                    <Input placeholder="https://n8n../webhook/..." value={newWorkflow.webhookUrl} onChange={e => setNewWorkflow(p => ({ ...p, webhookUrl: e.target.value }))} />
                   </div>
                   <div>
                     <Label>Evento Gatilho</Label>

@@ -3,12 +3,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { useReactionMutations } from '.../reactions/useReactionMutations';
-import type { MessageReaction, UseMessageReactionsOptions } from '.../reactions/types';
+import { useReactionMutations } from '../reactions/useReactionMutations';
+import type { MessageReaction, UseMessageReactionsOptions } from '../reactions/types';
 
 // Re-export types and batch hook for consumers
 export type { MessageReaction, UseMessageReactionsOptions };
-export { useMessagesReactions } from '.../reactions/useBatchReactions';
+export { useMessagesReactions } from '../reactions/useBatchReactions';
 
 export function useMessageReactions(messageId: string, options?: UseMessageReactionsOptions) {
   const queryClient = useQueryClient();
