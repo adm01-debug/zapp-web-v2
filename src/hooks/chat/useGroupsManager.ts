@@ -2,12 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { log } from '@/lib/logger';
 import { toast } from 'sonner';
-import { useGroupActions } from './groups/actions';
-import type { WhatsAppGroup, WhatsAppConnection } from './groups/types';
+import { useGroupActions } from '../groups/actions';
+import type { WhatsAppGroup, WhatsAppConnection } from '../groups/types';
 
 // Re-export for external consumers
-export type { WhatsAppGroup, WhatsAppConnection } from './groups/types';
-export { GROUP_CATEGORIES } from './groups/types';
+export type { WhatsAppGroup, WhatsAppConnection } from '../groups/types';
+export { GROUP_CATEGORIES } from '../groups/types';
 
 export function useGroupsManager() {
   const [groups, setGroups] = useState<WhatsAppGroup[]>([]);

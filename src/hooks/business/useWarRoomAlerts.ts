@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { usePushNotifications } from './usePushNotifications';
+import { usePushNotifications } from '../system/usePushNotifications';
 
 interface WarRoomAlert {
   id: string;

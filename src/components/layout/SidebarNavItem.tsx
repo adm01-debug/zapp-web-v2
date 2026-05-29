@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { Star } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { usePrefetchOnHover } from '@/hooks/system/usePrefetchOnHover';
+import { usePrefetchOnHover } from '@/hooks/ui/usePrefetchOnHover';
 
 export interface NavItemConfig {
   id: string;
