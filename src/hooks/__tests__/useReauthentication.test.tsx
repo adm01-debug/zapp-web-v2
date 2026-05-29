@@ -20,7 +20,7 @@ vi.mock('sonner', () => ({
   },
 }));
 
-import { useReauthentication } from '@/hooks/useReauthentication';
+import { useReauthentication } from '@/hooks/auth/useReauthentication';
 
 describe('useReauthentication', () => {
   beforeEach(() => {

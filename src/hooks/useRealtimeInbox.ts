@@ -2,10 +2,10 @@
  import { useInboxUIState } from '@/hooks/inbox/useInboxUIState';
  import { ChatService } from '@/services/chat.service';
 import { useOfflineCache } from '@/hooks/useOfflineCache';
-import { useMessages } from '@/hooks/useMessages';
-import { useRealtimeMessages, ConversationWithMessages, ConversationContact } from '@/hooks/useRealtimeMessages';
+import { useMessages } from '@/hooks/chat/useMessages';
+import { useRealtimeMessages, ConversationWithMessages, ConversationContact } from '@/hooks/chat/useRealtimeMessages';
 import { useExternalConversations, useExternalMessages } from '@/hooks/useExternalEvolution';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { getLogger } from '@/lib/logger';
 import { Conversation, Message } from '@/types/chat';

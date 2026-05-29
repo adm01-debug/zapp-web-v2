@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Fingerprint, Plus, Trash2, Smartphone, Key, Pencil, Clock, Shield, AlertTriangle, CheckCircle, Loader2, Monitor } from 'lucide-react';
-import { useWebAuthn } from '@/hooks/useWebAuthn';
+import { useWebAuthn } from '@/hooks/auth/useWebAuthn';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';

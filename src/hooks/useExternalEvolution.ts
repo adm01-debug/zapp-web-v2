@@ -9,7 +9,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
    evolutionToRealtimeMessage,
  } from '@/adapters/evolutionAdapter';
  import { ExternalCRMService } from '@/services/crm/external-crm.service';
-import type { RealtimeMessage } from '@/hooks/useRealtimeMessages';
+import type { RealtimeMessage } from '@/hooks/chat/useRealtimeMessages';
 import { getLogger } from '@/lib/logger';
 
 const log = getLogger('useExternalEvolution');

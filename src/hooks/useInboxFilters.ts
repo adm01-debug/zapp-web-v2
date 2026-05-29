@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUrlFilters } from '@/hooks/useUrlFilters';
 import { InboxFiltersState } from '@/components/inbox/InboxFilters';
-import { ConversationWithMessages } from '@/hooks/useRealtimeMessages';
+import { ConversationWithMessages } from '@/hooks/chat/useRealtimeMessages';
 import { filterByContactType } from '@/components/inbox/ContactTypeFilter';
 import { isAfter, isBefore, startOfDay, endOfDay, parseISO } from 'date-fns';
 import { MainTab, SubTab } from '@/components/inbox/TicketTabs';

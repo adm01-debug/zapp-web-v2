@@ -33,7 +33,7 @@ import {
   Mic,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useScheduledMessages, ScheduledMessage } from '@/hooks/useScheduledMessages';
+import { useScheduledMessages, ScheduledMessage } from '@/hooks/chat/useScheduledMessages';
 import { useAgents } from '@/hooks/useAgents';
 
 interface ScheduleCalendarViewProps {

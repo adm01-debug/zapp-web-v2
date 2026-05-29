@@ -12,7 +12,7 @@ import {
   Users, MessageSquare, UsersRound, FileText, ShieldCheck,
   ClipboardList, Handshake, UserCheck, Truck, Wrench,
 } from 'lucide-react';
-import { ConversationWithMessages } from '@/hooks/useRealtimeMessages';
+import { ConversationWithMessages } from '@/hooks/chat/useRealtimeMessages';
 
 // ---------- types & config ----------
 

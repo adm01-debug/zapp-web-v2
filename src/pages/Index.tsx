@@ -14,7 +14,7 @@ import { SLANotificationProvider } from '@/components/notifications/SLANotificat
 import { GoalNotificationProvider } from '@/components/notifications/GoalNotificationProvider';
 import { TourProvider, DEFAULT_ONBOARDING_STEPS, useTour } from '@/components/onboarding/OnboardingTour';
 import { useGlobalKeyboard } from '@/components/keyboard/GlobalKeyboardProvider';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useOnboardingChecklist } from '@/hooks/useOnboardingChecklist';
 import { useTranscriptionNotifications } from '@/hooks/useTranscriptionNotifications';

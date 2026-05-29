@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { useWebAuthn } from '@/hooks/useWebAuthn';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { useWebAuthn } from '@/hooks/auth/useWebAuthn';
 import { toast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';

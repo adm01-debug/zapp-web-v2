@@ -16,7 +16,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn() },
 }));
 
-import { useConversationAnalyses } from '@/hooks/useConversationAnalyses';
+import { useConversationAnalyses } from '@/hooks/chat/useConversationAnalyses';
 
 const mockAnalyses = [
   {

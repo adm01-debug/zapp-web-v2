@@ -15,7 +15,7 @@ vi.mock('@/integrations/supabase/client', () => ({
     removeChannel: vi.fn(),
   },
 }));
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: () => ({ user: { id: 'user-1' } }),
 }));
 vi.mock('@/hooks/usePushNotifications', () => ({

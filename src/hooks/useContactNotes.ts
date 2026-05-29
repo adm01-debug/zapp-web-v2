@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
  import { toast } from '@/hooks/use-toast';
  import { ContactService } from '@/services/contact.service';
  import { AuthService } from '@/services/auth.service';
- import { useAuth } from '@/hooks/useAuth';
+ import { useAuth } from '@/hooks/auth/useAuth';
 import { log } from '@/lib/logger';
 
 export interface ContactNote {

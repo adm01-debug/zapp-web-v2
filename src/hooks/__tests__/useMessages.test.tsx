@@ -21,7 +21,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn() },
 }));
 
-import { useMessages } from '@/hooks/useMessages';
+import { useMessages } from '@/hooks/chat/useMessages';
 
 function makeQueryChain(data: any[] = [], error: any = null) {
   const rangeMock = vi.fn()

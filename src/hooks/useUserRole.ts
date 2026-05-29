@@ -1,5 +1,5 @@
  import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
- import { useAuth } from '@/hooks/useAuth';
+ import { useAuth } from '@/hooks/auth/useAuth';
  import { RoleService, type AppRole } from '@/services/role.service';
  export type { AppRole };
  

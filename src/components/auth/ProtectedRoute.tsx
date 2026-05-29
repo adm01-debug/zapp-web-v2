@@ -1,7 +1,7 @@
  import { ReactNode, useEffect, useState } from 'react';
  import { Navigate, useLocation } from 'react-router-dom';
  import { Loader2 } from 'lucide-react';
- import { useAuth } from '@/hooks/useAuth';
+ import { useAuth } from '@/hooks/auth/useAuth';
  import { useUserRole } from '@/hooks/useUserRole';
  import { RoleService } from '@/services/role.service';
  
