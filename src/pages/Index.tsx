@@ -24,7 +24,6 @@ import { logAudit } from '@/lib/audit';
 import { Sparkles } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 // Critical indicators (import directly if needed, but let's try lazy first)
-import { lazy, Suspense } from 'react';
 import { toast } from 'sonner';
 
 const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _ref) {
