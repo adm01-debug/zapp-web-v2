@@ -71,6 +71,54 @@ const hookGroups = {
     'useKnowledgeBase.ts',
     'useKnowledgeBaseSearch.ts',
     'useExternalDB.ts'
+  ],
+  ui: [
+    'useTheme.ts',
+    'useSidebarCollapse.ts',
+    'useSidebarFavorites.ts',
+    'useLoadingState.ts',
+    'useKeyboardShortcuts.ts',
+    'useGlobalKeyboardShortcuts.ts',
+    'useGlobalSearchShortcut.ts',
+    'useDeviceDetection.ts',
+    'useScreenProtection.ts',
+    'useViewTransition.ts',
+    'useParallax.ts',
+    'usePullToRefresh.ts',
+    'useSwipeGesture.ts',
+    'useSwipeNavigation.ts',
+    'useDensity.ts',
+    'useDocumentTitle.ts',
+    'useZenMode.ts',
+    'use-mobile.tsx',
+    'use-toast.ts'
+  ],
+  system: [
+    'useDebounce.ts',
+    'useInfiniteScroll.ts',
+    'useNetworkStatus.ts',
+    'useServiceWorker.ts',
+    'useOfflineCache.ts',
+    'useCRUD.ts',
+    'useDuplicate.ts',
+    'useUndoableAction.ts',
+    'useVersions.ts',
+    'useExportData.ts',
+    'useImportData.ts',
+    'useIdleCallback.ts',
+    'usePrefetch.ts',
+    'useResourcePrefetch.ts'
+  ],
+  analytics: [
+    'useDashboardData.ts',
+    'useDashboardWidgets.ts',
+    'useRealtimeDashboard.ts',
+    'useAIStats.ts',
+    'useAIUsageDashboard.ts',
+    'useGoalNotifications.ts',
+    'useGoalsDashboard.ts',
+    'usePerformance.ts',
+    'usePerformanceSnapshots.ts'
   ]
 };
 
