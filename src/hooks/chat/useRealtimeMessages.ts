@@ -107,6 +107,14 @@ export function useRealtimeMessages() {
     [commitConversations, hydrateConversationForMessage, notifyAboutIncomingMessage]
   );
 
+  const handleNewMessageRef = useRef(handleNewMessage);
+  const handleMessageUpdateRef = useRef(handleMessageUpdate);
+
+  useEffect(() => {
+    handleNewMessageRef.current = handleNewMessage;
+    handleMessageUpdateRef.current = handleMessageUpdate;
+  }, [handleNewMessage, handleMessageUpdate]);
+
   const fetchConversations = useCallback(async () => {
     try {
       setLoading(true);
@@ -125,27 +133,30 @@ export function useRealtimeMessages() {
     } finally { setLoading(false); }
   }, [commitConversations]);
 
-  // Channel ID should be stable per hook instance unless we want to force re-subscribe
   const channelIdRef = useRef(`messages-realtime-${crypto.randomUUID().slice(0, 8)}`);
 
   useEffect(() => {
     fetchConversations();
     
     const channelId = channelIdRef.current;
-    const channel = RealtimeService.subscribeToMessages(handleNewMessage, handleMessageUpdate, channelId);
+    
+    // Stable handlers that use refs to avoid re-subscribing the channel
+    const stableOnInsert = (payload: any) => handleNewMessageRef.current(payload);
+    const stableOnUpdate = (payload: any) => handleMessageUpdateRef.current(payload);
+
+    const channel = RealtimeService.subscribeToMessages(stableOnInsert, stableOnUpdate, channelId);
     
     return () => { 
       log.debug('Cleaning up realtime channel:', channelId);
       supabase.removeChannel(channel); 
     };
-  }, [fetchConversations, handleNewMessage, handleMessageUpdate]);
+  }, [fetchConversations]); // Minimal dependencies
 
   const sendMessage = async (contactId: string, content: string, messageType: string = 'text', mediaUrl?: string, mediaPayload?: string) => {
     return sendMessageToContact(contactId, content, messageType, mediaUrl, mediaPayload);
   };
 
   const markAsRead = async (contactId: string) => {
-    // Optimization: Check if there are actually unread messages before hitting the DB
     const conv = conversationsRef.current.find(c => c.contact.id === contactId);
     if (conv && conv.unreadCount === 0) return;
 

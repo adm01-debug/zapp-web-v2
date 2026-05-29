@@ -1,15 +1,8 @@
- import { useState, useEffect, useCallback, useRef, forwardRef, memo } from 'react';
- import { useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect, useCallback, useRef, forwardRef, memo, useMemo, lazy, Suspense } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigationHistory } from '@/hooks/system/useNavigationHistory';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-// Lazy load non-critical secondary components
-const CommandPalette = lazy(() => import('@/components/CommandPalette').then(m => ({ default: m.CommandPalette })));
-const WelcomeModal = lazy(() => import('@/components/onboarding/WelcomeModal').then(m => ({ default: m.WelcomeModal })));
-const OfflineIndicator = lazy(() => import('@/components/ui/offline-indicator').then(m => ({ default: m.OfflineIndicator })));
-const ConnectionToast = lazy(() => import('@/components/ui/offline-indicator').then(m => ({ default: m.ConnectionToast })));
-const EvolutionDisconnectBanner = lazy(() => import('@/components/alerts/EvolutionDisconnectBanner').then(m => ({ default: m.EvolutionDisconnectBanner })));
-
 import { SLANotificationProvider } from '@/components/notifications/SLANotificationProvider';
 import { GoalNotificationProvider } from '@/components/notifications/GoalNotificationProvider';
 import { TourProvider, DEFAULT_ONBOARDING_STEPS, useTour } from '@/components/onboarding/OnboardingTour';
@@ -19,17 +12,22 @@ import { useOnboarding } from '@/hooks/ui/useOnboarding';
 import { useOnboardingChecklist } from '@/hooks/ui/useOnboardingChecklist';
 import { useTranscriptionNotifications } from '@/hooks/communication/useTranscriptionNotifications';
 import { logAudit } from '@/lib/audit';
- import { useKeyboardNavigation } from '@/hooks/ui/useKeyboardNavigation';
- import { useGmailOAuth } from '@/hooks/integrations/useGmailOAuth';
+import { useKeyboardNavigation } from '@/hooks/ui/useKeyboardNavigation';
+import { useGmailOAuth } from '@/hooks/integrations/useGmailOAuth';
 import { Sparkles } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
-// Critical indicators (import directly if needed, but let's try lazy first)
-import { lazy, Suspense } from 'react';
 import { toast } from 'sonner';
+
+// Lazy load non-critical secondary components
+const CommandPalette = lazy(() => import('@/components/CommandPalette').then(m => ({ default: m.CommandPalette })));
+const WelcomeModal = lazy(() => import('@/components/onboarding/WelcomeModal').then(m => ({ default: m.WelcomeModal })));
+const OfflineIndicator = lazy(() => import('@/components/ui/offline-indicator').then(m => ({ default: m.OfflineIndicator })));
+const ConnectionToast = lazy(() => import('@/components/ui/offline-indicator').then(m => ({ default: m.ConnectionToast })));
+const EvolutionDisconnectBanner = lazy(() => import('@/components/alerts/EvolutionDisconnectBanner').then(m => ({ default: m.EvolutionDisconnectBanner })));
 
 const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _ref) {
    const navigate = useNavigate();
-   const { user, profile, loading, signOut } = useAuth();
+   const { user, profile, signOut } = useAuth();
   const { hasCompletedOnboarding, loading: loadingOnboarding, completeOnboarding } = useOnboarding();
   const { startTour } = useTour();
   const { currentView, navigateTo: rawNavigateTo, goBack: rawGoBack, goForward: rawGoForward, canGoBack, canGoForward, breadcrumbTrail } = useNavigationHistory('inbox');
@@ -64,7 +62,8 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
     return () => unregisterNavigationHandler();
   }, [registerNavigationHandler, unregisterNavigationHandler, setCurrentView]);
 
-   useKeyboardNavigation({ goBack, goForward, setCurrentView, canGoBack });
+  const canGoBackMemo = useMemo(() => canGoBack, [canGoBack]);
+  useKeyboardNavigation({ goBack, goForward, setCurrentView, canGoBack: canGoBackMemo });
 
   // Defer transcription notifications by 2s after mount to not block first paint
   const [notifReady, setNotifReady] = useState(false);
@@ -78,23 +77,19 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
 
    const hasLoggedAudit = useRef(false);
    useEffect(() => {
-     if (user && !loading && !hasLoggedAudit.current) {
+     if (user && !hasLoggedAudit.current) {
        hasLoggedAudit.current = true;
        logAudit({ action: 'login', details: { email: user.email } });
      }
-   }, [user, loading]);
+   }, [user]);
  
-   useGmailOAuth(user, loading, setCurrentView);
+   useGmailOAuth(user, false, setCurrentView);
 
   useEffect(() => {
     if (!loadingOnboarding && hasCompletedOnboarding === false && user) {
       setShowWelcome(true);
     }
   }, [loadingOnboarding, hasCompletedOnboarding, user]);
-
-  if (loading) {
-    return <LoadingSplash />;
-  }
 
   if (!user) return <LoadingSplash />;
 
@@ -116,7 +111,7 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
           signOut={signOut}
           unreadNotifications={0}
           showChecklist={showChecklist}
-          loading={loading}
+          loading={false}
         />
 
         <Suspense fallback={null}>
@@ -171,9 +166,8 @@ function LoadingSplash() {
 }
 
 const Index = memo(forwardRef<HTMLDivElement>(function Index(_props, _ref) {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const { completeOnboarding } = useOnboarding();
-  const navigate = useNavigate();
 
   // O ProtectedRoute já garante que o usuário esteja autenticado,
   // mas mantemos um log para depuração se necessário.
@@ -183,11 +177,9 @@ const Index = memo(forwardRef<HTMLDivElement>(function Index(_props, _ref) {
     }
   }, [user]);
 
-  if (loading) {
+  if (!user) {
     return <LoadingSplash />;
   }
-
-  if (!user) return <LoadingSplash />;
 
   return (
     <TourProvider onComplete={completeOnboarding}>

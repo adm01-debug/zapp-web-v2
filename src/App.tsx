@@ -44,8 +44,6 @@ const DeferredHooks = lazy(() =>
 );
 
 function AppContent() {
-  const [deferredReady, setDeferredReady] = useState(false);
-
   useEffect(() => {
     log.info('AppContent mounted');
     if (window.performance && window.performance.mark) {
@@ -53,7 +51,6 @@ function AppContent() {
       const measure = performance.measure('total-load', undefined, 'app-content-mounted');
       log.info(`Total Load Time: ${measure.duration.toFixed(2)}ms`);
     }
-    setDeferredReady(true);
   }, []);
 
   // Global unhandled rejection handler
@@ -87,12 +84,10 @@ function AppContent() {
       <LiveRegion />
       <GlobalKeyboardProvider>
         <ErrorBoundary fallback={null}>
-          {deferredReady && <DeferredProviders />}
-          {deferredReady && (
-            <Suspense fallback={null}>
-              <DeferredHooks />
-            </Suspense>
-          )}
+          <Suspense fallback={null}>
+            <DeferredProviders />
+            <DeferredHooks />
+          </Suspense>
         </ErrorBoundary>
         <Toaster />
         <Sonner />

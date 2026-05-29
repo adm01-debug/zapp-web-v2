@@ -94,9 +94,14 @@ export function useMessages({ contactId, enabled = true }: UseMessagesOptions) {
 
   // Fetch on contact change
   useEffect(() => {
-    if (enabled && contactId !== previousContactIdRef.current) {
-      previousContactIdRef.current = contactId;
-      fetchMessages();
+    if (enabled) {
+      if (contactId !== previousContactIdRef.current) {
+        previousContactIdRef.current = contactId;
+        // Clear messages and set loading immediately to prevent UI flicker of old messages
+        setMessages([]);
+        setLoading(true);
+        fetchMessages();
+      }
     }
   }, [contactId, enabled, fetchMessages]);
 

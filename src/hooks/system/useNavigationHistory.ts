@@ -71,9 +71,15 @@ export function useNavigationHistory(defaultView = 'inbox'): NavigationHistoryRe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentView]);
 
-  const syncHash = useCallback((viewId: string) => {
+  const syncHash = useCallback((viewId: string, replace = false) => {
     isInternalNav.current = true;
-    window.history.pushState(null, '', `#${viewId}`);
+    const url = new URL(window.location.href);
+    url.hash = viewId;
+    if (replace) {
+      window.history.replaceState(null, '', url.href);
+    } else {
+      window.history.pushState(null, '', url.href);
+    }
   }, []);
 
   const navigateTo = useCallback((viewId: string) => {
@@ -101,7 +107,7 @@ export function useNavigationHistory(defaultView = 'inbox'): NavigationHistoryRe
       previousViewRef.current = prev.entries[prev.index]?.viewId ?? null;
       const newIndex = prev.index - 1;
       const targetView = prev.entries[newIndex]?.viewId;
-      if (targetView) syncHash(targetView);
+      if (targetView) syncHash(targetView, true); // Use replace when going back through internal stack
       return { ...prev, index: newIndex };
     });
   }, [syncHash]);
@@ -112,7 +118,7 @@ export function useNavigationHistory(defaultView = 'inbox'): NavigationHistoryRe
       previousViewRef.current = prev.entries[prev.index]?.viewId ?? null;
       const newIndex = prev.index + 1;
       const targetView = prev.entries[newIndex]?.viewId;
-      if (targetView) syncHash(targetView);
+      if (targetView) syncHash(targetView, true); // Use replace when going forward through internal stack
       return { ...prev, index: newIndex };
     });
   }, [syncHash]);

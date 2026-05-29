@@ -35,43 +35,56 @@
      if (payload.eventType === 'DELETE' && onDelete) onDelete(payload);
    }, [onInsert, onUpdate, onDelete, onAll]);
  
-   useEffect(() => {
-     if (!enabled) return;
- 
-     let channel: RealtimeChannel;
- 
-     try {
-       channel = supabase
-         .channel(channelName)
-         .on(
-           'postgres_changes',
-           {
-             event: '*',
-             schema,
-             table,
-             filter,
-           },
-           handlePayload
-         )
+  useEffect(() => {
+    if (!enabled) return;
+
+    let channel: RealtimeChannel;
+    let retryTimeout: NodeJS.Timeout;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 5;
+
+    const subscribe = () => {
+      try {
+        channel = supabase
+          .channel(channelName)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema,
+              table,
+              filter,
+            },
+            handlePayload
+          )
           .subscribe((status, err) => {
             if (status === 'SUBSCRIBED') {
               log.debug(`Realtime subscribed: ${channelName}`);
+              attempts = 0;
             } else if (status === 'CHANNEL_ERROR') {
               log.error(`Realtime channel error (${channelName}):`, err);
+              if (attempts < MAX_ATTEMPTS) {
+                attempts++;
+                const delay = Math.min(1000 * Math.pow(2, attempts), 10000);
+                log.warn(`Retrying realtime connection (${channelName}) in ${delay}ms... (Attempt ${attempts}/${MAX_ATTEMPTS})`);
+                retryTimeout = setTimeout(subscribe, delay);
+              }
             } else if (status === 'CLOSED') {
               log.debug(`Realtime channel closed: ${channelName}`);
             }
-            log.debug(`Realtime status (${channelName}):`, status);
           });
-     } catch (err) {
-       log.error(`Failed to subscribe to realtime (${channelName}):`, err);
-       return;
-     }
- 
-     return () => {
-       if (channel) {
-         supabase.removeChannel(channel);
-       }
-     };
-   }, [enabled, channelName, schema, table, filter, handlePayload]);
+      } catch (err) {
+        log.error(`Failed to subscribe to realtime (${channelName}):`, err);
+      }
+    };
+
+    subscribe();
+
+    return () => {
+      if (retryTimeout) clearTimeout(retryTimeout);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, [enabled, channelName, schema, table, filter, handlePayload]);
  }
