@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/ui/use-mobile';
 import { MobilePullToRefreshIndicator } from '@/components/mobile/MobilePullToRefresh';
 import { VirtualizedRealtimeList } from './VirtualizedRealtimeList';
 import { ErrorBoundary } from '@/components/errors/ErrorBoundary';

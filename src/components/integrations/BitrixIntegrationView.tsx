@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, CheckCircle2, XCircle, RefreshCw, Users, Briefcase, Phone } from 'lucide-react';
-import { useBitrixApi } from '@/hooks/useBitrixApi';
+import { useBitrixApi } from '@/hooks/integrations/useBitrixApi';
 
 export function BitrixIntegrationView() {
   const [webhookUrl, setWebhookUrl] = useState('');

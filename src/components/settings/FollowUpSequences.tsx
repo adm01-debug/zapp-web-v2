@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 import { Plus, Trash2, Clock, ArrowRight, Zap, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { FollowUpExecutionsHistory } from './FollowUpExecutionsHistory';

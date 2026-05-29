@@ -2,7 +2,7 @@ import { Construction } from 'lucide-react';
 import React, { useEffect, useMemo } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useCurrentModule } from '@/hooks/useCurrentModule';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { useDocumentTitle } from '@/hooks/ui/useDocumentTitle';
 import { useAriaAnnouncer } from '@/hooks/useAriaAnnouncer';
 import { ErrorBoundaryWithRetry } from '@/components/ui/error-boundary-retry';
 

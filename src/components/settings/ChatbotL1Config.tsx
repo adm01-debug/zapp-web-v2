@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 import { Bot, Brain, Shield, Zap, BookOpen, ArrowRightLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/auth/useAuth';
 

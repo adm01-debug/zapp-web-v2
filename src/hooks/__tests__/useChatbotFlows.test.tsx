@@ -10,7 +10,7 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
-import { useChatbotFlows } from '@/hooks/useChatbotFlows';
+import { useChatbotFlows } from '@/hooks/integrations/useChatbotFlows';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

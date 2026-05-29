@@ -7,7 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Mail, Search, RefreshCw, Pencil, Inbox, Star, Send as SendIcon, MailOpen, Loader2, Clock } from 'lucide-react';
-import { useGmail, type EmailThread } from '@/hooks/useGmail';
+import { useGmail, type EmailThread } from '@/hooks/integrations/useGmail';
 import { EmailThreadView } from './EmailThreadView';
 import { EmailComposer } from './EmailComposer';
 import { ThreadListItem } from './ThreadListItem';

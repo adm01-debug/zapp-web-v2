@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useParallax, useMouseParallax, useSmoothScroll } from '@/hooks/useParallax';
+import { useParallax, useMouseParallax, useSmoothScroll } from '@/hooks/ui/useParallax';
 
 describe('useParallax', () => {
   beforeEach(() => {

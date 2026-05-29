@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { StickyNote, Plus, Trash2, Send, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useContactNotes } from '@/hooks/useContactNotes';
+import { useContactNotes } from '@/hooks/crm/useContactNotes';
 
 interface PrivateNotesProps {
   contactId: string;

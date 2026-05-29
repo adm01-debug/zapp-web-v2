@@ -14,8 +14,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Send, Smile, Plus } from 'lucide-react';
 import { AIEnhanceButton } from './AIEnhanceButton';
 import { InputExtraTools } from './InputExtraTools';
-import { toast } from '@/hooks/use-toast';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from '@/hooks/ui/use-toast';
+import { useIsMobile } from '@/hooks/ui/use-mobile';
 
 interface QuickReply {
   id: string;

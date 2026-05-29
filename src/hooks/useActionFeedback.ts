@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/ui/use-toast';
 import type { FeedbackType, FeedbackOptions, WithFeedbackOptions, UndoableOptions } from './feedback/feedbackTypes';
 import { FEEDBACK_ICONS, FEEDBACK_TITLES, FEEDBACK_VARIANTS, FEEDBACK_DURATIONS } from './feedback/feedbackTypes';
 

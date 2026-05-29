@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ContactHeaderSection } from './contact-details/ContactHeaderSection';
 import { ContactAccordionSections } from './contact-details/ContactAccordionSections';
-import { useContactEnrichedData } from '@/hooks/useContactEnrichedData';
+import { useContactEnrichedData } from '@/hooks/crm/useContactEnrichedData';
 import { useConversationActions } from '@/hooks/chat/useConversationActions';
 import { Accordion } from '@/components/ui/accordion';
 import { toast } from 'sonner';

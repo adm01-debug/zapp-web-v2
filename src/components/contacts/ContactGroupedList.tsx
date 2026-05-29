@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { ContactListItem } from './ContactListItem';
 import type { Contact } from './types';
-import type { CRMBatchResult } from '@/hooks/useExternalContact360Batch';
+import type { CRMBatchResult } from '@/hooks/crm/useExternalContact360Batch';
 
 interface ContactGroupedListProps {
   contacts: Contact[];

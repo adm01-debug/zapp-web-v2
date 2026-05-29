@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useTalkX, TalkXCampaign } from '@/hooks/useTalkX';
+import { useTalkX, TalkXCampaign } from '@/hooks/integrations/useTalkX';
 
 export const VARIABLES = [
   { key: '{{nome}}', label: 'Primeiro Nome', desc: 'Insere o primeiro nome do contato' },

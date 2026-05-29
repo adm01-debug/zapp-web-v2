@@ -19,7 +19,7 @@ vi.mock('@/hooks/auth/useAuth', () => ({
   AuthProvider: ({ children }: any) => children,
 }));
 
-vi.mock('@/hooks/use-toast', () => ({
+vi.mock('@/hooks/ui/use-toast', () => ({
   toast: vi.fn(),
   useToast: () => ({ toast: vi.fn() }),
 }));

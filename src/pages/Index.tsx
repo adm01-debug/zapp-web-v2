@@ -20,7 +20,7 @@ import { useOnboardingChecklist } from '@/hooks/useOnboardingChecklist';
 import { useTranscriptionNotifications } from '@/hooks/useTranscriptionNotifications';
 import { logAudit } from '@/lib/audit';
  import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
- import { useGmailOAuth } from '@/hooks/useGmailOAuth';
+ import { useGmailOAuth } from '@/hooks/integrations/useGmailOAuth';
 import { Sparkles } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 // Critical indicators (import directly if needed, but let's try lazy first)

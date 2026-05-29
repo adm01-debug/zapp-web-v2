@@ -50,7 +50,7 @@ vi.mock('@/integrations/supabase/client', () => {
   };
 });
 
-import { useDashboardData, DashboardFilters } from '@/hooks/useDashboardData';
+import { useDashboardData, DashboardFilters } from '@/hooks/analytics/useDashboardData';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

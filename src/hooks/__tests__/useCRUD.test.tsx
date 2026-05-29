@@ -16,7 +16,7 @@ vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
 
-import { useCRUD, BaseEntity } from '@/hooks/useCRUD';
+import { useCRUD, BaseEntity } from '@/hooks/system/useCRUD';
 
 function createWrapper() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

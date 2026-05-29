@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Search, BookOpen, Loader2, Copy, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useKnowledgeBaseSearch } from '@/hooks/useKnowledgeBaseSearch';
+import { useKnowledgeBaseSearch } from '@/hooks/integrations/useKnowledgeBaseSearch';
 import { toast } from 'sonner';
 
 interface KnowledgeBaseSearchPanelProps {

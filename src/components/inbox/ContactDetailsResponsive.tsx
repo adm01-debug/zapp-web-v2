@@ -1,4 +1,4 @@
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/ui/use-mobile';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { ContactDetails } from './ContactDetails';
 import type { Conversation } from '@/types/chat';

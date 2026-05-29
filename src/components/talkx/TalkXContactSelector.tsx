@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Users, Search, X, Building2, Tag } from 'lucide-react';
 import { TalkXRecipientsList } from './TalkXRecipientsList';
-import { TalkXCampaign } from '@/hooks/useTalkX';
+import { TalkXCampaign } from '@/hooks/integrations/useTalkX';
 
 interface ContactItem {
   id: string;

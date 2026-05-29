@@ -19,7 +19,7 @@ import { CustomEmojiPicker } from '../CustomEmojiPicker';
 import { RichTextToggle } from './RichTextToolbar';
 import { FileUploader } from '../FileUploader';
 import { Send, Mic, Check, Plus, Loader2 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 import { InputPreviewBars } from './InputPreviewBars';
 import { useChatInputLogic, setNativeValue } from './useChatInputLogic';
 

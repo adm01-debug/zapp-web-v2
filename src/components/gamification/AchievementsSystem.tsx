@@ -8,7 +8,7 @@ import {
   Trophy, Star, Medal, Target, Zap, Crown, Flame, Award,
   MessageSquare, Clock, ThumbsUp, Sparkles, Gift, Lock, Check,
 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 import { useCelebration } from '@/components/effects/Confetti';
 import { AchievementDetailDialog } from './AchievementDetailDialog';
 

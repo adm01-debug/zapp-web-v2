@@ -85,7 +85,7 @@ describe('useExportData - Permissão de Download', () => {
     mockCanDownload.mockReturnValue(false);
 
     // Import dynamically to get fresh mock state
-    const { useExportData } = await import('@/hooks/useExportData');
+    const { useExportData } = await import('@/hooks/system/useExportData');
     const { renderHook } = await import('@testing-library/react');
 
     const { result } = renderHook(() =>

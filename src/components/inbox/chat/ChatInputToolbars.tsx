@@ -19,7 +19,7 @@ import { ExternalProduct } from '@/hooks/useExternalCatalog';
 import { Message } from '@/types/chat';
 import { Package, Layers, MapPin, Clock, Zap, PenTool, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 
 type QuickReplyItem = { id: string; title: string; shortcut: string; content: string; category: string };
 

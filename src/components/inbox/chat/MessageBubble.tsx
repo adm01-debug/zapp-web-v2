@@ -20,7 +20,7 @@ import { TextToSpeechButton } from '../TextToSpeechButton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatMessageTime, MessageStatusIcon } from './messageUtils';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/ui/use-toast';
 
 import { getLogger } from '@/lib/logger';
 const log = getLogger('MessageBubble');

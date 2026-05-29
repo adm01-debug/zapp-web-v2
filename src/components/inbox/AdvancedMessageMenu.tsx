@@ -14,7 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useEvolutionApi } from '@/hooks/useEvolutionApi';
+import { useEvolutionApi } from '@/hooks/integrations/useEvolutionApi';
 import { toast } from 'sonner';
 import {
   MoreHorizontal,

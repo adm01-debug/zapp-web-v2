@@ -1,5 +1,5 @@
 import { useState, useCallback, memo } from 'react';
-import { useAdvancedContactSearch } from '@/hooks/useAdvancedContactSearch';
+import { useAdvancedContactSearch } from '@/hooks/crm/useAdvancedContactSearch';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';

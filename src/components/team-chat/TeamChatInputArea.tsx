@@ -16,7 +16,7 @@ import { CustomEmojiPicker } from '@/components/inbox/CustomEmojiPicker';
 import { AudioRecorder } from '@/components/inbox/AudioRecorder';
 import { VoiceDictationButton } from '@/components/mobile/VoiceDictationButton';
 import { TeamFileUploader } from './TeamFileUploader';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/ui/use-mobile';
 import { TeamMessage } from '@/hooks/useTeamChat';
 import { Send, Mic, Reply, X, Loader2, Plus } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';

@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, BookOpen, FileText, Search, Upload, Trash2, Edit, Brain, CheckCircle, AlertCircle, Clock, File } from 'lucide-react';
-import { useKnowledgeBase, CATEGORIES, CATEGORY_LABELS } from '@/hooks/useKnowledgeBase';
+import { useKnowledgeBase, CATEGORIES, CATEGORY_LABELS } from '@/hooks/integrations/useKnowledgeBase';
 
 const statusIcon = (status: string) => {
   if (status === 'completed') return <CheckCircle className="w-3.5 h-3.5 text-success" />;

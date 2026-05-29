@@ -14,7 +14,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Clock, MessageSquare, Save, Copy } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 import { cn } from '@/lib/utils';
 import { useBusinessHours, BusinessHour, AwayMessage } from '@/hooks/useBusinessHours';
 

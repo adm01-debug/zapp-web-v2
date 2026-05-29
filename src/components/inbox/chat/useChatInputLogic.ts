@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/ui/use-mobile';
 
 const DRAFT_KEY_PREFIX = 'chat_draft_';
 const CHAR_LIMIT = 4096;

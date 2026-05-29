@@ -6,7 +6,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { useDeviceDetection } from '@/hooks/useDeviceDetection';
+import { useDeviceDetection } from '@/hooks/ui/useDeviceDetection';
 import { toast } from 'sonner';
 import { SessionCard, DeviceCard } from './DeviceCard';
 

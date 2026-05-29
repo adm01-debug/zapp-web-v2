@@ -19,8 +19,8 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useAgents } from '@/hooks/useAgents';
-import { useTags } from '@/hooks/useTags';
+import { useAgents } from '@/hooks/crm/useAgents';
+import { useTags } from '@/hooks/crm/useTags';
 
 export interface InboxFiltersState {
   status: string[];

@@ -7,9 +7,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useAgents } from '@/hooks/useAgents';
+import { useAgents } from '@/hooks/crm/useAgents';
 import { useQueues } from '@/hooks/useQueues';
-import { useContactAssignment } from '@/hooks/useContactAssignment';
+import { useContactAssignment } from '@/hooks/crm/useContactAssignment';
 import { Conversation } from '@/types/chat';
 import { cn } from '@/lib/utils';
 

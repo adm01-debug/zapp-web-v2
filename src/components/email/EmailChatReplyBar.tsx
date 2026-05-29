@@ -12,7 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useGmail, type EmailMessage } from '@/hooks/useGmail';
+import { useGmail, type EmailMessage } from '@/hooks/integrations/useGmail';
 import { toast } from 'sonner';
 
 import { getLogger } from '@/lib/logger';

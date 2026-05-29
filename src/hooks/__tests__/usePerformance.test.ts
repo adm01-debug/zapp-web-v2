@@ -5,7 +5,7 @@ vi.mock('@/lib/logger', () => ({
   log: { error: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
 
-import { useDebounce, useThrottle } from '@/hooks/usePerformance';
+import { useDebounce, useThrottle } from '@/hooks/analytics/usePerformance';
 
 describe('useDebounce (from usePerformance)', () => {
   beforeEach(() => {

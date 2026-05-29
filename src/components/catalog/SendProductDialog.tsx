@@ -18,7 +18,7 @@ import {
   Pencil, User,
 } from 'lucide-react';
 import { ExternalProduct, useExternalCatalog } from '@/hooks/useExternalCatalog';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 import { cn } from '@/lib/utils';
 import {
   type MessageTemplate, type SendMode, buildMessage, collectAllImages,

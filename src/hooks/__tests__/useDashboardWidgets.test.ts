@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 
-import { useDashboardWidgets } from '@/hooks/useDashboardWidgets';
+import { useDashboardWidgets } from '@/hooks/analytics/useDashboardWidgets';
 
 describe('useDashboardWidgets', () => {
   beforeEach(() => {

@@ -1,5 +1,5 @@
 import { MessageSquare, Clock, Star, BarChart3, Users, TrendingUp, TrendingDown } from 'lucide-react';
-import { useContactStats } from '@/hooks/useContactStats';
+import { useContactStats } from '@/hooks/crm/useContactStats';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';

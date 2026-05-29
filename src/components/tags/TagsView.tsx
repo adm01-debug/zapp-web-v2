@@ -34,7 +34,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useTags, Tag as TagType } from '@/hooks/useTags';
+import { useTags, Tag as TagType } from '@/hooks/crm/useTags';
 
 const COLORS = [
   '#ef4444', // red

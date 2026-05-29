@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Volume2, VolumeX, Play, Bell, RotateCcw } from 'lucide-react';
 import { useNotificationSettings } from '@/hooks/useNotificationSettings';
 import { previewSound, requestNotificationPermission, SoundType } from '@/utils/notificationSounds';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { PushNotificationCard } from './PushNotificationCard';

@@ -19,7 +19,7 @@ vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));
 
-import { useImportData } from '@/hooks/useImportData';
+import { useImportData } from '@/hooks/system/useImportData';
 
 const testSchema = z.object({
   name: z.string().min(1),

@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { useTalkX, TalkXCampaign } from '@/hooks/useTalkX';
+import { useTalkX, TalkXCampaign } from '@/hooks/integrations/useTalkX';
 import { supabase } from '@/integrations/supabase/client';
 import { TalkXCampaignEditor } from './TalkXCampaignEditor';
 import { TalkXLiveMonitor } from './TalkXLiveMonitor';

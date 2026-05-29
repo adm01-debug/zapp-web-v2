@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import { Search, Package, Grid3X3, List, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 
 interface ProductCatalogProps {
   onSendProduct: (product: Product) => void;

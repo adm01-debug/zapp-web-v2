@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/comp
 import {
   ArrowLeft, Star, Archive, Trash2, Loader2, Mail, PanelRightOpen
 } from 'lucide-react';
-import { useGmail, type EmailThread, type EmailMessage } from '@/hooks/useGmail';
+import { useGmail, type EmailThread, type EmailMessage } from '@/hooks/integrations/useGmail';
 import { EmailChatBubble } from './EmailChatBubble';
 import { EmailChatReplyBar } from './EmailChatReplyBar';
 import { EmailComposer } from '@/components/gmail/EmailComposer';

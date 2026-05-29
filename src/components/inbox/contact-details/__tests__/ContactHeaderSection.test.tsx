@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ContactHeaderSection } from '../ContactHeaderSection';
 
 // Minimal mocks
-vi.mock('@/hooks/useExternalContact360', () => ({
+vi.mock('@/hooks/crm/useExternalContact360', () => ({
   useExternalContact360: () => ({ data: null }),
 }));
 

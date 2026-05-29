@@ -3,7 +3,7 @@ import { renderHook, act } from '@testing-library/react';
 
 const mockToast = vi.fn().mockReturnValue({ id: 'toast-1', dismiss: vi.fn(), update: vi.fn() });
 
-vi.mock('@/hooks/use-toast', () => ({
+vi.mock('@/hooks/ui/use-toast', () => ({
   useToast: () => ({ toast: mockToast }),
 }));
 

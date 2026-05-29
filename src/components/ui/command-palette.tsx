@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent } from './dialog';
 import { Badge } from './badge';
 import { ScrollArea } from './scroll-area';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useDebounce } from '@/hooks/system/useDebounce';
 import { log } from '@/lib/logger';
 import {
   CommandItem, CommandGroup, CommandCategory,

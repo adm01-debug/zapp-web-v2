@@ -8,7 +8,7 @@ import {
   normalizeStoredPresetId,
 } from './presets';
 import type { ThemePreset, ThemeModeColors } from './presets';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 
 interface ThemeConfig {
   borderRadius?: number;

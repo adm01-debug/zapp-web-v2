@@ -1,10 +1,10 @@
  import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
  import { useInboxUIState } from '@/hooks/inbox/useInboxUIState';
  import { ChatService } from '@/services/chat.service';
-import { useOfflineCache } from '@/hooks/useOfflineCache';
+import { useOfflineCache } from '@/hooks/system/useOfflineCache';
 import { useMessages } from '@/hooks/chat/useMessages';
 import { useRealtimeMessages, ConversationWithMessages, ConversationContact } from '@/hooks/chat/useRealtimeMessages';
-import { useExternalConversations, useExternalMessages } from '@/hooks/useExternalEvolution';
+import { useExternalConversations, useExternalMessages } from '@/hooks/integrations/useExternalEvolution';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { getLogger } from '@/lib/logger';

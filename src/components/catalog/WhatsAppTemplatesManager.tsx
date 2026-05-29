@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import {
   useWhatsAppTemplates, TEMPLATE_CATEGORIES, TEMPLATE_LANGUAGES,
   STATUS_BADGES, EMPTY_TEMPLATE, type WhatsAppTemplate,
-} from '@/hooks/useWhatsAppTemplates';
+} from '@/hooks/integrations/useWhatsAppTemplates';
 
 const STATUS_ICONS: Record<string, React.ElementType> = {
   CheckCircle2, Clock, XCircle, FileText,

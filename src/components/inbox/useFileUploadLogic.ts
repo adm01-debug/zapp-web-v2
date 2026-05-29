@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { log } from '@/lib/logger';
 import { supabase } from '@/integrations/supabase/client';
-import { useEvolutionApi } from '@/hooks/useEvolutionApi';
+import { useEvolutionApi } from '@/hooks/integrations/useEvolutionApi';
 import { toast } from 'sonner';
 import { validateFile, FileValidationResult } from '@/utils/whatsappFileTypes';
 import { compressImage, formatCompressionInfo } from '@/utils/imageCompression';

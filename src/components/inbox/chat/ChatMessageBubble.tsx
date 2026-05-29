@@ -1,8 +1,8 @@
 import { useRef, lazy, Suspense } from 'react';
 import { cn } from '@/lib/utils';
 import { Message, MessageReaction, InteractiveButton } from '@/types/chat';
-import { useSwipeGesture } from '@/hooks/useSwipeGesture';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useSwipeGesture } from '@/hooks/ui/useSwipeGesture';
+import { useIsMobile } from '@/hooks/ui/use-mobile';
 import { motion } from '@/components/ui/motion';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { MessageReactions } from '../MessageReactions';

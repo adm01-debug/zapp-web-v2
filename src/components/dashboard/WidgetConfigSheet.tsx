@@ -11,7 +11,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import { DashboardWidget, WidgetSize } from '@/hooks/useDashboardWidgets';
+import { DashboardWidget, WidgetSize } from '@/hooks/analytics/useDashboardWidgets';
 
 const sizeLabels: Record<WidgetSize, string> = {
   small: 'Pequeno (1 col)',

@@ -13,7 +13,7 @@ import {
   TrendingDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useRealtimeDashboard } from '@/hooks/useRealtimeDashboard';
+import { useRealtimeDashboard } from '@/hooks/analytics/useRealtimeDashboard';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 

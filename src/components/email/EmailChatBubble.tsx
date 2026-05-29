@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { Paperclip, ChevronDown, ChevronUp, Reply, ReplyAll, Forward, Star, Check, CheckCheck } from 'lucide-react';
-import type { EmailMessage } from '@/hooks/useGmail';
+import type { EmailMessage } from '@/hooks/integrations/useGmail';
 
 interface EmailChatBubbleProps {
   message: EmailMessage;

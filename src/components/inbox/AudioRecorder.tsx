@@ -5,7 +5,7 @@ import { Mic, Square, X, Send, Pause, Play, Lock, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAudioRecorder } from '@/hooks/useAudioRecorder';
 import { VoiceChanger } from './VoiceChanger';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/ui/use-mobile';
 
 interface AudioRecorderProps {
   onSend: (audioBlob: Blob) => void;

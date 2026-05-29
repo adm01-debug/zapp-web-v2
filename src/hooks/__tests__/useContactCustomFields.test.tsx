@@ -12,7 +12,7 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 vi.mock('@/lib/logger', () => ({ log: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } }));
 
-import { useContactCustomFields } from '@/hooks/useContactCustomFields';
+import { useContactCustomFields } from '@/hooks/crm/useContactCustomFields';
 
 describe('useContactCustomFields', () => {
   beforeEach(() => {

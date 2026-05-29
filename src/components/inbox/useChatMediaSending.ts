@@ -2,8 +2,8 @@ import { useState, useRef, useCallback } from 'react';
 import { log } from '@/lib/logger';
 import { supabase } from '@/integrations/supabase/client';
 import { normalizeMediaUrl } from '@/utils/normalizeMediaUrl';
-import { toast } from '@/hooks/use-toast';
-import { useEvolutionApi } from '@/hooks/useEvolutionApi';
+import { toast } from '@/hooks/ui/use-toast';
+import { useEvolutionApi } from '@/hooks/integrations/useEvolutionApi';
 
 /**
  * Encapsulates WhatsApp instance resolution and media-message sending

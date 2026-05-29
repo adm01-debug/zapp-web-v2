@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { getLogger } from '@/lib/logger';
 
 const log = getLogger('MessageContextActions');
-import { useEvolutionApi } from '@/hooks/useEvolutionApi';
+import { useEvolutionApi } from '@/hooks/integrations/useEvolutionApi';
 import { supabase } from '@/integrations/supabase/client';
 import { Message } from '@/types/chat';
 import { toast } from 'sonner';

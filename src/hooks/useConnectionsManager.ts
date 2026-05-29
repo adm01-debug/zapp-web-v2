@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { log } from '@/lib/logger';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
-import { useEvolutionApi } from '@/hooks/useEvolutionApi';
+import { toast } from '@/hooks/ui/use-toast';
+import { useEvolutionApi } from '@/hooks/integrations/useEvolutionApi';
 
 export interface WhatsAppConnection {
   id: string;

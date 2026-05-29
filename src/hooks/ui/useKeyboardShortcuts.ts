@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/ui/use-toast';
 
 interface KeyboardShortcut {
   key: string;

@@ -2,7 +2,7 @@
  import { supabase } from '@/integrations/supabase/client';
   import { QueueService } from '@/services/queue.service';
  import { useSupabaseRealtime } from '@/hooks/realtime/useSupabaseRealtime';
- import { useToast } from '@/hooks/use-toast';
+ import { useToast } from '@/hooks/ui/use-toast';
  import { log } from '@/lib/logger';
  
   import type { Queue } from '@/services/queue.service';

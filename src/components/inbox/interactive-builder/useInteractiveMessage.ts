@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { InteractiveMessage, InteractiveButton, InteractiveListSection } from '@/types/chat';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/ui/use-toast';
 
 export function useInteractiveMessage() {
   const [messageType, setMessageType] = useState<'buttons' | 'list'>('buttons');

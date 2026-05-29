@@ -5,7 +5,7 @@ vi.mock('@/hooks/auth/useAuth', () => ({
   useAuth: () => ({ user: { id: 'user-1', email: 'test@test.com' } }),
 }));
 
-import { useScreenProtection } from '@/hooks/useScreenProtection';
+import { useScreenProtection } from '@/hooks/ui/useScreenProtection';
 
 describe('useScreenProtection', () => {
   beforeEach(() => {

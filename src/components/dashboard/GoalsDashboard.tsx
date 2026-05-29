@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { GoalsConfigDialog } from './GoalsConfigDialog';
 import { CelebrationOverlay } from '@/components/effects/Confetti';
-import { useGoalsDashboard, getProgressColor, getProgressBgColor, PERIOD_OPTIONS } from '@/hooks/useGoalsDashboard';
+import { useGoalsDashboard, getProgressColor, getProgressBgColor, PERIOD_OPTIONS } from '@/hooks/analytics/useGoalsDashboard';
 
 export function GoalsDashboard() {
   const {

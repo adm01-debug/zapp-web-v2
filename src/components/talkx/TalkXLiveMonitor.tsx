@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TalkXRecipientsList } from './TalkXRecipientsList';
 import { motion } from 'framer-motion';
-import type { TalkXCampaign, TalkXRecipient } from '@/hooks/useTalkX';
+import type { TalkXCampaign, TalkXRecipient } from '@/hooks/integrations/useTalkX';
 
 interface Props {
   campaignId: string;
