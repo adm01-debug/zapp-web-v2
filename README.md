@@ -93,7 +93,7 @@ bun run dev
 
 ### Variáveis de ambiente obrigatórias:
 - `VITE_SUPABASE_URL` - URL do projeto Supabase
-- `VITE_SUPABASE_ANON_KEY` - Chave pública do Supabase
+- `VITE_SUPABASE_PUBLISHABLE_KEY` - Chave pública (publishable) do Supabase
 
 ---
 
@@ -303,21 +303,18 @@ docs/
 ## Testes
 
 ```bash
-# Executar testes
-bun test
-
-# Com cobertura
-bun test --coverage
+# Executar testes (Vitest — use `bun run test`, não `bun test`)
+bun run test
 
 # Em watch mode
-bun test --watch
+bunx vitest
 
 # Testes específicos
-bun test src/hooks/
+bunx vitest run src/hooks/
 ```
 
 **Framework**: Vitest + Testing Library  
-**Arquivos**: ~72 arquivos de teste  
+**Arquivos**: ~146 arquivos de teste  
 **Mock**: Mock centralizado do Supabase em `src/test/mocks/supabase.ts`
 
 ---
