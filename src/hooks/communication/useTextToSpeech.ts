@@ -14,6 +14,7 @@ interface UseTextToSpeechOptions {
 }
 
 export function useTextToSpeech(options: UseTextToSpeechOptions = {}) {
+  const { onVoiceChange, onSpeedChange, useStreaming } = options;
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentMessageId, setCurrentMessageId] = useState<string | null>(null);
@@ -44,8 +45,8 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}) {
 
   const setVoiceId = useCallback((newVoiceId: string) => {
     setVoiceIdState(newVoiceId);
-    options.onVoiceChange?.(newVoiceId);
-  }, [options.onVoiceChange]);
+    onVoiceChange?.(newVoiceId);
+  }, [onVoiceChange]);
 
   const setSpeed = useCallback((newSpeed: number) => {
     // Clamp speed between 0.5 and 2.0
@@ -55,8 +56,8 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}) {
     if (audioRef.current) {
       audioRef.current.playbackRate = clampedSpeed;
     }
-    options.onSpeedChange?.(clampedSpeed);
-  }, [options.onSpeedChange]);
+    onSpeedChange?.(clampedSpeed);
+  }, [onSpeedChange]);
 
   const stop = useCallback(() => {
     if (audioRef.current) {
@@ -95,7 +96,7 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}) {
     setCurrentMessageId(messageId || null);
 
     try {
-      const endpoint = options.useStreaming
+      const endpoint = useStreaming
         ? 'elevenlabs-tts-stream'
         : 'elevenlabs-tts';
       const response = await fetch(
@@ -153,7 +154,7 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}) {
     } finally {
       setIsLoading(false);
     }
-  }, [voiceId, speed, stop]);
+  }, [voiceId, speed, stop, useStreaming]);
 
   return {
     speak,

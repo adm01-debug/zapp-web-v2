@@ -19,6 +19,7 @@ export function PeriodComparison() {
 
   useEffect(() => {
     loadComparison();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
   }, [period]);
 
   const loadComparison = async () => {

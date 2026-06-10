@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.87.1";
 import { handleCors, errorResponse, jsonResponse, requireEnv, Logger } from "../_shared/validation.ts";
 import { GmailOAuthActionSchema, parseBody } from "../_shared/schemas.ts";
+import type { SupabaseClient } from "../_shared/deno-types.ts";
 
 const GMAIL_SCOPES = [
   "https://www.googleapis.com/auth/gmail.readonly",
@@ -60,15 +61,13 @@ async function getGmailProfile(accessToken: string): Promise<{ emailAddress: str
   return response.json();
 }
 
-// deno-lint-ignore no-explicit-any
-async function getTokens(supabase: any, accountId: string): Promise<{ access_token: string; refresh_token: string }> {
+async function getTokens(supabase: SupabaseClient, accountId: string): Promise<{ access_token: string; refresh_token: string }> {
   const { data, error } = await supabase.rpc("get_gmail_tokens", { p_account_id: accountId });
   if (error || !data?.length) throw new Error("Failed to retrieve tokens");
   return data[0];
 }
 
-// deno-lint-ignore no-explicit-any
-async function storeTokens(supabase: any, accountId: string, accessToken: string, refreshToken?: string | null) {
+async function storeTokens(supabase: SupabaseClient, accountId: string, accessToken: string, refreshToken?: string | null) {
   await supabase.rpc("store_gmail_tokens", {
     p_account_id: accountId,
     p_access_token: accessToken,

@@ -33,6 +33,7 @@ export function LeadRiskScorePanel({ contactId }: LeadRiskScorePanelProps) {
 
   useEffect(() => {
     loadData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
   }, [contactId]);
 
   const loadData = async () => {

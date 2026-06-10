@@ -1,5 +1,5 @@
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 // Animated counter
@@ -7,7 +7,9 @@ interface AnimatedCounterProps { value: number; duration?: number; className?: s
 
 export function AnimatedCounter({ value, duration = 1, className }: AnimatedCounterProps) {
   const [displayValue, setDisplayValue] = useState(0);
-  const prevRef = { current: 0 };
+  // useRef de verdade: um objeto literal seria recriado a cada render e a
+  // animação recomeçaria sempre do zero em vez do valor anterior
+  const prevRef = useRef(0);
 
   useEffect(() => {
     let startTime: number;
@@ -26,7 +28,7 @@ export function AnimatedCounter({ value, duration = 1, className }: AnimatedCoun
     };
     frame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frame);
-  }, [value, duration]);
+  }, [value, duration, prevRef]);
 
   return <motion.span key={displayValue} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className={className}>{displayValue.toLocaleString()}</motion.span>;
 }

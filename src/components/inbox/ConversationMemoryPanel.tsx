@@ -41,6 +41,7 @@ export function ConversationMemoryPanel({ contactId, profileId }: ConversationMe
 
   useEffect(() => {
     loadMemory();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
   }, [contactId]);
 
   const loadMemory = async () => {

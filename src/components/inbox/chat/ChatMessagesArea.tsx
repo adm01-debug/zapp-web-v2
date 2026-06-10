@@ -90,7 +90,6 @@ export const ChatMessagesArea = memo(forwardRef<ChatMessagesAreaRef, ChatMessage
 
   const messageIds = useMemo(() => messages.map((message) => message.id).filter(Boolean), [messages]);
   const messageIdsSet = useMemo(() => new Set(messageIds), [messageIds]);
-  const messageIdsKey = useMemo(() => messageIds.join(','), [messageIds]);
 
   useEffect(() => {
     if (messageIds.length === 0) return;
@@ -106,7 +105,7 @@ export const ChatMessagesArea = memo(forwardRef<ChatMessagesAreaRef, ChatMessage
     });
 
     return () => { void RealtimeService.removeChannel(channel); };
-  }, [messageIds.length, messageIdsKey, messageIdsSet, queryClient]);
+  }, [messageIds, messageIdsSet, queryClient]);
 
   const groupedMessages = useMemo(() => {
     return messages.reduce((groups, message) => {

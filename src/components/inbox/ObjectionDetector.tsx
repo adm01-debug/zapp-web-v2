@@ -123,6 +123,7 @@ export function ObjectionDetector({ contactId, contactName, lastMessages, allMes
 
   const handleSelect = useCallback((text: string) => {
     detector.handleSelect(text, onSelectSuggestion);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- detector é recriado a cada render do hook; a função interna lê estado fresco
   }, [detector.handleSelect, onSelectSuggestion]);
 
   /* ── Pre-analysis state ── */

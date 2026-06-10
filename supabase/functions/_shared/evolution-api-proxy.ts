@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "./deno-types.ts";
 // Shared proxy logic for Evolution API edge function
 
 const TIMEOUT_MS = 15000;
@@ -67,11 +68,9 @@ export async function proxyToEvolution(
 
       if (!response.ok) {
         const errorData = data as Record<string, unknown>;
-        // deno-lint-ignore no-explicit-any
-        const responseMsg = (errorData?.response as any)?.message;
+        const responseMsg = (errorData?.response as { message?: unknown } | undefined)?.message;
         let friendlyMessage = 'Erro na API Evolution';
-        // deno-lint-ignore no-explicit-any
-        if (Array.isArray(responseMsg) && responseMsg.some((m: any) => m.exists === false)) {
+        if (Array.isArray(responseMsg) && responseMsg.some((m: { exists?: boolean }) => m.exists === false)) {
           friendlyMessage = 'Número não encontrado no WhatsApp. Verifique se o número está correto e registrado.';
         } else if (response.status === 401) {
           friendlyMessage = 'Chave de API inválida ou sem permissão.';
@@ -105,8 +104,7 @@ export async function proxyToEvolution(
 }
 
 // Helper to generate signed URLs for private storage buckets
-// deno-lint-ignore no-explicit-any
-export async function resolvePrivateBucketUrl(supabase: any, url: string, buckets: string[] = ['whatsapp-media', 'audio-messages']): Promise<string> {
+export async function resolvePrivateBucketUrl(supabase: SupabaseClient, url: string, buckets: string[] = ['whatsapp-media', 'audio-messages']): Promise<string> {
   if (typeof url !== 'string') return url;
   for (const bucket of buckets) {
     if (url.includes(`/storage/v1/object/public/${bucket}/`)) {

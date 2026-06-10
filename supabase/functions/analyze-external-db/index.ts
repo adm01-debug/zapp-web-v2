@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
       'categories', 'groups', 'roles', 'permissions',
     ]
 
-    const results: Record<string, any> = {}
+    const results: Record<string, { count: number | null; sample: unknown[]; columns: string[] }> = {}
     const errors: string[] = []
 
     // Check each table - get count and sample

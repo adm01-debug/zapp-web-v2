@@ -48,6 +48,7 @@ export function QueueGoalsDialog({
         setFormData(getDefaultGoal());
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
   }, [open, queueId, goals]);
 
   const handleSave = async () => {

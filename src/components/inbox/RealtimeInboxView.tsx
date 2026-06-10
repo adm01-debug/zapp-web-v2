@@ -62,6 +62,7 @@ export function RealtimeInboxView() {
     };
 
     handlePendingContact();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dispara só quando o contato pendente/loading mudam; inbox/inboxFilters são objetos novos por render
   }, [inbox.pendingContactId, inbox.loading]);
 
   useEffect(() => {

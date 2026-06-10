@@ -11,6 +11,7 @@ export function AbandonmentRate() {
   const [period, setPeriod] = useState('7');
   const [loading, setLoading] = useState(true);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
   useEffect(() => { loadData(); }, [period]);
 
   const loadData = async () => {

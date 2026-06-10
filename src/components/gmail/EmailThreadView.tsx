@@ -165,6 +165,7 @@ export function EmailThreadView({ thread, onBack }: EmailThreadViewProps) {
         markAsRead.mutate(unreadIds);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- marca como lida só ao trocar de thread
   }, [threadMessages, thread.is_unread]);
 
   const lastMessage = useMemo(() => {

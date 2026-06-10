@@ -56,6 +56,7 @@ export function ProductDetailDialog({ product, open, onOpenChange, onSend }: Pro
     } else {
       setFullProduct(product);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
   }, [open, product.id]);
 
   const dp = fullProduct;

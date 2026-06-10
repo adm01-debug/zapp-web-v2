@@ -93,6 +93,7 @@ export const ExternalProductCatalog: React.FC<ExternalProductCatalogProps> = ({
       fetchSuppliers();
       doFetch();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
   }, [isOpen]);
 
   // Re-fetch on filter changes (debounced for search)
@@ -105,11 +106,13 @@ export const ExternalProductCatalog: React.FC<ExternalProductCatalogProps> = ({
     }, 300);
     setSearchTimeout(t);
     return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
   }, [search, categoryId, supplierId, onlyInStock]);
 
   // Re-fetch on page change
   useEffect(() => {
     if (isOpen && page > 0) doFetch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
   }, [page]);
 
   const handleSend = (product: ExternalProduct) => {

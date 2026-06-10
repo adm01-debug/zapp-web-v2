@@ -64,14 +64,15 @@ export function TeamChatInputArea({
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendWithAnimation(); }
   };
 
+  const { hasText, isOverLimit, clearDraft } = draft;
   const handleSendWithAnimation = useCallback(() => {
-    if (!draft.hasText || draft.isOverLimit || isPending) return;
+    if (!hasText || isOverLimit || isPending) return;
     setSendAnimation(true);
-    draft.clearDraft();
+    clearDraft();
     if (isMobile && navigator.vibrate) navigator.vibrate(50);
     onSend();
     setTimeout(() => setSendAnimation(false), 400);
-  }, [draft.hasText, draft.isOverLimit, isPending, isMobile, onSend, draft.clearDraft]);
+  }, [hasText, isOverLimit, clearDraft, isPending, isMobile, onSend]);
 
   const handleVoiceDictation = useCallback((transcript: string) => {
     setText(text ? `${text} ${transcript}` : transcript);

@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "./deno-types.ts";
 // Shared helpers for Evolution API webhook and sync functions
 
 export interface WebhookPayload {
@@ -131,8 +132,7 @@ export function shouldUpdateStatus(currentStatus: string | null, newStatus: stri
   return newPriority > currentPriority;
 }
 
-// deno-lint-ignore no-explicit-any
-export async function getConnectionByInstance(supabase: any, instance: string): Promise<{ id: string } | null> {
+export async function getConnectionByInstance(supabase: SupabaseClient, instance: string): Promise<{ id: string } | null> {
   const { data } = await supabase
     .from('whatsapp_connections')
     .select('id')
@@ -143,7 +143,7 @@ export async function getConnectionByInstance(supabase: any, instance: string): 
 
 // deno-lint-ignore no-explicit-any
 export async function getContactByPhone(
-  supabase: any,
+  supabase: SupabaseClient,
   phone: string,
   connectionId: string
 ): Promise<{ id: string; avatar_url: string | null; assigned_to: string | null; name: string | null } | null> {
@@ -227,8 +227,7 @@ export async function fetchProfilePicFromApi(instance: string, phone: string): P
   } catch { return null; }
 }
 
-// deno-lint-ignore no-explicit-any
-export async function persistProfilePicture(supabase: any, phone: string, profilePicUrl: string): Promise<string | null> {
+export async function persistProfilePicture(supabase: SupabaseClient, phone: string, profilePicUrl: string): Promise<string | null> {
   try {
     const response = await fetch(profilePicUrl, { signal: AbortSignal.timeout(5000) });
     if (!response.ok) return null;
@@ -254,8 +253,7 @@ export async function persistProfilePicture(supabase: any, phone: string, profil
   } catch (err) { console.error('Avatar persist error:', err); return null; }
 }
 
-// deno-lint-ignore no-explicit-any
-export async function handleReactionEvent(supabase: any, reactionMessage: Record<string, unknown>, actorFromMe: boolean) {
+export async function handleReactionEvent(supabase: SupabaseClient, reactionMessage: Record<string, unknown>, actorFromMe: boolean) {
   const emoji = (reactionMessage.text as string) || '';
   const reactKey = reactionMessage.key as Record<string, unknown> | undefined;
   if (!reactKey?.id) return;

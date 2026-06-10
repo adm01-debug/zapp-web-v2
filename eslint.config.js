@@ -19,7 +19,11 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      // Desligado deliberadamente: o projeto usa os padrões idiomáticos de
+      // Provider+hook de contexto e componente+helpers no mesmo arquivo
+      // (shadcn inclusive). A regra só afeta granularidade de HMR no dev
+      // server — não corretude — e o ruído esconderia avisos reais.
+      "react-refresh/only-export-components": "off",
       "@typescript-eslint/no-unused-vars": "off",
       "no-console": ["warn", { allow: ["warn", "error"] }],
     },

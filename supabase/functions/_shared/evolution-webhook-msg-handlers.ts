@@ -4,9 +4,9 @@ import {
   isRecord, normalizePhone, resolveEventJid, toEventRecords, shouldUpdateStatus,
   getConnectionByInstance, getContactByPhone,
 } from "./evolution-helpers.ts";
+import type { SupabaseClient } from "./deno-types.ts";
 
-// deno-lint-ignore no-explicit-any
-export async function handleSendMessage(supabase: any, instance: string, data: unknown, baseData: Record<string, unknown>) {
+export async function handleSendMessage(supabase: SupabaseClient, instance: string, data: unknown, baseData: Record<string, unknown>) {
   for (const entry of toEventRecords(data, ['messages'])) {
     const keySource = isRecord(entry.key) ? entry.key : isRecord(baseData.key) ? baseData.key : null;
     const key = keySource as { remoteJid?: string; fromMe?: boolean; id?: string } | null;
@@ -66,8 +66,7 @@ export async function handleSendMessage(supabase: any, instance: string, data: u
   }
 }
 
-// deno-lint-ignore no-explicit-any
-export async function handleMessagesUpdate(supabase: any, instance: string, data: unknown, baseData: Record<string, unknown>) {
+export async function handleMessagesUpdate(supabase: SupabaseClient, instance: string, data: unknown, baseData: Record<string, unknown>) {
   const statusMap: Record<string, string> = {
     'DELIVERY_ACK': 'delivered', 'READ': 'read', 'PLAYED': 'read', 'SERVER_ACK': 'sent', 'ERROR': 'failed',
   };
@@ -112,8 +111,7 @@ export async function handleMessagesUpdate(supabase: any, instance: string, data
   }
 }
 
-// deno-lint-ignore no-explicit-any
-export async function handleMessagesDelete(supabase: any, instance: string, data: unknown, baseData: Record<string, unknown>) {
+export async function handleMessagesDelete(supabase: SupabaseClient, instance: string, data: unknown, baseData: Record<string, unknown>) {
   const connection = await getConnectionByInstance(supabase, instance);
   for (const entry of toEventRecords(data, ['messages', 'keys'])) {
     const keySource = isRecord(entry.key)
@@ -144,8 +142,7 @@ export async function handleMessagesDelete(supabase: any, instance: string, data
   }
 }
 
-// deno-lint-ignore no-explicit-any
-export async function handleMessagesSet(supabase: any, instance: string, data: unknown) {
+export async function handleMessagesSet(supabase: SupabaseClient, instance: string, data: unknown) {
   const messages = toEventRecords(data, ['messages']);
   if (messages.length === 0) return;
 
@@ -190,8 +187,7 @@ export async function handleMessagesSet(supabase: any, instance: string, data: u
   console.log(`messages.set: synced ${synced}, skipped ${skipped} for ${instance}`);
 }
 
-// deno-lint-ignore no-explicit-any
-export async function handleMessagesEdited(supabase: any, data: unknown, baseData: Record<string, unknown>) {
+export async function handleMessagesEdited(supabase: SupabaseClient, data: unknown, baseData: Record<string, unknown>) {
   for (const entry of toEventRecords(data, ['messages'])) {
     const keySource = isRecord(entry.key) ? entry.key : isRecord(baseData.key) ? baseData.key : null;
     const key = keySource as { id?: string } | null;

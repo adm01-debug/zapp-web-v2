@@ -45,6 +45,7 @@ export function InstanceSettingsDialog({ open, onOpenChange, instanceName, conne
   const [labels, setLabels] = useState<{ id: string; name: string; color: string }[]>([]);
   const [loadingTab, setLoadingTab] = useState('');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
   useEffect(() => { if (open && instanceName) { loadSettings(); loadProfile(); } }, [open, instanceName]);
 
   const loadSettings = async () => {

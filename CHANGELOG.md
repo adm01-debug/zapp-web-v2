@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (rodada 10/10 — 2026-06-10)
+- **SSOCallback:** timeout de 10s lia `status` por closure obsoleta (podia exibir
+  "Tempo esgotado" após login OK); listener de auth nunca era desinscrito
+  (cleanup retornado de função interna, não do efeito); timeouts sem cleanup
+- **useAudioRecorder:** corte automático no tempo máximo nunca disparava
+  (`stopRecording` capturado pelo setInterval com `isRecording` obsoleto);
+  agora usa o estado do MediaRecorder como fonte da verdade
+- **AnimatedCounter:** `prevRef` era objeto literal recriado a cada render
+  (não `useRef`) — a animação sempre recomeçava do zero
+- **ViewRouter:** props de navegação congeladas no useMemo (breadcrumb/voltar
+  obsoletos); **ChatInputArea:** handlers de menu fora das deps do useMemo
+- **useChatSearch:** callback de prop podia executar versão obsoleta (ref)
+
+### Changed (rodada 10/10 — 2026-06-10)
+- **ESLint zerado de verdade: 0 erros e 0 avisos** (eram 723 problemas).
+  exhaustive-deps: 82→0 (correções reais + intenção documentada caso a caso);
+  edge functions Deno tipadas (`SupabaseClient` central em `deno-types.ts`,
+  payloads Gmail/Evolution com interfaces mínimas)
+- **Bundle do chat 90% menor:** mapbox-gl (~1 MB) saiu do caminho crítico —
+  `LocationMessage` agora é lazy (chunk só carrega ao receber localização);
+  ChatPanel: 1,8 MB → 176 KB
+- **Suíte de simulação massiva** (`scenario-simulation.test.ts`): ~3.500
+  cenários gerados com seed determinística validando invariantes (limites,
+  monotonicidade, segurança XSS do renderizador WhatsApp, fuzz de classificação)
+
 ### Fixed (auditoria de QA — 2026-06-10)
 - **CI quebrado:** `ci.yml` e `supabase-sync.yml` eram YAML inválido (bloco colado
   antes do header) — nenhum workflow rodava; reconstruídos e migrados para Bun
