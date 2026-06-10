@@ -137,6 +137,7 @@ export function handleCors(req: Request): Response | null {
 export function sanitizeString(input: unknown, maxLength = 10000): string | null {
   if (typeof input !== 'string') return null;
   // Remove control characters except newlines/tabs
+  // eslint-disable-next-line no-control-regex -- sanitizador: remover control chars é o objetivo
   const cleaned = input.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
   return cleaned.length > 0 ? cleaned.slice(0, maxLength) : null;
 }

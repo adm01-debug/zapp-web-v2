@@ -69,7 +69,11 @@ describe('useMessages', () => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(result.current.messages).toEqual(mockMessages.map(m => ({ ...m, isEdited: false })));
+    // O hook enriquece cada linha com campos derivados (timestamp, flags)
+    expect(result.current.messages).toHaveLength(2);
+    expect(result.current.messages[0]).toMatchObject({ ...mockMessages[0], isEdited: false, is_deleted: false });
+    expect(result.current.messages[1]).toMatchObject({ ...mockMessages[1], isEdited: false, is_deleted: false });
+    expect(result.current.messages[0].timestamp).toBeInstanceOf(Date);
   });
 
   it('sets error when fetch fails', async () => {

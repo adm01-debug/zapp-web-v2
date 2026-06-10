@@ -36,20 +36,31 @@ export function useQueues() {
    const fetchQueues = useCallback(async () => {
      try {
        setLoading(true);
-       const [{ data: queuesData, error: queuesError }, { data: membersData, error: membersError }] = await Promise.all([
+       const [
+         { data: queuesData, error: queuesError },
+         { data: membersData, error: membersError },
+         { data: waitingData, error: waitingError },
+       ] = await Promise.all([
          QueueService.fetchQueues(),
-         QueueService.fetchMembers()
+         QueueService.fetchMembers(),
+         QueueService.fetchWaitingContacts(),
        ]);
- 
+
        if (queuesError) throw queuesError;
        if (membersError) throw membersError;
- 
+       if (waitingError) throw waitingError;
+
+       const waitingByQueue = new Map<string, number>();
+       (waitingData || []).forEach((c) => {
+         if (c.queue_id) waitingByQueue.set(c.queue_id, (waitingByQueue.get(c.queue_id) || 0) + 1);
+       });
+
        const queuesWithMembers: QueueWithMembers[] = (queuesData || []).map(queue => ({
          ...queue,
          members: (membersData || []).filter(m => m.queue_id === queue.id) as QueueMember[],
-         waiting_count: 0 // Waiting counts logic could be moved to service if needed
+         waiting_count: waitingByQueue.get(queue.id) || 0
        }));
- 
+
        setQueues(queuesWithMembers);
        setError(null);
      } catch (err) {

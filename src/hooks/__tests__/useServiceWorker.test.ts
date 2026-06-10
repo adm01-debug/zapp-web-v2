@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
 
 vi.mock('@/lib/logger', () => ({
   log: { debug: vi.fn(), error: vi.fn(), info: vi.fn() },
@@ -11,17 +11,9 @@ const mockCaches = {
   delete: vi.fn().mockResolvedValue(true),
 };
 
-const mockRegistration = {
-  scope: '/',
-  update: vi.fn(),
-  installing: null,
-  addEventListener: vi.fn(),
-};
-
-describe('useServiceWorker', () => {
+describe('useServiceWorker (kill-switch: PWA desativado)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
     sessionStorage.clear();
 
     Object.defineProperty(globalThis, 'caches', {
@@ -29,10 +21,10 @@ describe('useServiceWorker', () => {
       writable: true,
       configurable: true,
     });
-    
+
     Object.defineProperty(navigator, 'serviceWorker', {
       value: {
-        register: vi.fn().mockResolvedValue(mockRegistration),
+        register: vi.fn(),
         controller: null,
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
@@ -44,35 +36,39 @@ describe('useServiceWorker', () => {
   });
 
   afterEach(() => {
-    vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
-  it('registers service worker on mount', async () => {
+  it('unregisters existing service workers on mount', async () => {
     const { useServiceWorker } = await import('@/hooks/system/useServiceWorker');
     renderHook(() => useServiceWorker());
-    
-    // Allow async registration
-    await vi.advanceTimersByTimeAsync(0);
-    
-    expect(navigator.serviceWorker.register).toHaveBeenCalledWith('/sw.js', {
-      scope: '/',
-      updateViaCache: 'none',
+
+    await waitFor(() => {
+      expect(navigator.serviceWorker.getRegistrations).toHaveBeenCalled();
+      expect(mockUnregister).toHaveBeenCalled();
     });
   });
 
-  it('cleans legacy caches before registering the current worker', async () => {
-    mockCaches.keys.mockResolvedValueOnce(['whatsapp-crm-v2']);
-    sessionStorage.setItem('legacy-sw-reset-done', '1');
+  it('deletes all caches to purge stale UI', async () => {
+    mockCaches.keys.mockResolvedValueOnce(['whatsapp-crm-v2', 'other-cache']);
 
     const { useServiceWorker } = await import('@/hooks/system/useServiceWorker');
     renderHook(() => useServiceWorker());
 
-    await vi.advanceTimersByTimeAsync(0);
+    await waitFor(() => {
+      expect(mockCaches.delete).toHaveBeenCalledWith('whatsapp-crm-v2');
+      expect(mockCaches.delete).toHaveBeenCalledWith('other-cache');
+    });
+  });
 
-    expect(navigator.serviceWorker.getRegistrations).toHaveBeenCalled();
-    expect(mockUnregister).toHaveBeenCalled();
-    expect(caches.delete).toHaveBeenCalledWith('whatsapp-crm-v2');
-    expect(navigator.serviceWorker.register).toHaveBeenCalled();
+  it('never registers a new service worker', async () => {
+    const { useServiceWorker } = await import('@/hooks/system/useServiceWorker');
+    renderHook(() => useServiceWorker());
+
+    await waitFor(() => {
+      expect(navigator.serviceWorker.getRegistrations).toHaveBeenCalled();
+    });
+    expect(navigator.serviceWorker.register).not.toHaveBeenCalled();
   });
 
   it('does not crash when serviceWorker is unavailable', async () => {
@@ -81,7 +77,7 @@ describe('useServiceWorker', () => {
       writable: true,
       configurable: true,
     });
-    
+
     const { useServiceWorker } = await import('@/hooks/system/useServiceWorker');
     expect(() => renderHook(() => useServiceWorker())).not.toThrow();
   });

@@ -6,6 +6,7 @@ import { Message, InteractiveMessage, InteractiveButton, LocationMessage } from 
 import { SlashCommand } from '../SlashCommands';
 import { ExternalProduct } from '@/hooks/integrations/useExternalCatalog';
 import { toast } from '@/hooks/ui/use-toast';
+import type { DialogKey, ActiveTool } from './dialogKeys';
 
 interface UseChatPanelHandlersOptions {
   conversationId: string;
@@ -13,13 +14,13 @@ interface UseChatPanelHandlersOptions {
   contactPhone: string;
   instanceName?: string;
   onSendMessage: (content: string) => void;
-  editMessageApi: (instance: string, params: { number: string; messageId: string; text: string }) => Promise<any>;
+  editMessageApi: (instance: string, params: { number: string; messageId: string; text: string }) => Promise<unknown>;
   applySignature: (text: string) => string;
   handleTypingStart: () => void;
   handleTypingStop: () => void;
-  openDialog: (key: string) => void;
-  closeDialog: (key: string) => void;
-  handleSetActiveTool: (tool: any) => void;
+  openDialog: (key: DialogKey) => void;
+  closeDialog: (key: DialogKey) => void;
+  handleSetActiveTool: (tool: ActiveTool) => void;
 }
 
 export function useChatPanelHandlers(opts: UseChatPanelHandlersOptions) {

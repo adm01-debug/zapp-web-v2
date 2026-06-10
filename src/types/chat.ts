@@ -64,7 +64,7 @@ export interface AssignedAgentInfo {
 export interface Conversation {
   id: string;
   contact: ConversationContact;
-  lastMessage?: any;
+  lastMessage?: Message;
   unreadCount: number;
   status: 'open' | 'closed' | 'pending' | 'waiting' | 'resolved';
   priority: 'low' | 'medium' | 'high';
