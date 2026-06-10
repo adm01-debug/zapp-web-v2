@@ -25,23 +25,20 @@
 - [Integrações](#integrações)
 - [Segurança](#segurança)
 - [Testes](#testes)
- - [Auditoria](#-auditoria-e-conformidade)
- - [Deploy](#deploy)
- - [Documentação Adicional](#documentação-adicional)
- - [Contribuição](#contribuição)
+- [Auditoria](#%EF%B8%8F-auditoria-e-conformidade)
+- [Deploy](#deploy)
+- [Documentação Adicional](#documentação-adicional)
+- [Contribuição](#contribuição)
 
 ---
 
- ## 🛡️ Auditoria e Conformidade
- 
- O sistema passa por auditorias regulares de segurança e funcionalidade.
- - **Relatório em Markdown:** [docs/audit_report.md](docs/audit_report.md)
- - **Relatório em PDF:** [docs/audit_report.pdf](docs/audit_report.pdf)
- 
- *O PDF é gerado automaticamente via CI a cada atualização do relatório (commit contendo 'audit').*
- 
- ---
- 
+## 🛡️ Auditoria e Conformidade
+
+O sistema passa por auditorias regulares de segurança e funcionalidade.
+- **Relatório:** [docs/audit_report.md](docs/audit_report.md)
+
+---
+
 ## Visão Geral
 
 ZAPP-WEB (Pronto Talk Suite) é uma plataforma completa de atendimento ao cliente que centraliza comunicações via WhatsApp, oferece sugestões de IA, CRM integrado, gamificação de agentes, dashboards analíticos e automações de fluxo.
@@ -117,7 +114,7 @@ bun run dev
 │  │ Auth │ │ DB │ │ Storage │ │ Real │  │
 │  └──────┘ └────┘ └─────────┘ │ time │  │
 │  ┌────────────────────────┐  └──────┘  │
-│  │   Edge Functions (20)  │            │
+│  │   Edge Functions (60+) │            │
 │  └───────────┬────────────┘            │
 └──────────────┼─────────────────────────┘
                │
@@ -162,13 +159,13 @@ src/
 └── i18n/               # Internacionalização
 
 supabase/
-├── functions/          # 20 Edge Functions
+├── functions/          # 60+ Edge Functions
 │   ├── _shared/        # Utilitários compartilhados (validação, CORS, logger)
 │   ├── ai-*/           # Funções de IA (suggest-reply, summary, analysis, etc.)
 │   ├── evolution-*/    # Integração WhatsApp
 │   ├── elevenlabs-*/   # Integração de áudio
 │   └── ...
-├── migrations/         # 55 Migrations SQL versionadas
+├── migrations/         # 250+ Migrations SQL versionadas
 └── config.toml         # Configuração do projeto
 
 docs/
@@ -314,7 +311,7 @@ bunx vitest run src/hooks/
 ```
 
 **Framework**: Vitest + Testing Library  
-**Arquivos**: ~146 arquivos de teste  
+**Arquivos**: ~123 arquivos de teste  
 **Mock**: Mock centralizado do Supabase em `src/test/mocks/supabase.ts`
 
 ---

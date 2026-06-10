@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (auditoria de QA — 2026-06-10)
+- **CI quebrado:** `ci.yml` e `supabase-sync.yml` eram YAML inválido (bloco colado
+  antes do header) — nenhum workflow rodava; reconstruídos e migrados para Bun
+  (`npm ci` falhava sem `package-lock.json`)
+- **bun.lock irreproduzível:** 331 URLs apontavam para o registry privado do
+  sandbox Lovable (HTTP 403 fora dele); trocadas pelo registry público npmjs
+- **useQueues:** `waiting_count` estava fixo em 0 (cálculo perdido em refactor);
+  contagem de contatos aguardando atribuição restaurada via `QueueService`
+- **ContactForm:** cargo atual desaparecia do Select quando ausente da lista
+  externa de cargos
+- **Rules of Hooks:** `useTransform` chamado condicionalmente em
+  `mobile-components.tsx` (PullToRefresh)
+- **useSpeechToText:** tipos da Web Speech API ausentes quebravam `tsc`
+- **Testes:** 9 falhas e 1 worker travado corrigidos — mock instável do
+  `StoryViewer` causava loop infinito de render (suíte caiu de ~58min para ~90s);
+  env dummy do Supabase para suites que importam o client real; mocks
+  sincronizados com os contratos atuais dos hooks
+- **.env.example/README:** `VITE_SUPABASE_PUBLISHABLE_KEY` (nome real lido pelo
+  client) no lugar de `VITE_SUPABASE_ANON_KEY`; comandos de teste corrigidos
+- **jspdf-autotable:** ^5.0.8 (5.0.2 declarava peer incompatível com jspdf 4)
+
+### Changed (auditoria de QA — 2026-06-10)
+- ESLint estratificado por ambiente (app, testes/mocks, Edge Functions Deno);
+  489 erros de lint zerados; testes tautológicos de Churn/Tickets/Performance
+  reescritos contra a lógica real extraída para módulos puros testáveis
+  (`churnRisk.ts`, `ticketClassification.ts`, `metricThresholds.ts`)
+- Tipagens de produção sem `any`: payloads realtime, navegação, evolution hooks
+  (alias central `EvolutionApiResponse`), `DialogKey` unificado em módulo único
+
+### Removed (auditoria de QA — 2026-06-10)
+- 167 módulos órfãos (inalcançáveis a partir de `main.tsx`) + 24 suítes que
+  testavam exclusivamente código morto
+- Dependências sem uso: react-hook-form, @hookform/resolvers, radix
+  aspect-ratio/hover-card/menubar/navigation-menu, embla-carousel-react,
+  input-otp, next-themes, react-resizable-panels, vaul, serialize-javascript,
+  caniuse-lite, baseline-browser-mapping, vite-plugin-pwa, tsx,
+  @vitejs/plugin-react-swc
+- Fantasmas: `tmp/`, `HANDOFF_MISSION_10-10.md`, `generate_audit_pdf.ts`,
+  `docs/audit_report.pdf` (gerado), `performance-budget.json` (sem consumidor),
+  job de CI que commitava PDF estático na main
+
 ### Added
 - CI/CD Pipeline with GitHub Actions (`ci.yml`)
 - Dependabot configuration for automated dependency updates
