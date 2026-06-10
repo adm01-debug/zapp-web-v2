@@ -86,7 +86,7 @@ export function InternalNotesPanel({ contactId }: { contactId: string }) {
           ) : (
             <div className="space-y-3 pr-2">
               <AnimatePresence>
-                {notes?.map((note: any, index: number) => (
+                {notes?.map((note, index) => (
                   <motion.div key={note.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }} className="p-3 rounded-lg bg-muted/50 border">
                     <div className="flex items-center gap-2 mb-2">

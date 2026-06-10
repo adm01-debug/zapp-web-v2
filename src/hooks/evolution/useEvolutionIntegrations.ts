@@ -1,14 +1,11 @@
 import { useCallback } from 'react';
-import type { HttpMethod } from './useEvolutionApiCore';
+import type { CallApiFn, WithToastFn } from './useEvolutionApiCore';
 import type {
   TypebotConfig, OpenAIConfig, DifyConfig, FlowiseConfig,
   EvolutionBotConfig, ChatwootConfig, PrivacySettings,
 } from '../integrations/evolutionApi.types';
 
-export function useEvolutionIntegrations(
-  callApi: (action: string, body?: object, method?: HttpMethod) => Promise<any>,
-  withToast: (action: string, body: object | undefined, successMsg: string, errorMsg: string, method?: HttpMethod) => Promise<any>
-) {
+export function useEvolutionIntegrations(callApi: CallApiFn, withToast: WithToastFn) {
   // Profile
   const fetchProfile = useCallback((instanceName: string) => callApi('fetch-profile', { instanceName }, 'GET'), [callApi]);
   const updateProfileName = useCallback((instanceName: string, name: string) => withToast('update-profile-name', { instanceName, name }, 'Nome atualizado', 'Erro ao atualizar nome'), [withToast]);

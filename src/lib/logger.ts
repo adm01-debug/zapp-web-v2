@@ -1,5 +1,6 @@
 // Centralized logging utility with correlation IDs and structured output
 // Logs are automatically filtered in production builds
+/* eslint-disable no-console -- este módulo é o wrapper oficial de console do app */
 
 const isDev = import.meta.env.DEV;
 

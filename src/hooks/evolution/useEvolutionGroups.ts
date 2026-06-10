@@ -1,10 +1,7 @@
 import { useCallback } from 'react';
-import type { HttpMethod } from './useEvolutionApiCore';
+import type { CallApiFn, WithToastFn } from './useEvolutionApiCore';
 
-export function useEvolutionGroups(
-  callApi: (action: string, body?: object, method?: HttpMethod) => Promise<any>,
-  withToast: (action: string, body: object | undefined, successMsg: string, errorMsg: string, method?: HttpMethod) => Promise<any>
-) {
+export function useEvolutionGroups(callApi: CallApiFn, withToast: WithToastFn) {
   const createGroup = useCallback((instanceName: string, subject: string, description: string, participants: string[]) =>
     withToast('create-group', { instanceName, subject, description, participants }, 'Grupo criado', 'Erro ao criar grupo'), [withToast]);
 

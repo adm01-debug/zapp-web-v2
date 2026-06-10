@@ -38,7 +38,7 @@ export function TranscriptionsHistoryView() {
         .not('transcription', 'is', null)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      setTranscriptions((data || []).map((item: any) => ({
+      setTranscriptions((data || []).map((item) => ({
         id: item.id, content: item.content, transcription: item.transcription, media_url: item.media_url,
         created_at: item.created_at, contact_id: item.contact_id,
         contact_name: item.contacts?.name || 'Desconhecido', contact_phone: item.contacts?.phone || '', contact_avatar: item.contacts?.avatar_url || null,

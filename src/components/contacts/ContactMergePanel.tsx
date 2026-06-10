@@ -63,7 +63,7 @@ export function ContactMergePanel({ open, onOpenChange, contacts, onMergeComplet
   const handleMerge = async () => {
     setMerging(true);
     try {
-      const mergedData: Record<string, any> = {};
+      const mergedData: Record<string, string | string[]> = {};
       MERGE_FIELDS.forEach(f => {
         const sourceContact = selections[f.key] === 0 ? primary : secondary;
         const val = getFieldValue(sourceContact, f.key);

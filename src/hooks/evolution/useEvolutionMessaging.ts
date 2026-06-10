@@ -1,11 +1,8 @@
 import { useCallback } from 'react';
-import type { HttpMethod } from './useEvolutionApiCore';
+import type { CallApiFn, WithToastFn } from './useEvolutionApiCore';
 import type { SendMessageParams, ContactCard, PollParams, ListSection, ButtonItem } from '../integrations/evolutionApi.types';
 
-export function useEvolutionMessaging(
-  callApi: (action: string, body?: object, method?: HttpMethod) => Promise<any>,
-  withToast: (action: string, body: object | undefined, successMsg: string, errorMsg: string, method?: HttpMethod) => Promise<any>
-) {
+export function useEvolutionMessaging(callApi: CallApiFn, withToast: WithToastFn) {
   // ============================================================
   // SEND MESSAGES
   // ============================================================

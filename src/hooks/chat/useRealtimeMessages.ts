@@ -141,8 +141,10 @@ export function useRealtimeMessages() {
     const channelId = channelIdRef.current;
     
     // Stable handlers that use refs to avoid re-subscribing the channel
-    const stableOnInsert = (payload: any) => handleNewMessageRef.current(payload);
-    const stableOnUpdate = (payload: any) => handleMessageUpdateRef.current(payload);
+    const stableOnInsert: Parameters<typeof RealtimeService.subscribeToMessages>[0] =
+      (payload) => handleNewMessageRef.current(payload);
+    const stableOnUpdate: Parameters<typeof RealtimeService.subscribeToMessages>[1] =
+      (payload) => handleMessageUpdateRef.current(payload);
 
     const channel = RealtimeService.subscribeToMessages(stableOnInsert, stableOnUpdate, channelId);
     

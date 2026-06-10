@@ -18,6 +18,12 @@ export interface NavItem {
   permission?: string;
 }
 
+export interface NavGroup {
+  label: string;
+  icon: LucideIcon;
+  items: NavItem[];
+}
+
 export class NavigationService {
   static getPrimaryNav(): NavItem[] {
     return [
@@ -32,7 +38,7 @@ export class NavigationService {
     ];
   }
 
-  static getGroups() {
+  static getGroups(): NavGroup[] {
     return [
       {
         label: 'Vendas & CRM',
