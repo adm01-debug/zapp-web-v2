@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { createRunGuard } from '@/lib/runGuard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -46,17 +47,21 @@ export function ConversationTasksPanel({ contactId, profileId }: ConversationTas
   const [newPriority, setNewPriority] = useState('medium');
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  // Troca rápida de contato: respostas atrasadas não podem sobrescrever a atual
+  const guard = useRef(createRunGuard()).current;
 
   const loadTasks = useCallback(async () => {
+    const runId = guard.start();
     setLoading(true);
     const { data } = await supabase
       .from('conversation_tasks')
       .select('*')
       .eq('contact_id', contactId)
       .order('created_at', { ascending: false });
+    if (!guard.isCurrent(runId)) return;
     if (data) setTasks(data);
     setLoading(false);
-  }, [contactId]);
+  }, [contactId, guard]);
 
   useEffect(() => {
     loadTasks();

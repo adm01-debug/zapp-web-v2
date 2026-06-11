@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { createRunGuard } from '@/lib/runGuard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,17 +34,21 @@ export function CampaignABTesting({ campaignId }: CampaignABTestingProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [newContent, setNewContent] = useState('');
+  // Troca rápida de campanha: respostas atrasadas não podem sobrescrever a atual
+  const guard = useRef(createRunGuard()).current;
 
   const loadVariants = useCallback(async () => {
+    const runId = guard.start();
     setLoading(true);
     const { data } = await supabase
       .from('campaign_ab_variants')
       .select('*')
       .eq('campaign_id', campaignId)
       .order('created_at');
+    if (!guard.isCurrent(runId)) return;
     if (data) setVariants(data);
     setLoading(false);
-  }, [campaignId]);
+  }, [campaignId, guard]);
 
   useEffect(() => { loadVariants(); }, [loadVariants]);
 

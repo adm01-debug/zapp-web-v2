@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { createRunGuard } from '@/lib/runGuard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +35,8 @@ export function RemindersPanel({ contactId, profileId }: RemindersPanelProps) {
   const [newTitle, setNewTitle] = useState('');
   const [when, setWhen] = useState('1h');
   const [loading, setLoading] = useState(true);
+  // Troca rápida de contato: respostas atrasadas não podem sobrescrever a atual
+  const guard = useRef(createRunGuard()).current;
 
   useEffect(() => {
     loadReminders();
@@ -42,6 +45,7 @@ export function RemindersPanel({ contactId, profileId }: RemindersPanelProps) {
 
   const loadReminders = async () => {
     if (!profileId) return;
+    const runId = guard.start();
     setLoading(true);
     const { data } = await supabase
       .from('reminders')
@@ -50,6 +54,7 @@ export function RemindersPanel({ contactId, profileId }: RemindersPanelProps) {
       .eq('profile_id', profileId)
       .eq('is_dismissed', false)
       .order('remind_at', { ascending: true });
+    if (!guard.isCurrent(runId)) return;
     if (data) setReminders(data);
     setLoading(false);
   };

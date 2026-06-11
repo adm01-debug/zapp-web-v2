@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { createRunGuard } from '@/lib/runGuard';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
@@ -30,22 +31,28 @@ const SECTIONS = [
   { key: 'pending_items' as const, label: 'Pendências', icon: Clock, color: 'text-destructive' },
 ];
 
+const EMPTY_MEMORY: MemoryData = {
+  facts: [], objections_handled: [], promises_made: [], pending_items: [],
+  commercial_summary: '', cumulative_summary: '',
+};
+
 export function ConversationMemoryPanel({ contactId, profileId }: ConversationMemoryPanelProps) {
-  const [memory, setMemory] = useState<MemoryData>({
-    facts: [], objections_handled: [], promises_made: [], pending_items: [],
-    commercial_summary: '', cumulative_summary: '',
-  });
+  const [memory, setMemory] = useState<MemoryData>(EMPTY_MEMORY);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [newItems, setNewItems] = useState<Record<string, string>>({});
+  // Troca rápida de contato: respostas atrasadas não podem sobrescrever a atual
+  const guard = useRef(createRunGuard()).current;
 
   const loadMemory = useCallback(async () => {
+    const runId = guard.start();
     setLoading(true);
     const { data } = await supabase
       .from('conversation_memory')
       .select('*')
       .eq('contact_id', contactId)
       .maybeSingle();
+    if (!guard.isCurrent(runId)) return;
     if (data) {
       setMemory({
         id: data.id,
@@ -56,9 +63,12 @@ export function ConversationMemoryPanel({ contactId, profileId }: ConversationMe
         commercial_summary: data.commercial_summary || '',
         cumulative_summary: data.cumulative_summary || '',
       });
+    } else {
+      // Contato sem memória: não herdar a memória do contato anterior
+      setMemory(EMPTY_MEMORY);
     }
     setLoading(false);
-  }, [contactId]);
+  }, [contactId, guard]);
 
   useEffect(() => {
     loadMemory();

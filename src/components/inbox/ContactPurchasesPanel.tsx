@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { createRunGuard } from '@/lib/runGuard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -42,17 +43,21 @@ export function ContactPurchasesPanel({ contactId, profileId }: ContactPurchases
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('purchase');
+  // Troca rápida de contato: respostas atrasadas não podem sobrescrever a atual
+  const guard = useRef(createRunGuard()).current;
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- recarrega quando a chave da consulta muda; a função de fetch lê os filtros correntes
   useEffect(() => { loadPurchases(); }, [contactId]);
 
   const loadPurchases = async () => {
+    const runId = guard.start();
     setLoading(true);
     const { data } = await supabase
       .from('contact_purchases')
       .select('*')
       .eq('contact_id', contactId)
       .order('created_at', { ascending: false });
+    if (!guard.isCurrent(runId)) return;
     if (data) setPurchases(data);
     setLoading(false);
   };
