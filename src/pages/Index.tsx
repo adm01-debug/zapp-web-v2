@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, forwardRef, memo, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useRef, forwardRef, memo, useMemo, lazy, Suspense, useTransition } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigationHistory } from '@/hooks/system/useNavigationHistory';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +32,7 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
   const { startTour } = useTour();
   const { currentView, navigateTo: rawNavigateTo, goBack: rawGoBack, goForward: rawGoForward, canGoBack, canGoForward, breadcrumbTrail } = useNavigationHistory('inbox');
   const navDirectionRef = useRef<'forward' | 'back'>('forward');
+  const [isPending, startTransition] = useTransition();
 
   // Only run checklist queries when on dashboard view
   const { isComplete: checklistComplete, isDismissed: checklistDismissed } = useOnboardingChecklist({
@@ -39,18 +40,24 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
   });
 
   const setCurrentView = useCallback((viewId: string) => {
-    navDirectionRef.current = 'forward';
-    rawNavigateTo(viewId);
+    startTransition(() => {
+      navDirectionRef.current = 'forward';
+      rawNavigateTo(viewId);
+    });
   }, [rawNavigateTo]);
 
   const goBack = useCallback(() => {
-    navDirectionRef.current = 'back';
-    rawGoBack();
+    startTransition(() => {
+      navDirectionRef.current = 'back';
+      rawGoBack();
+    });
   }, [rawGoBack]);
 
   const goForward = useCallback(() => {
-    navDirectionRef.current = 'forward';
-    rawGoForward();
+    startTransition(() => {
+      navDirectionRef.current = 'forward';
+      rawGoForward();
+    });
   }, [rawGoForward]);
 
   const [showWelcome, setShowWelcome] = useState(false);
