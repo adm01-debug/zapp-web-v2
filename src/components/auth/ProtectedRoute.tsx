@@ -24,15 +24,36 @@
    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
  
    const loading = authLoading || rolesLoading;
- 
+
+   useEffect(() => {
+     console.log('[ProtectedRoute] State:', { 
+       path: location.pathname, 
+       authLoading, 
+       rolesLoading, 
+       userEmail: user?.email,
+       requiredPermission,
+       hasPermission,
+       loading
+     });
+   }, [location.pathname, authLoading, rolesLoading, user, requiredPermission, hasPermission, loading]);
+
    useEffect(() => {
      if (!loading && user && requiredPermission) {
-       RoleService.checkPermission(user.id, requiredPermission).then(setHasPermission);
-     } else if (!requiredPermission) {
+       console.log('[ProtectedRoute] Checking permission:', requiredPermission);
+       RoleService.checkPermission(user.id, requiredPermission)
+         .then(result => {
+           console.log('[ProtectedRoute] Permission result:', requiredPermission, result);
+           setHasPermission(result);
+         })
+         .catch(err => {
+           console.error('[ProtectedRoute] Permission error:', err);
+           setHasPermission(false);
+         });
+     } else if (!loading && !requiredPermission) {
        setHasPermission(true);
      }
    }, [loading, user, requiredPermission]);
- 
+
    if (loading || (requiredPermission && hasPermission === null)) {
      return (
        <div className="min-h-screen flex items-center justify-center bg-background" role="status" aria-busy="true" aria-label="Verificando acesso">
