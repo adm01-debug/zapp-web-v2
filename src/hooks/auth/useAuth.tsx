@@ -33,11 +33,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
    }, []);
 
   useEffect(() => {
+    let mounted = true;
     console.log('[BOOT] AuthProvider initialized, starting session check');
     
-    // Check for existing session first to prevent flickering
-    AuthService.getSession()
-      .then(async (session) => {
+    // Initial fetch
+    const initSession = async () => {
+      try {
+        const session = await AuthService.getSession();
+        if (!mounted) return;
+        
         console.log('[BOOT] Initial session retrieved:', session ? 'User Found' : 'No User');
         setSession(session);
         setUser(session?.user ?? null);
@@ -47,16 +51,20 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
         } else {
           setProfile(null);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error('[BOOT] Error fetching session:', err);
-      })
-      .finally(() => {
-        setLoading(false);
-        console.log('[BOOT] Auth initial load finished');
-      });
+      } finally {
+        if (mounted) {
+          setLoading(false);
+          console.log('[BOOT] Auth initial load finished');
+        }
+      }
+    };
+
+    void initSession();
 
     const subscription = AuthService.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
       console.log('[BOOT] Auth state change:', event, session ? 'Authenticated' : 'Unauthenticated');
       
       setSession(session);
@@ -68,7 +76,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
         setProfile(null);
       }
       
-      // Handle login/logout specific UI feedback if needed
       if (event === 'SIGNED_IN') {
         console.log('[AUTH] User signed in');
       } else if (event === 'SIGNED_OUT') {
@@ -77,6 +84,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [fetchProfile]);
