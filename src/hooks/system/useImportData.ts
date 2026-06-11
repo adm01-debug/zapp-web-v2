@@ -139,12 +139,12 @@ export function useImportData<T>(options: UseImportDataOptions<T>) {
         success.push(validated);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          error.errors.forEach((err) => {
+          error.issues.forEach((issue) => {
             errors.push({
               row: index + 2, // +2 porque linha 1 é header
-              field: err.path.join('.'),
-              message: err.message,
-              value: (row as Record<string, unknown>)[err.path[0] as string],
+              field: issue.path.join('.'),
+              message: issue.message,
+              value: (row as Record<string, unknown>)[issue.path[0] as string],
             });
           });
         }
