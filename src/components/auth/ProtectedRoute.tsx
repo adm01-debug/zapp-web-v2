@@ -44,19 +44,35 @@
      );
    }
  
-   if (!user) {
-     return <Navigate to="/auth" state={{ from: location }} replace />;
-   }
- 
-   if (requiredRoles?.length && !requiredRoles.some(role => hasRole(role))) {
-     if (fallback) return <>{fallback}</>;
-     return <Navigate to="/" replace />;
-   }
- 
-   if (requiredPermission && !hasPermission) {
-     if (fallback) return <>{fallback}</>;
-     return <Navigate to="/" replace />;
-   }
+    if (!user) {
+      return <Navigate to="/auth" state={{ from: location }} replace />;
+    }
+
+    const isAuthorized = !requiredRoles?.length || requiredRoles.some(role => hasRole(role));
+    const isPermissioned = !requiredPermission || hasPermission;
+
+    if (!isAuthorized || !isPermissioned) {
+      if (fallback) return <>{fallback}</>;
+      // If we are not at home, go home. If we ARE at home and not authorized, we might need a logout or a public page
+      if (location.pathname !== "/") {
+        return <Navigate to="/" replace />;
+      }
+      // If unauthorized even for home, show a basic message or sign out to avoid loop
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-background p-4 text-center">
+          <div className="space-y-4">
+            <h1 className="text-2xl font-bold text-destructive">Acesso Negado</h1>
+            <p className="text-muted-foreground">Você não tem permissão para acessar esta área.</p>
+            <button 
+              onClick={() => window.location.href = '/auth'}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md"
+            >
+              Voltar para Login
+            </button>
+          </div>
+        </div>
+      );
+    }
  
    return <>{children}</>;
  }
