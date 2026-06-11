@@ -139,12 +139,13 @@ export function useRealtimeInbox() {
 
   const handleSendMessage = useCallback(async (content: string) => {
     if (!selectedContactId) return;
+    const currentId = selectedContactId;
     try {
-      await sendMessage(selectedContactId, content);
-    } catch {
-      toast.error('Erro ao enviar mensagem');
-    } finally {
+      await sendMessage(currentId, content);
       await refreshActiveConversation();
+    } catch (err) {
+      log.error('Error sending message:', err);
+      toast.error('Erro ao enviar mensagem');
     }
   }, [selectedContactId, sendMessage, refreshActiveConversation]);
 
