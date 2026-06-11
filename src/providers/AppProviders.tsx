@@ -1,13 +1,14 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "@/hooks/auth/useAuth";
-import { ThemeSync } from "@/hooks/ui/useTheme";
-import { HighContrastProvider } from "@/components/theme/HighContrastToggle";
-import { AccessibleToastProvider } from "@/components/ui/accessible-toast";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeInitializer } from "@/components/ThemeInitializer";
-import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
-import { getLogger } from "@/lib/logger";
-import { useRef, useState, useEffect } from "react";
+ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+ import { AuthProvider } from "@/hooks/auth/useAuth";
+ import { ThemeSync } from "@/hooks/ui/useTheme";
+ import { HighContrastProvider } from "@/components/theme/HighContrastToggle";
+ import { AccessibleToastProvider } from "@/components/ui/accessible-toast";
+ import { TooltipProvider } from "@/components/ui/tooltip";
+ import { ThemeInitializer } from "@/components/ThemeInitializer";
+ import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
+ import { getLogger } from "@/lib/logger";
+ import { useRef, useState, useEffect } from "react";
+ import { AlertTriangle } from "lucide-react";
 
 const log = getLogger('AppProviders');
 
