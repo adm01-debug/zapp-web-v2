@@ -4,6 +4,7 @@
  import { useAuth } from '@/hooks/auth/useAuth';
  import { useUserRole } from '@/hooks/system/useUserRole';
  import { RoleService } from '@/services/role.service';
+ import { AuthService } from '@/services/auth.service';
  
  interface ProtectedRouteProps {
    children: ReactNode;
