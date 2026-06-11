@@ -25,24 +25,36 @@ export function useMessages({ contactId, enabled = true }: UseMessagesOptions) {
 
   // Fetch messages for contact
   const fetchMessages = useCallback(async () => {
-    if (!contactId || !mountedRef.current) {
-      if (mountedRef.current) { setMessages([]); setLoading(false); }
-      setLoading(false);
+    if (!contactId) {
+      if (mountedRef.current) {
+        setMessages([]);
+        setLoading(false);
+      }
       return;
     }
 
-     try {
-       setLoading(true);
-       setError(null);
-       const { data, error: fetchError } = await ChatService.fetchMessages(contactId);
-       if (fetchError) throw fetchError;
-        if (mountedRef.current) setMessages((data || []).map(mapMessageRowToMessage as any));
-     } catch (err) {
-       log.error('Error fetching messages:', err);
-       if (mountedRef.current) setError(err instanceof Error ? err.message : 'Failed to fetch messages');
-     } finally {
-       if (mountedRef.current) setLoading(false);
-     }
+    try {
+      if (mountedRef.current) {
+        setLoading(true);
+        setError(null);
+      }
+      
+      const { data, error: fetchError } = await ChatService.fetchMessages(contactId);
+      if (fetchError) throw fetchError;
+      
+      if (mountedRef.current && data) {
+        setMessages(data.map(mapMessageRowToMessage as any));
+      }
+    } catch (err) {
+      log.error('Error fetching messages:', err);
+      if (mountedRef.current) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch messages');
+      }
+    } finally {
+      if (mountedRef.current) {
+        setLoading(false);
+      }
+    }
   }, [contactId]);
 
   // Handle new message from realtime
