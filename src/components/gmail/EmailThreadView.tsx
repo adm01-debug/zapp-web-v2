@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { GenericEmptyState } from '@/components/ui/GenericEmptyState';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -155,18 +155,22 @@ export function EmailThreadView({ thread, onBack }: EmailThreadViewProps) {
     return () => setSelectedThreadId(null);
   }, [thread.id, setSelectedThreadId]);
 
-  // Mark as read
+  // Mark as read — uma única vez por thread aberta (threadMessages muda quando
+  // novas mensagens chegam via realtime e não deve re-disparar a marcação)
+  const markedThreadRef = useRef<string | null>(null);
   useEffect(() => {
+    if (markedThreadRef.current === thread.id) return;
     if (thread.is_unread && threadMessages.length > 0) {
       const unreadIds = threadMessages
         .filter(m => !m.is_read)
         .map(m => m.gmail_message_id);
       if (unreadIds.length > 0) {
+        markedThreadRef.current = thread.id;
         markAsRead.mutate(unreadIds);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- marca como lida só ao trocar de thread
-  }, [threadMessages, thread.is_unread]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- o ref garante uma marcação por thread; markAsRead é mutation estável
+  }, [thread.id, thread.is_unread, threadMessages]);
 
   const lastMessage = useMemo(() => {
     return threadMessages[threadMessages.length - 1];

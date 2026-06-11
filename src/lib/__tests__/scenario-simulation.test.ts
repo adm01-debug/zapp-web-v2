@@ -69,6 +69,18 @@ describe('Simulação: computeChurnRisk (500 contatos aleatórios)', () => {
     }
   });
 
+  it('dias nunca negativos, mesmo com timestamps futuros (clock skew)', () => {
+    for (const c of contacts) {
+      expect(computeChurnRisk(c, NOW).daysSinceLastMessage).toBeGreaterThanOrEqual(0);
+    }
+    const future = computeChurnRisk(
+      { ...contacts[0], updated_at: formatISO(addDays(NOW, 30)), created_at: formatISO(addDays(NOW, 10)) },
+      NOW
+    );
+    expect(future.daysSinceLastMessage).toBe(0);
+    expect(future.riskScore).toBeGreaterThanOrEqual(0);
+  });
+
   it('sentimento negativo nunca reduz o score em condições idênticas', () => {
     for (let i = 0; i < 100; i++) {
       const base = contacts[i];
@@ -171,6 +183,21 @@ describe('Simulação: classificação de tickets (fuzz de 600 strings)', () => 
       const p = derivePriority(randomTag(), conf);
       expect(Object.keys(PRIORITY_MAP)).toContain(p);
     }
+  });
+
+  it('groupTagsIntoTickets ignora linhas malformadas sem lançar', () => {
+    const tickets = groupTagsIntoTickets([
+      { contact_id: null, tag_name: 'suporte' },
+      { contact_id: 'c1', tag_name: null },
+      { contact_id: 'c1' },
+      { tag_name: 'venda' },
+      {},
+      { contact_id: '', tag_name: 'x' },
+      { contact_id: 'ok', tag_name: 'suporte técnico', confidence: 'alta', contacts: 42 },
+    ]);
+    expect(tickets.length).toBe(1);
+    expect(tickets[0].contactId).toBe('ok');
+    expect(tickets[0].confidence).toBeCloseTo(70); // confidence não-numérica → default
   });
 
   it('groupTagsIntoTickets: nº de tickets = contatos únicos; confiança exibida em [0,100]', () => {

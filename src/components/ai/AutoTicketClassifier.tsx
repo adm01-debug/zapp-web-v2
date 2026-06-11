@@ -39,7 +39,8 @@ export function AutoTicketClassifier() {
         .order('created_at', { ascending: false })
         .limit(100);
 
-      if (!error && tags) {
+      if (error) throw error;
+      if (tags) {
         const list = groupTagsIntoTickets(tags as Array<Record<string, unknown>>);
         setTickets(list);
 
@@ -67,7 +68,8 @@ export function AutoTicketClassifier() {
       toast.success('Classificação em lote concluída!');
       await loadClassifiedTickets();
     } catch {
-      toast.success('Classificação local aplicada com sucesso!');
+      // Falha real não pode soar como sucesso; ainda exibimos os dados locais
+      toast.error('Falha na classificação em lote; exibindo dados locais disponíveis.');
       await loadClassifiedTickets();
     } finally {
       setClassifying(false);

@@ -209,10 +209,15 @@ export function useQueues() {
 
       toast({
         title: queueId ? 'Contato atribuído' : 'Contato removido da fila',
-        description: queueId 
+        description: queueId
           ? 'O contato foi atribuído à fila e será distribuído automaticamente.'
           : 'O contato foi removido da fila.'
       });
+
+      // Atualiza waiting_count imediatamente após a atribuição.
+      // Não assinamos realtime de `contacts` de propósito: updated_at muda a
+      // cada mensagem recebida e geraria um refetch para cada evento de chat.
+      await fetchQueues();
     } catch (err) {
       log.error('Error assigning contact:', err);
       toast({

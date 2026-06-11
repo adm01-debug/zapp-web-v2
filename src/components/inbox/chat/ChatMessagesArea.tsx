@@ -89,12 +89,19 @@ export const ChatMessagesArea = memo(forwardRef<ChatMessagesAreaRef, ChatMessage
   }));
 
   const messageIds = useMemo(() => messages.map((message) => message.id).filter(Boolean), [messages]);
-  const messageIdsSet = useMemo(() => new Set(messageIds), [messageIds]);
+  // Chave primitiva estável: `messages` muda de referência a cada nova mensagem,
+  // e re-subscrever o canal realtime por referência geraria churn desnecessário
+  const messageIdsKey = useMemo(() => messageIds.join('|'), [messageIds]);
+  const messageIdsSet = useMemo(
+    () => new Set(messageIdsKey ? messageIdsKey.split('|') : []),
+    [messageIdsKey]
+  );
 
   useEffect(() => {
-    if (messageIds.length === 0) return;
+    if (messageIdsSet.size === 0) return;
 
-    const channel = RealtimeService.subscribeToReactions(messageIds[0] ?? 'empty', (payload) => {
+    const firstId = messageIdsSet.values().next().value as string;
+    const channel = RealtimeService.subscribeToReactions(firstId, (payload) => {
       const nextMessageId = (payload.new as { message_id?: string } | null)?.message_id;
       const prevMessageId = (payload.old as { message_id?: string } | null)?.message_id;
       const reactionMessageId = nextMessageId ?? prevMessageId;
@@ -105,7 +112,7 @@ export const ChatMessagesArea = memo(forwardRef<ChatMessagesAreaRef, ChatMessage
     });
 
     return () => { void RealtimeService.removeChannel(channel); };
-  }, [messageIds, messageIdsSet, queryClient]);
+  }, [messageIdsSet, queryClient]);
 
   const groupedMessages = useMemo(() => {
     return messages.reduce((groups, message) => {

@@ -114,33 +114,37 @@ export const EasterEggsProvider = forwardRef<HTMLDivElement, EasterEggsProviderP
   }, [celebrate]);
 
   useEffect(() => {
+    // Updates funcionais: o listener é registrado uma única vez em vez de
+    // ser removido/recriado a cada tecla digitada
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.code;
-      const newProgress = [...konamiProgress, key].slice(-KONAMI_CODE.length);
-      setKonamiProgress(newProgress);
-
-      if (newProgress.join(',') === KONAMI_CODE.join(',')) {
-        triggerKonamiEasterEgg();
-        setKonamiProgress([]);
-      }
+      setKonamiProgress(prev => {
+        const newProgress = [...prev, key].slice(-KONAMI_CODE.length);
+        if (newProgress.join(',') === KONAMI_CODE.join(',')) {
+          triggerKonamiEasterEgg();
+          return [];
+        }
+        return newProgress;
+      });
 
       // Detect typed secret codes
       if (e.key && e.key.length === 1 && /[a-z]/i.test(e.key)) {
-        const newTyped = (typedText + e.key.toLowerCase()).slice(-10);
-        setTypedText(newTyped);
-        
-        Object.entries(SECRET_CODES).forEach(([code, { name, action }]) => {
-          if (newTyped.endsWith(code)) {
+        setTypedText(prev => {
+          const newTyped = (prev + e.key.toLowerCase()).slice(-10);
+          const matched = Object.entries(SECRET_CODES).find(([code]) => newTyped.endsWith(code));
+          if (matched) {
+            const [, { name, action }] = matched;
             triggerSecretCode(name, action);
-            setTypedText('');
+            return '';
           }
+          return newTyped;
         });
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [konamiProgress, typedText, triggerKonamiEasterEgg, triggerSecretCode]);
+  }, [triggerKonamiEasterEgg, triggerSecretCode]);
 
   // Shake Detection (for mobile)
   useEffect(() => {

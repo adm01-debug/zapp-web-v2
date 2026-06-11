@@ -28,7 +28,7 @@ export function AnimatedCounter({ value, duration = 1, className }: AnimatedCoun
     };
     frame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frame);
-  }, [value, duration, prevRef]);
+  }, [value, duration]);
 
   return <motion.span key={displayValue} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className={className}>{displayValue.toLocaleString()}</motion.span>;
 }

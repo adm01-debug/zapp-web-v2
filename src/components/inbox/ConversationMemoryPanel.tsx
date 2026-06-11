@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -39,12 +39,7 @@ export function ConversationMemoryPanel({ contactId, profileId }: ConversationMe
   const [saving, setSaving] = useState(false);
   const [newItems, setNewItems] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    loadMemory();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
-  }, [contactId]);
-
-  const loadMemory = async () => {
+  const loadMemory = useCallback(async () => {
     setLoading(true);
     const { data } = await supabase
       .from('conversation_memory')
@@ -63,7 +58,11 @@ export function ConversationMemoryPanel({ contactId, profileId }: ConversationMe
       });
     }
     setLoading(false);
-  };
+  }, [contactId]);
+
+  useEffect(() => {
+    loadMemory();
+  }, [loadMemory]);
 
   const addItem = (key: keyof Pick<MemoryData, 'facts' | 'objections_handled' | 'promises_made' | 'pending_items'>) => {
     const value = newItems[key]?.trim();

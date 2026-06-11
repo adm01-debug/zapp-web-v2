@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
@@ -31,12 +31,7 @@ export function LeadRiskScorePanel({ contactId }: LeadRiskScorePanelProps) {
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    loadData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
-  }, [contactId]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     const { data } = await supabase
       .from('contacts')
       .select('lead_score, risk_score, lead_origin, consent_status')
@@ -49,7 +44,11 @@ export function LeadRiskScorePanel({ contactId }: LeadRiskScorePanelProps) {
       setConsentStatus(data.consent_status ?? '');
     }
     setLoaded(true);
-  };
+  }, [contactId]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const save = async () => {
     setSaving(true);

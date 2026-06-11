@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -35,12 +35,7 @@ export function NextBestActionEngine({ contactId, contactName }: NextBestActionP
   const [actions, setActions] = useState<NextAction[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    analyzeAndSuggest();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
-  }, [contactId]);
-
-  const analyzeAndSuggest = async () => {
+  const analyzeAndSuggest = useCallback(async () => {
     setLoading(true);
     const suggestedActions: NextAction[] = [];
 
@@ -158,7 +153,11 @@ export function NextBestActionEngine({ contactId, contactName }: NextBestActionP
 
     setActions(suggestedActions);
     setLoading(false);
-  };
+  }, [contactId, contactName]);
+
+  useEffect(() => {
+    analyzeAndSuggest();
+  }, [analyzeAndSuggest]);
 
   const priorityColors = {
     high: 'border-destructive/30 bg-destructive/5',

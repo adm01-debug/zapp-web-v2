@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,12 +47,7 @@ export function ConversationTasksPanel({ contactId, profileId }: ConversationTas
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
 
-  useEffect(() => {
-    loadTasks();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
-  }, [contactId]);
-
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     setLoading(true);
     const { data } = await supabase
       .from('conversation_tasks')
@@ -61,7 +56,11 @@ export function ConversationTasksPanel({ contactId, profileId }: ConversationTas
       .order('created_at', { ascending: false });
     if (data) setTasks(data);
     setLoading(false);
-  };
+  }, [contactId]);
+
+  useEffect(() => {
+    loadTasks();
+  }, [loadTasks]);
 
   const addTask = async () => {
     if (!newTitle.trim()) return;

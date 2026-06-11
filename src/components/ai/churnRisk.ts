@@ -29,8 +29,9 @@ export function getRiskLevel(score: number): ChurnRisk['riskLevel'] {
 }
 
 export function computeChurnRisk(contact: ChurnContact, now: Date = new Date()): ChurnRisk {
-  const daysSinceUpdate = differenceInDays(now, new Date(contact.updated_at));
-  const daysSinceCreation = differenceInDays(now, new Date(contact.created_at));
+  // Clamp em 0: timestamps futuros (clock skew) não podem gerar dias negativos
+  const daysSinceUpdate = Math.max(0, differenceInDays(now, new Date(contact.updated_at)));
+  const daysSinceCreation = Math.max(0, differenceInDays(now, new Date(contact.created_at)));
 
   let score = 0;
   const reasons: string[] = [];

@@ -16,7 +16,7 @@ export function DemandForecast() {
 
   useEffect(() => {
     loadForecast();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount; a função de fetch lê os filtros correntes
   }, []);
 
   const loadForecast = async () => {

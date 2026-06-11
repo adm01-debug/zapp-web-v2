@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -34,10 +34,7 @@ export function CampaignABTesting({ campaignId }: CampaignABTestingProps) {
   const [newName, setNewName] = useState('');
   const [newContent, setNewContent] = useState('');
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
-  useEffect(() => { loadVariants(); }, [campaignId]);
-
-  const loadVariants = async () => {
+  const loadVariants = useCallback(async () => {
     setLoading(true);
     const { data } = await supabase
       .from('campaign_ab_variants')
@@ -46,7 +43,9 @@ export function CampaignABTesting({ campaignId }: CampaignABTestingProps) {
       .order('created_at');
     if (data) setVariants(data);
     setLoading(false);
-  };
+  }, [campaignId]);
+
+  useEffect(() => { loadVariants(); }, [loadVariants]);
 
   const addVariant = async () => {
     if (!newContent.trim()) return;

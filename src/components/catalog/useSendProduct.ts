@@ -40,6 +40,8 @@ export function useContactSearch(step: 'configure' | 'selectContact') {
   // Load recent contacts when entering step 2
   useEffect(() => {
     if (step !== 'selectContact') return;
+    // Captura o termo no disparo: o callback assíncrono não deve ler closure obsoleta
+    const searchTermAtDispatch = contactSearch.trim();
     setSearchingContacts(true);
     supabase
       .from('contacts')
@@ -47,10 +49,10 @@ export function useContactSearch(step: 'configure' | 'selectContact') {
       .order('updated_at', { ascending: false })
       .limit(15)
       .then(({ data }) => {
-        if (!contactSearch.trim()) setContactResults(data || []);
+        if (!searchTermAtDispatch) setContactResults(data || []);
         setSearchingContacts(false);
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga intencional apenas no mount/quando a chave muda; a função de fetch lê os filtros correntes
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- dispara só ao entrar no passo; o termo é capturado no momento do disparo
   }, [step]);
 
   const resetContactSelection = useCallback(() => {
