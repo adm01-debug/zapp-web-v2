@@ -45,9 +45,12 @@ export function ContactPurchasesPanel({ contactId, profileId }: ContactPurchases
   const [type, setType] = useState('purchase');
   // Troca rápida de contato: respostas atrasadas não podem sobrescrever a atual
   const guard = useRef(createRunGuard()).current;
+  // Chave ativa: um handler criado num render antigo não pode, após seu await,
+  // recarregar a lista do contato anterior (o reload re-legitimaria o run velho)
+  const activeContactRef = useRef(contactId);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- recarrega quando a chave da consulta muda; a função de fetch lê os filtros correntes
-  useEffect(() => { loadPurchases(); }, [contactId]);
+  useEffect(() => { activeContactRef.current = contactId; loadPurchases(); }, [contactId]);
 
   const loadPurchases = async () => {
     const runId = guard.start();
@@ -76,7 +79,7 @@ export function ContactPurchasesPanel({ contactId, profileId }: ContactPurchases
       setDialogOpen(false);
       setTitle('');
       setAmount('');
-      loadPurchases();
+      if (activeContactRef.current === contactId) loadPurchases();
     }
   };
 

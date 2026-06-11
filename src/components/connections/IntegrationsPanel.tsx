@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { createRunGuard } from '@/lib/runGuard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
@@ -112,13 +113,18 @@ export function IntegrationsPanel({
   const [chatwoot, setChatwoot] = useState<Record<string, unknown>>({ enabled: false });
   const [evolutionBot, setEvolutionBot] = useState<Record<string, unknown>>({ enabled: false });
 
+  // Troca rápida de instância: respostas atrasadas não podem sobrescrever a atual
+  const guard = useRef(createRunGuard()).current;
+
   // Getters individuais são useCallback estáveis; o objeto `api` é recriado a
   // cada render e jamais pode entrar em deps (causaria refetch em loop)
   const { getTypebot, getOpenAI, getDify, getFlowise, getChatwoot, getEvolutionBot } = api;
   const loadAll = useCallback(async () => {
+    const runId = guard.start();
     const load = async (getter: (n: string) => Promise<unknown>, setter: (v: Record<string, unknown>) => void) => {
       try {
         const data = await getter(instanceName);
+        if (!guard.isCurrent(runId)) return;
         if (data && typeof data === 'object') setter({ enabled: true, ...(data as Record<string, unknown>) });
       } catch (err) { log.error('Unexpected error in IntegrationsPanel:', err); }
     };
@@ -130,7 +136,7 @@ export function IntegrationsPanel({
       load(getChatwoot, setChatwoot),
       load(getEvolutionBot, setEvolutionBot),
     ]);
-  }, [getTypebot, getOpenAI, getDify, getFlowise, getChatwoot, getEvolutionBot, instanceName]);
+  }, [getTypebot, getOpenAI, getDify, getFlowise, getChatwoot, getEvolutionBot, instanceName, guard]);
 
   useEffect(() => {
     if (open && instanceName) loadAll();

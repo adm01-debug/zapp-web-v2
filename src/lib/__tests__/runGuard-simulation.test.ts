@@ -196,3 +196,119 @@ describe('runGuard: simulação de corridas assíncronas (centenas de cenários)
     }
   });
 });
+
+/**
+ * Segunda família de bug: a guarda protege contra RESPOSTAS atrasadas, mas um
+ * handler de mutação criado num render antigo (closure com a chave velha) que
+ * chama o loader DEPOIS da troca de contato inicia um run NOVO — e o run novo
+ * é, por definição, o corrente. O loader re-legitimaria a chave antiga.
+ * O conserto nos painéis é o gate de chave ativa via ref:
+ *   if (activeKeyRef.current === closureKey) loadX();
+ */
+async function simulateStaleMutationReload(opts: {
+  mutations: number;
+  resolveBeforeSwitch: number;
+  gated: boolean;
+}): Promise<{ state: string; reloadsForOldKey: number }> {
+  const guard = createRunGuard();
+  let activeKey = 'k0'; // papel do activeContactRef.current
+  let state = 'nenhum';
+  let reloadsForOldKey = 0;
+  const loaderGates: Deferred[] = [];
+  const pending: Promise<void>[] = [];
+
+  // Loader real dos painéis: start() síncrono, fetch assíncrono, escrita guardada
+  const loader = (key: string) => {
+    const runId = guard.start();
+    const gate = deferred();
+    loaderGates.push(gate);
+    const run = (async () => {
+      await gate.promise;
+      if (!guard.isCurrent(runId)) return;
+      state = key;
+    })();
+    pending.push(run);
+  };
+
+  const drain = async () => {
+    for (let i = 0; i < 6; i++) await Promise.resolve();
+  };
+
+  // Efeito inicial: contato k0 carrega
+  loader('k0');
+
+  // Mutações disparadas enquanto k0 está ativo (closure captura k0)
+  const mutationGates = Array.from({ length: opts.mutations }, deferred);
+  mutationGates.forEach((gate) => {
+    const closureKey = activeKey; // 'k0'
+    pending.push(
+      (async () => {
+        await gate.promise; // INSERT/UPDATE/DELETE em voo
+        if (opts.gated && activeKey !== closureKey) return; // gate de chave ativa
+        if (activeKey !== closureKey) reloadsForOldKey++;
+        loader(closureKey);
+      })(),
+    );
+  });
+
+  // Parte das mutações conclui ANTES da troca: reload legítimo, deve passar
+  for (let i = 0; i < opts.resolveBeforeSwitch; i++) {
+    mutationGates[i].resolve();
+    await drain();
+  }
+
+  // Troca de contato: efeito atualiza a chave ativa e recarrega k1
+  activeKey = 'k1';
+  loader('k1');
+
+  // O restante das mutações conclui DEPOIS da troca (closures obsoletas)
+  for (let i = opts.resolveBeforeSwitch; i < opts.mutations; i++) {
+    mutationGates[i].resolve();
+    await drain();
+  }
+
+  // Resolve os fetches dos loaders na ordem de criação (inclui os criados
+  // dinamicamente pelas mutações); a guarda decide quem escreve
+  let idx = 0;
+  while (idx < loaderGates.length) {
+    loaderGates[idx].resolve();
+    idx++;
+    await drain();
+  }
+  await Promise.all(pending);
+  return { state, reloadsForOldKey };
+}
+
+describe('runGuard + gate de chave ativa: mutações obsoletas não re-legitimam o contato antigo', () => {
+  it('150 cenários: COM o gate, nenhuma mutação atrasada recarrega a chave antiga e k1 sempre vence', async () => {
+    for (let seed = 1; seed <= 150; seed++) {
+      const rand = mulberry32(seed * 2654435761);
+      const mutations = 1 + Math.floor(rand() * 6); // 1..6 mutações em voo
+      const resolveBeforeSwitch = Math.floor(rand() * mutations); // 0..mutations-1 (≥1 fica para depois)
+      const { state, reloadsForOldKey } = await simulateStaleMutationReload({
+        mutations,
+        resolveBeforeSwitch,
+        gated: true,
+      });
+      expect(state, `seed=${seed} mut=${mutations} antes=${resolveBeforeSwitch}`).toBe('k1');
+      expect(reloadsForOldKey, `seed=${seed}`).toBe(0);
+    }
+  });
+
+  it('150 cenários: SEM o gate, a mutação atrasada promove k0 a run corrente e sobrescreve k1 (bug reproduzido)', async () => {
+    for (let seed = 1; seed <= 150; seed++) {
+      const rand = mulberry32(seed * 40503);
+      const mutations = 1 + Math.floor(rand() * 6);
+      const resolveBeforeSwitch = Math.floor(rand() * mutations);
+      const { state, reloadsForOldKey } = await simulateStaleMutationReload({
+        mutations,
+        resolveBeforeSwitch,
+        gated: false,
+      });
+      // Sensibilidade do harness: sem o gate, o reload obsoleto SEMPRE ocorre
+      // e o último run criado (k0 da mutação atrasada) vence sobre k1.
+      expect(reloadsForOldKey, `seed=${seed}`).toBeGreaterThan(0);
+      expect(state, `seed=${seed} mut=${mutations} antes=${resolveBeforeSwitch}`).toBe('k0');
+    }
+  });
+});

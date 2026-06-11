@@ -43,6 +43,9 @@ export function ConversationMemoryPanel({ contactId, profileId }: ConversationMe
   const [newItems, setNewItems] = useState<Record<string, string>>({});
   // Troca rápida de contato: respostas atrasadas não podem sobrescrever a atual
   const guard = useRef(createRunGuard()).current;
+  // Chave ativa: um handler criado num render antigo não pode, após seu await,
+  // recarregar a memória do contato anterior (o reload re-legitimaria o run velho)
+  const activeContactRef = useRef(contactId);
 
   const loadMemory = useCallback(async () => {
     const runId = guard.start();
@@ -71,8 +74,9 @@ export function ConversationMemoryPanel({ contactId, profileId }: ConversationMe
   }, [contactId, guard]);
 
   useEffect(() => {
+    activeContactRef.current = contactId;
     loadMemory();
-  }, [loadMemory]);
+  }, [contactId, loadMemory]);
 
   const addItem = (key: keyof Pick<MemoryData, 'facts' | 'objections_handled' | 'promises_made' | 'pending_items'>) => {
     const value = newItems[key]?.trim();
@@ -104,7 +108,7 @@ export function ConversationMemoryPanel({ contactId, profileId }: ConversationMe
 
     if (!error) {
       toast.success('Memória salva');
-      loadMemory();
+      if (activeContactRef.current === contactId) loadMemory();
     } else {
       toast.error('Erro ao salvar');
     }

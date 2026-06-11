@@ -36,6 +36,9 @@ export function CampaignABTesting({ campaignId }: CampaignABTestingProps) {
   const [newContent, setNewContent] = useState('');
   // Troca rápida de campanha: respostas atrasadas não podem sobrescrever a atual
   const guard = useRef(createRunGuard()).current;
+  // Chave ativa: um handler criado num render antigo não pode, após seu await,
+  // recarregar variantes da campanha anterior (o reload re-legitimaria o run velho)
+  const activeCampaignRef = useRef(campaignId);
 
   const loadVariants = useCallback(async () => {
     const runId = guard.start();
@@ -50,7 +53,10 @@ export function CampaignABTesting({ campaignId }: CampaignABTestingProps) {
     setLoading(false);
   }, [campaignId, guard]);
 
-  useEffect(() => { loadVariants(); }, [loadVariants]);
+  useEffect(() => {
+    activeCampaignRef.current = campaignId;
+    loadVariants();
+  }, [campaignId, loadVariants]);
 
   const addVariant = async () => {
     if (!newContent.trim()) return;
@@ -65,21 +71,21 @@ export function CampaignABTesting({ campaignId }: CampaignABTestingProps) {
       setDialogOpen(false);
       setNewName('');
       setNewContent('');
-      loadVariants();
+      if (activeCampaignRef.current === campaignId) loadVariants();
     }
   };
 
   const deleteVariant = async (id: string) => {
     await supabase.from('campaign_ab_variants').delete().eq('id', id);
     toast.success('Variante removida');
-    loadVariants();
+    if (activeCampaignRef.current === campaignId) loadVariants();
   };
 
   const declareWinner = async (id: string) => {
     await supabase.from('campaign_ab_variants').update({ is_winner: false }).eq('campaign_id', campaignId);
     await supabase.from('campaign_ab_variants').update({ is_winner: true }).eq('id', id);
     toast.success('Vencedor declarado!');
-    loadVariants();
+    if (activeCampaignRef.current === campaignId) loadVariants();
   };
 
   const getConversionRate = (v: ABVariant) => {
