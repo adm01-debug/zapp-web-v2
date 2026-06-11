@@ -24,7 +24,18 @@
    const location = useLocation();
    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
  
-   const loading = authLoading || rolesLoading;
+    const [safetyForced, setSafetyForced] = useState(false);
+    const loading = (authLoading || rolesLoading) && !safetyForced;
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        if (authLoading || rolesLoading) {
+          console.warn('[ProtectedRoute] Safety timeout reached, forcing render');
+          setSafetyForced(true);
+        }
+      }, 7000);
+      return () => clearTimeout(timer);
+    }, [authLoading, rolesLoading]);
 
    useEffect(() => {
      console.log('[ProtectedRoute] State:', { 
@@ -38,22 +49,36 @@
      });
    }, [location.pathname, authLoading, rolesLoading, user, requiredPermission, hasPermission, loading]);
 
-   useEffect(() => {
-     if (!loading && user && requiredPermission) {
-       console.log('[ProtectedRoute] Checking permission:', requiredPermission);
-       RoleService.checkPermission(user.id, requiredPermission)
-         .then(result => {
-           console.log('[ProtectedRoute] Permission result:', requiredPermission, result);
-           setHasPermission(result);
-         })
-         .catch(err => {
-           console.error('[ProtectedRoute] Permission error:', err);
-           setHasPermission(false);
-         });
-     } else if (!loading && !requiredPermission) {
-       setHasPermission(true);
-     }
-   }, [loading, user, requiredPermission]);
+    useEffect(() => {
+      if (!loading && user && requiredPermission) {
+        console.log('[ProtectedRoute] Checking permission:', requiredPermission);
+        
+        const permTimeout = setTimeout(() => {
+          if (hasPermission === null) {
+            console.warn('[ProtectedRoute] Permission check timed out');
+            setHasPermission(false);
+          }
+        }, 5000);
+
+        RoleService.checkPermission(user.id, requiredPermission)
+          .then(result => {
+            console.log('[ProtectedRoute] Permission result:', requiredPermission, result);
+            setHasPermission(result);
+          })
+          .catch(err => {
+            console.error('[ProtectedRoute] Permission error:', err);
+            setHasPermission(false);
+          })
+          .finally(() => {
+            clearTimeout(permTimeout);
+          });
+      } else if (!loading && !requiredPermission) {
+        setHasPermission(true);
+      } else if (!loading && !user) {
+        // Not logged in, handled by the !user redirect
+        setHasPermission(false);
+      }
+    }, [loading, user, requiredPermission]);
 
    if (loading || (requiredPermission && hasPermission === null)) {
      return (
