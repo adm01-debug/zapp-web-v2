@@ -16,11 +16,12 @@ vi.mock('@/hooks/integrations/useWhatsAppStatus', () => ({
   useWhatsAppStatus: () => mockData,
 }));
 
-// Mock useEvolutionApi
+// Mock useEvolutionApi — referências estáveis: identidade nova por render
+// dispararia o efeito de mídia em loop (o hook real usa useCallback)
+const mockGetMediaBase64 = vi.fn().mockResolvedValue({ base64: '', mimetype: 'image/jpeg' });
+const mockEvolutionApi = { getMediaBase64: mockGetMediaBase64 };
 vi.mock('@/hooks/integrations/useEvolutionApi', () => ({
-  useEvolutionApi: () => ({
-    getMediaBase64: vi.fn().mockResolvedValue({ base64: '', mimetype: 'image/jpeg' }),
-  }),
+  useEvolutionApi: () => mockEvolutionApi,
 }));
 
 // Mock formatRelativeTime

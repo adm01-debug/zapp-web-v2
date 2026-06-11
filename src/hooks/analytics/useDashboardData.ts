@@ -24,12 +24,12 @@
      }).length;
  
      const queuesStats = (queues || []).map(queue => {
-       const members = (queue as any).queue_members || [];
-       const onlineMembers = members.filter((m: any) => m.is_active && m.profiles?.is_active).length;
+       const members = queue.queue_members || [];
+       const onlineMembers = members.filter((m) => m.is_active && m.profiles?.is_active).length;
        return {
          id: queue.id,
          name: queue.name,
-         color: (queue as any).color,
+         color: queue.color,
          waitingCount: 0,
          onlineAgents: onlineMembers,
          totalAgents: members.length,

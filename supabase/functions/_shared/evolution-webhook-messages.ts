@@ -6,10 +6,11 @@ import {
   generatePhoneVariants,
 } from "./evolution-helpers.ts";
 import { persistMediaToStorage, persistMediaViaApi, parseMessageContent } from "./evolution-media.ts";
+import type { SupabaseClient } from "./deno-types.ts";
 
 // deno-lint-ignore no-explicit-any
 export async function handleOutgoingWhatsAppMessage(
-  supabase: any, instance: string, data: Record<string, unknown>,
+  supabase: SupabaseClient, instance: string, data: Record<string, unknown>,
   key: { remoteJid?: string; remoteJidAlt?: string; participant?: string; participantAlt?: string; fromMe: boolean; id: string },
 ) {
   const externalId = key.id;
@@ -69,7 +70,7 @@ export async function handleOutgoingWhatsAppMessage(
 
 // deno-lint-ignore no-explicit-any
 export async function handleIncomingMessage(
-  supabase: any, instance: string, data: Record<string, unknown>,
+  supabase: SupabaseClient, instance: string, data: Record<string, unknown>,
   key: { remoteJid?: string; remoteJidAlt?: string; participant?: string; participantAlt?: string; fromMe: boolean; id: string },
   supabaseUrl: string, supabaseServiceKey: string
 ) {
@@ -168,7 +169,7 @@ export async function handleIncomingMessage(
 
 // deno-lint-ignore no-explicit-any
 export async function handleStickerMedia(
-  supabase: any, instance: string, data: Record<string, unknown>,
+  supabase: SupabaseClient, instance: string, data: Record<string, unknown>,
   message: Record<string, unknown> | undefined, key: { id: string }
 ): Promise<string | null> {
   let mediaUrl: string | null = null;
@@ -251,8 +252,7 @@ export async function handleStickerMedia(
   return mediaUrl;
 }
 
-// deno-lint-ignore no-explicit-any
-export async function handleAudioTranscription(supabase: any, _contactId: string, messageId: string, mediaUrl: string, supabaseUrl: string, supabaseServiceKey: string) {
+export async function handleAudioTranscription(supabase: SupabaseClient, _contactId: string, messageId: string, mediaUrl: string, supabaseUrl: string, supabaseServiceKey: string) {
   const { data: globalSetting } = await supabase.from('global_settings')
     .select('value').eq('key', 'auto_transcription_enabled').maybeSingle();
   if (globalSetting?.value === 'false') return;

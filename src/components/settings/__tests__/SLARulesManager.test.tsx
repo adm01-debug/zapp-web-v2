@@ -3,6 +3,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 
+type Resolver = (value: { data?: unknown[]; error: null }) => void;
+
 // Mock supabase
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
@@ -13,30 +15,30 @@ vi.mock('@/integrations/supabase/client', () => ({
             is: () => ({
               is: () => ({
                 is: () => ({
-                  then: (r: unknown) => (r as Function)({ data: [], error: null }),
+                  then: (r: unknown) => (r as Resolver)({ data: [], error: null }),
                 }),
-                then: (r: unknown) => (r as Function)({ data: [], error: null }),
+                then: (r: unknown) => (r as Resolver)({ data: [], error: null }),
               }),
-              then: (r: unknown) => (r as Function)({ data: [], error: null }),
+              then: (r: unknown) => (r as Resolver)({ data: [], error: null }),
             }),
-            then: (r: unknown) => (r as Function)({ data: [], error: null }),
+            then: (r: unknown) => (r as Resolver)({ data: [], error: null }),
           }),
-          then: (r: unknown) => (r as Function)({ data: [], error: null }),
+          then: (r: unknown) => (r as Resolver)({ data: [], error: null }),
         }),
         not: () => ({
-          then: (r: unknown) => (r as Function)({ data: [], error: null }),
+          then: (r: unknown) => (r as Resolver)({ data: [], error: null }),
         }),
         eq: () => ({
-          then: (r: unknown) => (r as Function)({ data: [], error: null }),
+          then: (r: unknown) => (r as Resolver)({ data: [], error: null }),
         }),
-        then: (r: unknown) => (r as Function)({ data: [], error: null }),
+        then: (r: unknown) => (r as Resolver)({ data: [], error: null }),
       }),
-      insert: () => ({ then: (r: unknown) => (r as Function)({ error: null }) }),
+      insert: () => ({ then: (r: unknown) => (r as Resolver)({ error: null }) }),
       update: () => ({
-        eq: () => ({ then: (r: unknown) => (r as Function)({ error: null }) }),
+        eq: () => ({ then: (r: unknown) => (r as Resolver)({ error: null }) }),
       }),
       delete: () => ({
-        eq: () => ({ then: (r: unknown) => (r as Function)({ error: null }) }),
+        eq: () => ({ then: (r: unknown) => (r as Resolver)({ error: null }) }),
       }),
     }),
   },

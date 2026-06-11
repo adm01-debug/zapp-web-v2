@@ -23,6 +23,25 @@ interface SpeechToTextReturn {
 type SpeechRecognitionInstance = any;
 type SpeechRecognitionCtor = new () => SpeechRecognitionInstance;
 
+// Tipos mínimos da Web Speech API (ausentes no lib DOM do TypeScript)
+interface SpeechRecognitionAlternativeLike {
+  transcript: string;
+}
+
+interface SpeechRecognitionResultLike {
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionAlternativeLike;
+}
+
+interface SpeechRecognitionEventLike {
+  resultIndex: number;
+  results: ArrayLike<SpeechRecognitionResultLike>;
+}
+
+interface SpeechRecognitionErrorEventLike {
+  error: string;
+}
+
 function getSpeechRecognition(): SpeechRecognitionCtor | null {
   if (typeof window === 'undefined') return null;
   const w = window as unknown as Record<string, unknown>;
@@ -52,7 +71,7 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): SpeechToT
     recognition.continuous = continuous;
     recognition.interimResults = true;
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: SpeechRecognitionEventLike) => {
       let finalTranscript = '';
       let interimTranscript = '';
 
@@ -78,7 +97,7 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}): SpeechToT
       onEndRef.current?.();
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
       log.warn('Speech recognition error:', event.error);
       setIsListening(false);
     };

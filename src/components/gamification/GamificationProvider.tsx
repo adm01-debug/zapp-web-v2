@@ -185,7 +185,8 @@ export function GamificationProvider({ children }: { children: ReactNode }) {
       const calculatedLevel = calculateLevel(dbStats.xp);
       if (calculatedLevel > currentLevel) triggerLevelUp(calculatedLevel);
     }
-  }, [dbStats?.xp]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- gatilho é o XP; usar dbStats inteiro dispararia level-up em updates não relacionados
+  }, [dbStats?.xp, triggerLevelUp]);
 
   return (
     <GamificationContext.Provider

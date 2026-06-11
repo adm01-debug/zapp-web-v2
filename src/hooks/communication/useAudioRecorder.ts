@@ -20,6 +20,21 @@ export function useAudioRecorder(options: UseAudioRecorderOptions = {}) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
+  // Fonte da verdade é o MediaRecorder: o state React em closure ficaria
+  // obsoleto dentro do setInterval e o corte no tempo máximo nunca dispararia
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+      streamRef.current?.getTracks().forEach(track => track.stop());
+
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
+      setIsRecording(false);
+    }
+  }, []);
+
   const startRecording = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -74,36 +89,23 @@ export function useAudioRecorder(options: UseAudioRecorderOptions = {}) {
         variant: 'destructive',
       });
     }
-  }, [maxDuration, onRecordingComplete]);
-
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      streamRef.current?.getTracks().forEach(track => track.stop());
-      
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      
-      setIsRecording(false);
-    }
-  }, [isRecording]);
+  }, [maxDuration, onRecordingComplete, stopRecording]);
 
   const cancelRecording = useCallback(() => {
-    if (mediaRecorderRef.current && isRecording) {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
       streamRef.current?.getTracks().forEach(track => track.stop());
-      
+
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
-      
+
       chunksRef.current = [];
       setIsRecording(false);
       setDuration(0);
       setAudioUrl(null);
     }
-  }, [isRecording]);
+  }, []);
 
   const uploadAudio = useCallback(async (blob: Blob, conversationId: string) => {
     const fileName = `${conversationId}/${Date.now()}.webm`;

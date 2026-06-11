@@ -142,12 +142,12 @@ export function useExternalMutation() {
       match?: Record<string, unknown>;
     }) => {
       if (params.action === 'insert') {
-        const { data, error } = await getExternalSupabase().from(params.table).insert(params.data as any).select();
+        const { data, error } = await getExternalSupabase().from(params.table).insert(params.data as never).select();
         if (error) throw new Error(error.message);
         return data;
       }
       if (params.action === 'update') {
-        let q = getExternalSupabase().from(params.table).update(params.data as any);
+        let q = getExternalSupabase().from(params.table).update(params.data as never);
         if (params.match) {
           for (const [k, v] of Object.entries(params.match)) q = q.eq(k, v as string);
         }

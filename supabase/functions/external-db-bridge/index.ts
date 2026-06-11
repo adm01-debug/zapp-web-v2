@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { handleCors, errorResponse, jsonResponse, requireEnv, Logger } from "../_shared/validation.ts";
 import { ExternalDbBridgeSchema, parseBody } from "../_shared/schemas.ts";
+import type { SupabaseClient } from "../_shared/deno-types.ts";
 
 // ─── Telemetry helper ─────────────────────────────────────────
 interface TelemetryPayload {
@@ -27,8 +28,7 @@ function classifySeverity(durationMs: number, hasError: boolean): string {
   return "ok";
 }
 
-// deno-lint-ignore no-explicit-any
-async function emitTelemetry(supabaseAdmin: any, payload: TelemetryPayload): Promise<void> {
+async function emitTelemetry(supabaseAdmin: SupabaseClient, payload: TelemetryPayload): Promise<void> {
   try {
     await supabaseAdmin.from("query_telemetry").insert({
       operation: payload.operation,
@@ -88,7 +88,7 @@ Deno.serve(async (req) => {
 
     try {
       if (action === "select" && table) {
-        // deno-lint-ignore no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- builder dinâmico: a cadeia de filtros varia por requisição
         let query: any = supabaseAdmin.from(table).select(params?.select as string || "*", {
           count: (countMode as "exact" | "planned" | "estimated") || undefined,
         });
@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
         result = data;
         recordCount = Array.isArray(data) ? data.length : 1;
       } else if (action === "update" && table) {
-        // deno-lint-ignore no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- builder dinâmico: a cadeia de filtros varia por requisição
         let query: any = supabaseAdmin.from(table).update(params?.values || {});
         if (params?.match) {
           for (const [k, v] of Object.entries(params.match)) {
@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
         result = data;
         recordCount = Array.isArray(data) ? data.length : 0;
       } else if (action === "delete" && table) {
-        // deno-lint-ignore no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- builder dinâmico: a cadeia de filtros varia por requisição
         let query: any = supabaseAdmin.from(table).delete();
         if (params?.match) {
           for (const [k, v] of Object.entries(params.match)) {

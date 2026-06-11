@@ -1,8 +1,9 @@
+import type { SupabaseClient } from "./deno-types.ts";
 // Shared sync action handlers for evolution-sync/index.ts
 
 // deno-lint-ignore no-explicit-any
 export async function syncContacts(
-  supabase: any, evolutionApiUrl: string, evolutionApiKey: string,
+  supabase: SupabaseClient, evolutionApiUrl: string, evolutionApiKey: string,
   instanceName: string, corsHeaders: Record<string, string>, page: number, offset: number
 ): Promise<Response> {
   console.log(`[Sync] Fetching contacts from instance ${instanceName}`);
@@ -55,7 +56,7 @@ export async function syncContacts(
 
 // deno-lint-ignore no-explicit-any
 export async function syncMessages(
-  supabase: any, evolutionApiUrl: string, evolutionApiKey: string,
+  supabase: SupabaseClient, evolutionApiUrl: string, evolutionApiKey: string,
   instanceName: string, contactPhone: string, corsHeaders: Record<string, string>
 ): Promise<Response> {
   if (!contactPhone) throw new Error('contactPhone is required');
@@ -106,7 +107,7 @@ export async function syncMessages(
 
 // deno-lint-ignore no-explicit-any
 export async function syncAllMessages(
-  supabase: any, evolutionApiUrl: string, evolutionApiKey: string,
+  supabase: SupabaseClient, evolutionApiUrl: string, evolutionApiKey: string,
   instanceName: string, messagesPerContact: number, corsHeaders: Record<string, string>
 ): Promise<Response> {
   const { data: conn } = await supabase.from('whatsapp_connections').select('id').eq('instance_id', instanceName).maybeSingle();
@@ -178,8 +179,7 @@ export async function setupWebhook(
   });
 }
 
-// deno-lint-ignore no-explicit-any
-export async function cleanupMock(supabase: any, corsHeaders: Record<string, string>): Promise<Response> {
+export async function cleanupMock(supabase: SupabaseClient, corsHeaders: Record<string, string>): Promise<Response> {
   const { data: mockContacts } = await supabase.from('contacts').select('id').like('id', 'c1000001-%');
   if (mockContacts?.length) {
     const mockIds = mockContacts.map((c: { id: string }) => c.id);
@@ -194,7 +194,7 @@ export async function cleanupMock(supabase: any, corsHeaders: Record<string, str
 
 // deno-lint-ignore no-explicit-any
 export async function fullSync(
-  supabase: any, evolutionApiUrl: string, evolutionApiKey: string,
+  supabase: SupabaseClient, evolutionApiUrl: string, evolutionApiKey: string,
   instanceName: string, supabaseUrl: string, corsHeaders: Record<string, string>
 ): Promise<Response> {
   const results: Record<string, unknown> = {};
@@ -276,8 +276,21 @@ export const WEBHOOK_EVENTS = [
   'LABELS_EDIT', 'LABELS_ASSOCIATION', 'CALL',
 ];
 
-// deno-lint-ignore no-explicit-any
-function parseEvolutionMessage(messageObj: any): { content: string; messageType: string; shouldSkip?: boolean } {
+type EvolutionMessageObj = {
+  conversation?: string;
+  extendedTextMessage?: { text?: string };
+  imageMessage?: { caption?: string };
+  videoMessage?: { caption?: string };
+  audioMessage?: unknown;
+  documentMessage?: { fileName?: string };
+  stickerMessage?: unknown;
+  locationMessage?: unknown;
+  contactMessage?: unknown;
+  reactionMessage?: unknown;
+  [key: string]: unknown;
+};
+
+function parseEvolutionMessage(messageObj: EvolutionMessageObj): { content: string; messageType: string; shouldSkip?: boolean } {
   if (messageObj.conversation) return { content: messageObj.conversation, messageType: 'text' };
   if (messageObj.extendedTextMessage?.text) return { content: messageObj.extendedTextMessage.text, messageType: 'text' };
   if (messageObj.imageMessage) return { content: messageObj.imageMessage.caption || '[Imagem]', messageType: 'image' };

@@ -162,7 +162,7 @@ supabase secrets list --project-ref allrjhkpuscmgbsnmjlv
 ```env
 # .env.local
 VITE_SUPABASE_URL=https://allrjhkpuscmgbsnmjlv.supabase.co
-VITE_SUPABASE_ANON_KEY=xxx
+VITE_SUPABASE_PUBLISHABLE_KEY=xxx
 
 # Externo
 VITE_EXTERNAL_SUPABASE_URL=https://pgxfvjmuubtbowutlide.supabase.co

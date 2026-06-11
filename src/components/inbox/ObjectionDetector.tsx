@@ -121,9 +121,12 @@ function ShimmerBlock({ className }: { className?: string }) {
 export function ObjectionDetector({ contactId, contactName, lastMessages, allMessages = [], onSelectSuggestion }: ObjectionDetectorProps) {
   const detector = useObjectionDetector(contactId, contactName, lastMessages, allMessages);
 
+  // detector.handleSelect é estável (useCallback([]) no hook); desestruturar
+  // permite deps exatas sem supressão de lint
+  const { handleSelect: detectorHandleSelect } = detector;
   const handleSelect = useCallback((text: string) => {
-    detector.handleSelect(text, onSelectSuggestion);
-  }, [detector.handleSelect, onSelectSuggestion]);
+    detectorHandleSelect(text, onSelectSuggestion);
+  }, [detectorHandleSelect, onSelectSuggestion]);
 
   /* ── Pre-analysis state ── */
   if (!detector.analyzed) {

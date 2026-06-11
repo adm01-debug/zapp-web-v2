@@ -2,9 +2,10 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
-import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
+// PWA/service worker desativado de propósito (problemas de preview) —
+// useServiceWorker atua como kill-switch limpando workers legados.
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -13,8 +14,6 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === "development" && componentTagger(),
-    // PWA disabled to resolve preview issues
-
   ].filter(Boolean),
   resolve: {
     alias: {

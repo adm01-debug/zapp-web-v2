@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.87.1";
 import { handleCors, errorResponse, jsonResponse, requireEnv, Logger } from "../_shared/validation.ts";
 import { GmailSendActionSchema, parseBody } from "../_shared/schemas.ts";
+import type { SupabaseClient } from "../_shared/deno-types.ts";
 
 const GMAIL_API = "https://gmail.googleapis.com/gmail/v1/users/me";
 
@@ -82,15 +83,13 @@ function buildMimeMessage(options: {
   }
 }
 
-// deno-lint-ignore no-explicit-any
-async function getTokens(supabase: any, accountId: string): Promise<{ access_token: string; refresh_token: string }> {
+async function getTokens(supabase: SupabaseClient, accountId: string): Promise<{ access_token: string; refresh_token: string }> {
   const { data, error } = await supabase.rpc("get_gmail_tokens", { p_account_id: accountId });
   if (error || !data?.length) throw new Error("Failed to retrieve tokens");
   return data[0];
 }
 
-// deno-lint-ignore no-explicit-any
-async function storeTokens(supabase: any, accountId: string, accessToken: string, refreshToken?: string | null) {
+async function storeTokens(supabase: SupabaseClient, accountId: string, accessToken: string, refreshToken?: string | null) {
   await supabase.rpc("store_gmail_tokens", {
     p_account_id: accountId,
     p_access_token: accessToken,
@@ -98,8 +97,7 @@ async function storeTokens(supabase: any, accountId: string, accessToken: string
   });
 }
 
-// deno-lint-ignore no-explicit-any
-async function ensureValidToken(supabase: any, account: any): Promise<string> {
+async function ensureValidToken(supabase: SupabaseClient, account: { id: string; email_address?: string; token_expires_at: string; [key: string]: unknown }): Promise<string> {
   const now = new Date();
   const expiresAt = new Date(account.token_expires_at);
   
@@ -231,8 +229,7 @@ Deno.serve(async (req) => {
           from: account.email_address, to: Array.isArray(to) ? to : [to || ""],
           cc: cc || [], bcc: bcc || [], subject: subject || "", textBody: text_body, htmlBody: html_body,
         });
-        // deno-lint-ignore no-explicit-any
-        const draftBody: any = { message: { raw: encodeBase64Url(raw) } };
+        const draftBody: { message: { raw: string; threadId?: string } } = { message: { raw: encodeBase64Url(raw) } };
         if (thread_id) draftBody.message.threadId = thread_id;
 
         const response = await fetch(`${GMAIL_API}/drafts`, {

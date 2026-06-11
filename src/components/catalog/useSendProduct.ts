@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/ui/use-toast';
 import { getLogger } from '@/lib/logger';
@@ -18,12 +18,21 @@ export function useContactSearch(step: 'configure' | 'selectContact') {
   const [searchingContacts, setSearchingContacts] = useState(false);
   const [selectedContact, setSelectedContact] = useState<ContactResult | null>(null);
 
+  // Espelha o termo corrente para callbacks assíncronos decidirem com o valor
+  // mais recente, não com a closure do momento do disparo
+  const latestSearchRef = useRef('');
+  useEffect(() => {
+    latestSearchRef.current = contactSearch.trim();
+  }, [contactSearch]);
+
   // Search contacts with debounce
   useEffect(() => {
     if (step !== 'selectContact' || !contactSearch.trim()) {
       setContactResults([]);
+      setSearchingContacts(false);
       return;
     }
+    let cancelled = false;
     const timeout = setTimeout(async () => {
       setSearchingContacts(true);
       const { data } = await supabase
@@ -31,15 +40,21 @@ export function useContactSearch(step: 'configure' | 'selectContact') {
         .select('id, name, phone, avatar_url')
         .or(`name.ilike.%${contactSearch}%,phone.ilike.%${contactSearch}%`)
         .limit(15);
+      if (cancelled) return;
       setContactResults(data || []);
       setSearchingContacts(false);
     }, 300);
-    return () => clearTimeout(timeout);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
   }, [contactSearch, step]);
 
   // Load recent contacts when entering step 2
   useEffect(() => {
     if (step !== 'selectContact') return;
+    const searchTermAtDispatch = contactSearch.trim();
+    let cancelled = false;
     setSearchingContacts(true);
     supabase
       .from('contacts')
@@ -47,9 +62,18 @@ export function useContactSearch(step: 'configure' | 'selectContact') {
       .order('updated_at', { ascending: false })
       .limit(15)
       .then(({ data }) => {
-        if (!contactSearch.trim()) setContactResults(data || []);
+        if (cancelled) return;
+        // Só aplica os recentes se o usuário continua sem digitar nada:
+        // uma resposta tardia não pode sobrescrever resultados da busca
+        if (!searchTermAtDispatch && !latestSearchRef.current) {
+          setContactResults(data || []);
+        }
         setSearchingContacts(false);
       });
+    return () => {
+      cancelled = true;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- dispara só ao entrar no passo; o termo é capturado no disparo e revalidado via ref
   }, [step]);
 
   const resetContactSelection = useCallback(() => {

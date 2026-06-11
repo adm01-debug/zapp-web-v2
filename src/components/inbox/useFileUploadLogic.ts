@@ -167,7 +167,7 @@ export function useFileUploadLogic(opts: {
       setCurrentQueueIndex(i);
       if (fileQueue[i].validation.valid) {
         const success = await sendSingleQueueFile(fileQueue[i], i);
-        success ? successCount++ : errorCount++;
+        if (success) successCount++; else errorCount++;
         if (i < fileQueue.length - 1) await new Promise(r => setTimeout(r, 500));
       } else { errorCount++; }
     }

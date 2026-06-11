@@ -1,7 +1,13 @@
-// @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { AutoTicketClassifier } from '../AutoTicketClassifier';
+import {
+  CATEGORIES,
+  PRIORITY_MAP,
+  classifyTag,
+  derivePriority,
+  groupTagsIntoTickets,
+} from '../ticketClassification';
 
 const mockTags = [
   { id: 't1', contact_id: 'c1', tag_name: 'suporte técnico', confidence: 0.9, source: 'ai', created_at: new Date().toISOString(), contacts: { name: 'Maria', phone: '+5511999' } },
@@ -71,16 +77,6 @@ describe('AutoTicketClassifier', () => {
 
   // ===== CLASSIFICATION LOGIC =====
   describe('Classification logic (classifyTag)', () => {
-    const classifyTag = (tagName: string): string => {
-      const lower = tagName.toLowerCase();
-      if (lower.includes('suporte') || lower.includes('bug') || lower.includes('erro')) return 'Suporte Técnico';
-      if (lower.includes('vend') || lower.includes('preço') || lower.includes('compra')) return 'Vendas';
-      if (lower.includes('pag') || lower.includes('boleto') || lower.includes('fatura')) return 'Financeiro';
-      if (lower.includes('reclam') || lower.includes('insatisf')) return 'Reclamação';
-      if (lower.includes('agend') || lower.includes('horário')) return 'Agendamento';
-      return 'Informação';
-    };
-
     it('classifies suporte', () => expect(classifyTag('suporte técnico')).toBe('Suporte Técnico'));
     it('classifies bug as suporte', () => expect(classifyTag('bug report')).toBe('Suporte Técnico'));
     it('classifies erro as suporte', () => expect(classifyTag('erro no sistema')).toBe('Suporte Técnico'));
@@ -100,14 +96,6 @@ describe('AutoTicketClassifier', () => {
 
   // ===== PRIORITY DERIVATION =====
   describe('Priority derivation (derivePriority)', () => {
-    const derivePriority = (tagName: string, confidence: number): string => {
-      const lower = tagName.toLowerCase();
-      if (lower.includes('urgent') || lower.includes('reclam')) return 'urgent';
-      if (confidence > 0.8 && (lower.includes('bug') || lower.includes('erro'))) return 'high';
-      if (confidence > 0.5) return 'medium';
-      return 'low';
-    };
-
     it('urgent for reclamação', () => expect(derivePriority('reclamação', 0.5)).toBe('urgent'));
     it('urgent for urgent tag', () => expect(derivePriority('urgente', 0.3)).toBe('urgent'));
     it('high for bug with high confidence', () => expect(derivePriority('bug crítico', 0.9)).toBe('high'));
@@ -119,15 +107,6 @@ describe('AutoTicketClassifier', () => {
 
   // ===== CATEGORY ICONS =====
   describe('Category config', () => {
-    const CATEGORIES = [
-      { name: 'Suporte Técnico', icon: '🔧' },
-      { name: 'Vendas', icon: '💰' },
-      { name: 'Financeiro', icon: '💳' },
-      { name: 'Reclamação', icon: '⚠️' },
-      { name: 'Informação', icon: 'ℹ️' },
-      { name: 'Agendamento', icon: '📅' },
-    ];
-
     it('has 6 categories', () => expect(CATEGORIES.length).toBe(6));
     CATEGORIES.forEach(cat => {
       it(`${cat.name} has icon`, () => expect(cat.icon.length).toBeGreaterThan(0));
@@ -136,13 +115,6 @@ describe('AutoTicketClassifier', () => {
 
   // ===== PRIORITY MAP =====
   describe('Priority map', () => {
-    const PRIORITY_MAP: Record<string, { label: string }> = {
-      urgent: { label: 'Urgente' },
-      high: { label: 'Alta' },
-      medium: { label: 'Média' },
-      low: { label: 'Baixa' },
-    };
-
     it('has 4 priority levels', () => expect(Object.keys(PRIORITY_MAP).length).toBe(4));
     it('urgent label is correct', () => expect(PRIORITY_MAP.urgent.label).toBe('Urgente'));
     it('high label is correct', () => expect(PRIORITY_MAP.high.label).toBe('Alta'));
@@ -151,38 +123,52 @@ describe('AutoTicketClassifier', () => {
   });
 
   // ===== GROUPING LOGIC =====
-  describe('Contact grouping', () => {
+  describe('Contact grouping (groupTagsIntoTickets)', () => {
     it('groups tags by contact_id', () => {
-      const tags = [
-        { contact_id: 'c1', tag_name: 'suporte' },
-        { contact_id: 'c1', tag_name: 'urgente' },
-        { contact_id: 'c2', tag_name: 'venda' },
-      ];
-      const grouped = new Map<string, string[]>();
-      tags.forEach(t => {
-        if (!grouped.has(t.contact_id)) grouped.set(t.contact_id, []);
-        grouped.get(t.contact_id)!.push(t.tag_name);
-      });
-      expect(grouped.size).toBe(2);
-      expect(grouped.get('c1')?.length).toBe(2);
+      const tickets = groupTagsIntoTickets([
+        { contact_id: 'c1', tag_name: 'suporte', confidence: 0.9, contacts: { name: 'Maria' } },
+        { contact_id: 'c1', tag_name: 'urgente', confidence: 0.8, contacts: { name: 'Maria' } },
+        { contact_id: 'c2', tag_name: 'venda', confidence: 0.7, contacts: { name: 'João' } },
+      ]);
+      expect(tickets.length).toBe(2);
+      expect(tickets.find(t => t.contactId === 'c1')?.tags).toEqual(['suporte', 'urgente']);
+    });
+
+    it('derives category and priority from the first tag', () => {
+      const [ticket] = groupTagsIntoTickets([
+        { contact_id: 'c1', tag_name: 'reclamação grave', confidence: 0.9, contacts: { name: 'Maria' } },
+      ]);
+      expect(ticket.category).toBe('Reclamação');
+      expect(ticket.priority).toBe('urgent');
+      expect(ticket.confidence).toBeCloseTo(90);
     });
   });
 
   // ===== EDGE CASES =====
   describe('Edge cases', () => {
     it('handles null contact', () => {
-      const contact = null;
-      const name = contact?.name || 'Desconhecido';
-      expect(name).toBe('Desconhecido');
+      const [ticket] = groupTagsIntoTickets([
+        { contact_id: 'c1', tag_name: 'suporte', confidence: 0.9, contacts: null },
+      ]);
+      expect(ticket.contactName).toBe('Desconhecido');
     });
 
-    it('handles zero confidence', () => {
-      const confidence = (0 || 0.7) * 100;
-      expect(confidence).toBe(70);
+    it('falls back to 70% confidence when missing or zero', () => {
+      const [missing] = groupTagsIntoTickets([
+        { contact_id: 'c1', tag_name: 'suporte', confidence: null, contacts: { name: 'Maria' } },
+      ]);
+      const [zero] = groupTagsIntoTickets([
+        { contact_id: 'c2', tag_name: 'suporte', confidence: 0, contacts: { name: 'João' } },
+      ]);
+      expect(missing.confidence).toBeCloseTo(70);
+      expect(zero.confidence).toBeCloseTo(70);
     });
 
-    it('handles empty tags list', async () => {
-      vi.mocked(vi.fn()).mockResolvedValueOnce({ data: [], error: null });
+    it('handles empty tags list', () => {
+      expect(groupTagsIntoTickets([])).toEqual([]);
+    });
+
+    it('renders with empty data', async () => {
       render(<AutoTicketClassifier />);
       expect(screen.getByText(/Classificação Automática/)).toBeInTheDocument();
     });

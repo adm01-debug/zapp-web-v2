@@ -29,6 +29,9 @@ export function useVoiceAgent(options?: UseVoiceAgentOptions): UseVoiceAgentRetu
   const autoRestartRef = useRef<ReturnType<typeof setTimeout>>();
   const errorResetRef = useRef<ReturnType<typeof setTimeout>>();
   const mountedRef = useRef(true);
+  // Estado de conexão do scribe via ref: o hook é criado depois deste callback
+  // (ciclo intencional) e o timeout deve ler o valor do momento do reset
+  const scribeConnectedRef = useRef(false);
   const processingAbortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -106,7 +109,7 @@ export function useVoiceAgent(options?: UseVoiceAgentOptions): UseVoiceAgentRetu
 
       safeSetPhase('idle');
       autoRestartRef.current = setTimeout(() => {
-        if (mountedRef.current && scribe.isConnected) {
+        if (mountedRef.current && scribeConnectedRef.current) {
           safeSetPhase('listening');
         }
       }, AUTO_RESTART_DELAY_MS);
@@ -130,7 +133,7 @@ export function useVoiceAgent(options?: UseVoiceAgentOptions): UseVoiceAgentRetu
       errorResetRef.current = setTimeout(() => {
         if (!mountedRef.current) return;
         setError('');
-        safeSetPhase(scribe.isConnected ? 'listening' : 'idle');
+        safeSetPhase(scribeConnectedRef.current ? 'listening' : 'idle');
       }, ERROR_RESET_DELAY_MS);
     }
   }, [supabaseUrl, supabaseKey, safeSetPhase]);
@@ -151,6 +154,7 @@ export function useVoiceAgent(options?: UseVoiceAgentOptions): UseVoiceAgentRetu
       }
     },
   });
+  scribeConnectedRef.current = scribe.isConnected;
 
   const startListening = useCallback(async () => {
     if (phaseRef.current === 'booting' || phaseRef.current === 'processing') return;

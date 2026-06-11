@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -112,11 +112,10 @@ export function IntegrationsPanel({
   const [chatwoot, setChatwoot] = useState<Record<string, unknown>>({ enabled: false });
   const [evolutionBot, setEvolutionBot] = useState<Record<string, unknown>>({ enabled: false });
 
-  useEffect(() => {
-    if (open && instanceName) loadAll();
-  }, [open, instanceName]);
-
-  const loadAll = async () => {
+  // Getters individuais são useCallback estáveis; o objeto `api` é recriado a
+  // cada render e jamais pode entrar em deps (causaria refetch em loop)
+  const { getTypebot, getOpenAI, getDify, getFlowise, getChatwoot, getEvolutionBot } = api;
+  const loadAll = useCallback(async () => {
     const load = async (getter: (n: string) => Promise<unknown>, setter: (v: Record<string, unknown>) => void) => {
       try {
         const data = await getter(instanceName);
@@ -124,14 +123,18 @@ export function IntegrationsPanel({
       } catch (err) { log.error('Unexpected error in IntegrationsPanel:', err); }
     };
     await Promise.allSettled([
-      load(api.getTypebot, setTypebot),
-      load(api.getOpenAI, setOpenai),
-      load(api.getDify, setDify),
-      load(api.getFlowise, setFlowise),
-      load(api.getChatwoot, setChatwoot),
-      load(api.getEvolutionBot, setEvolutionBot),
+      load(getTypebot, setTypebot),
+      load(getOpenAI, setOpenai),
+      load(getDify, setDify),
+      load(getFlowise, setFlowise),
+      load(getChatwoot, setChatwoot),
+      load(getEvolutionBot, setEvolutionBot),
     ]);
-  };
+  }, [getTypebot, getOpenAI, getDify, getFlowise, getChatwoot, getEvolutionBot, instanceName]);
+
+  useEffect(() => {
+    if (open && instanceName) loadAll();
+  }, [open, instanceName, loadAll]);
 
   const typebotFields = [
     { key: 'url', label: 'URL do Typebot', placeholder: 'https://typebot.io' },

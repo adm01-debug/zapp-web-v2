@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigationHistory } from '@/hooks/system/useNavigationHistory';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { log } from '@/lib/logger';
 import { SLANotificationProvider } from '@/components/notifications/SLANotificationProvider';
 import { GoalNotificationProvider } from '@/components/notifications/GoalNotificationProvider';
 import { TourProvider, DEFAULT_ONBOARDING_STEPS, useTour } from '@/components/onboarding/OnboardingTour';
@@ -173,7 +174,7 @@ const Index = memo(forwardRef<HTMLDivElement>(function Index(_props, _ref) {
   // mas mantemos um log para depuração se necessário.
   useEffect(() => {
     if (user) {
-      console.log('[Index] Usuário autenticado:', user.email);
+      log.debug('[Index] Usuário autenticado:', user.email);
     }
   }, [user]);
 

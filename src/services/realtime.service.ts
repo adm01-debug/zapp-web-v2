@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import type { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { MessageRow } from '@/types/chat';
 import { ContactRow } from '@/types/contact';
 import { 
@@ -71,7 +72,11 @@ export class RealtimeService {
     return buildConversations([...seededContactRows, ...messageContacts], normalizedMessages);
   }
 
-  static subscribeToMessages(onInsert: (payload: any) => void, onUpdate: (payload: any) => void, channelName = 'messages-realtime') {
+  static subscribeToMessages(
+    onInsert: (payload: RealtimePostgresChangesPayload<MessageRow>) => void,
+    onUpdate: (payload: RealtimePostgresChangesPayload<MessageRow>) => void,
+    channelName = 'messages-realtime'
+  ) {
     return supabase.channel(channelName)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, onInsert)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, onUpdate)
@@ -84,7 +89,7 @@ export class RealtimeService {
       });
   }
 
-  static subscribeToReactions(messageId: string, onChange: (payload: any) => void) {
+  static subscribeToReactions(messageId: string, onChange: (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => void) {
     return supabase
       .channel(`chat-reactions:${messageId}`)
       .on('postgres_changes', {
@@ -95,7 +100,7 @@ export class RealtimeService {
       .subscribe();
   }
 
-  static removeChannel(channel: any) {
+  static removeChannel(channel: RealtimeChannel) {
     return supabase.removeChannel(channel);
   }
 

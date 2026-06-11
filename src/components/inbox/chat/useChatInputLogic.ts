@@ -60,6 +60,7 @@ export function useChatInputLogic({
     if (draft && !inputValue) {
       setNativeValue(inputRef, draft);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- restaura o rascunho apenas na troca de contato; reler a cada tecla apagaria a digitação
   }, [contactId]);
 
   // Paste images

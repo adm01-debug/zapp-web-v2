@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
@@ -13,8 +13,14 @@ export default function SSOCallback() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<CallbackStatus>('loading');
   const [errorMessage, setErrorMessage] = useState('');
+  // Ref espelha o status para o timeout não ler closure obsoleta
+  const statusRef = useRef<CallbackStatus>(status);
+  statusRef.current = status;
 
   useEffect(() => {
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    let unsubscribe: (() => void) | undefined;
+
     const handleCallback = async () => {
       try {
         // Get the session from URL hash (for OAuth callbacks)
@@ -27,11 +33,11 @@ export default function SSOCallback() {
         if (data.session) {
           setStatus('success');
           toast.success('Login realizado com sucesso!');
-          
+
           // Redirect after a brief delay
-          setTimeout(() => {
+          timeouts.push(setTimeout(() => {
             navigate('/');
-          }, 1500);
+          }, 1500));
         } else {
           // Check for error in URL params
           const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -46,24 +52,21 @@ export default function SSOCallback() {
             if (event === 'SIGNED_IN' && session) {
               setStatus('success');
               toast.success('Login realizado com sucesso!');
-              setTimeout(() => navigate('/'), 1500);
+              timeouts.push(setTimeout(() => navigate('/'), 1500));
             } else if (event === 'SIGNED_OUT') {
               setStatus('error');
               setErrorMessage('Sessão não encontrada');
             }
           });
+          unsubscribe = () => authData.subscription.unsubscribe();
 
-          // Timeout fallback
-          setTimeout(() => {
-            if (status === 'loading') {
+          // Timeout fallback — lê o ref para não congelar o status do mount
+          timeouts.push(setTimeout(() => {
+            if (statusRef.current === 'loading') {
               setStatus('error');
               setErrorMessage('Tempo esgotado. Tente novamente.');
             }
-          }, 10000);
-
-          return () => {
-            authData.subscription.unsubscribe();
-          };
+          }, 10000));
         }
       } catch (err: unknown) {
         setStatus('error');
@@ -73,6 +76,11 @@ export default function SSOCallback() {
     };
 
     handleCallback();
+
+    return () => {
+      timeouts.forEach(clearTimeout);
+      unsubscribe?.();
+    };
   }, [navigate]);
 
   return (

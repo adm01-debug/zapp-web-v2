@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
       'categories', 'groups', 'roles', 'permissions',
     ]
 
-    const results: Record<string, any> = {}
+    const results: Record<string, { count: number | null; sample: unknown[]; columns: string[] }> = {}
     const errors: string[] = []
 
     // Check each table - get count and sample
@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
             columns: data.length > 0 ? Object.keys(data[0]) : []
           }
         }
-      } catch (e) {
+      } catch {
         // Table doesn't exist or no access
       }
     }
@@ -82,7 +82,9 @@ Deno.serve(async (req) => {
     try {
       const { data } = await ext.rpc('get_all_table_names')
       if (data) discoveredTables = data
-    } catch {}
+    } catch {
+      // RPC indisponível no banco externo — segue só com as tabelas conhecidas
+    }
 
     return new Response(JSON.stringify({
       external_url: url.replace(/https?:\/\//, '').split('.')[0] + '...',

@@ -76,7 +76,8 @@ export function ConversationHistory({ contactId, contactPhone, onSelectConversat
 
   useEffect(() => {
     fetchConversationHistory();
-  }, [contactId, contactPhone, periodFilter]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- recarrega quando contato/período mudam; a query usa apenas contactId e periodFilter
+  }, [contactId, periodFilter]);
 
   const fetchConversationHistory = async () => {
     setIsLoading(true);

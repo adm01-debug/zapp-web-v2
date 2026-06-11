@@ -3,6 +3,8 @@
  import { RealtimePostgresChangesPayload, RealtimeChannel } from '@supabase/supabase-js';
  import { log } from '@/lib/logger';
  
+ // Constraint idêntico ao usado pelo próprio supabase-js para payloads realtime
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
  interface RealtimeConfig<T extends { [key: string]: any }> {
    channelName: string;
    table: string;
@@ -15,6 +17,7 @@
    enabled?: boolean;
  }
  
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
  export function useSupabaseRealtime<T extends { [key: string]: any }>(config: RealtimeConfig<T>) {
    const {
      channelName,

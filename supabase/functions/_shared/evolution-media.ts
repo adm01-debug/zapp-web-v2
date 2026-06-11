@@ -1,5 +1,6 @@
 // Shared media persistence helpers for Evolution API functions
 import { isRecord } from "./evolution-helpers.ts";
+import type { SupabaseClient } from "./deno-types.ts";
 
 export function isValidMediaBytes(bytes: Uint8Array, messageType: string): boolean {
   if (bytes.length < 4) return false;
@@ -41,7 +42,7 @@ function detectExtension(respContentType: string, defaultExt: string): string {
 
 // deno-lint-ignore no-explicit-any
 export async function persistMediaToStorage(
-  supabase: any,
+  supabase: SupabaseClient,
   cdnUrl: string,
   messageType: string,
   messageId: string,
@@ -81,7 +82,7 @@ export async function persistMediaToStorage(
 
 // deno-lint-ignore no-explicit-any
 export async function persistMediaViaApi(
-  supabase: any,
+  supabase: SupabaseClient,
   instance: string,
   data: Record<string, unknown>,
   messageType: string,

@@ -72,6 +72,7 @@ export const SendProductDialog: React.FC<SendProductDialogProps> = ({
     } else {
       setFullProduct(product);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- recarrega quando a chave da consulta muda; a função de fetch lê os filtros correntes
   }, [open, product.id]);
 
   const variantGroups = useMemo(

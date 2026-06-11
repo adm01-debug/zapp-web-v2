@@ -30,7 +30,11 @@ export function useRealtimeInbox() {
   const conversations = USE_EXTERNAL_DB ? externalData.conversations : localRealtime.conversations;
   const loading = USE_EXTERNAL_DB ? externalData.loading : localRealtime.loading;
   const error = USE_EXTERNAL_DB ? externalData.error : localRealtime.error;
-  const refetch = USE_EXTERNAL_DB ? (() => { externalData.refetch(); }) : localRealtime.refetch;
+  const externalRefetch = externalData.refetch;
+  const refetch = useMemo(
+    () => (USE_EXTERNAL_DB ? () => { externalRefetch(); } : localRealtime.refetch),
+    [externalRefetch, localRealtime.refetch]
+  );
 
   // These features only available on local for now
   const { sendMessage, markAsRead } = localRealtime;
@@ -72,7 +76,7 @@ export function useRealtimeInbox() {
     };
     window.addEventListener('open-contact-chat', handler);
     return () => window.removeEventListener('open-contact-chat', handler);
-  }, []);
+  }, [setPendingContactId]);
 
   // Load fallback contact
   const selectedConversation = useMemo(
@@ -118,7 +122,7 @@ export function useRealtimeInbox() {
     setSelectedContactId(contactId);
     setSelectedContact(contactId);
     markAsRead(contactId);
-  }, [setSelectedContact, markAsRead]);
+  }, [setSelectedContactId, setSelectedContact, markAsRead]);
 
   const handleNotificationView = useCallback(() => {
     if (newMessageNotification) {
@@ -167,11 +171,10 @@ export function useRealtimeInbox() {
     [resolvedSelectedConversation]
   );
 
-  const messageSource = selectedContactId ? selectedMessages : resolvedSelectedConversation?.messages || [];
-  const legacyMessages: Message[] = useMemo(() => 
-    messageSource.map((m) => mapRealtimeMessageToMessage(m, selectedContactId || resolvedSelectedConversation?.contact.id)),
-    [messageSource, selectedContactId, resolvedSelectedConversation?.contact.id]
-  );
+  const legacyMessages: Message[] = useMemo(() => {
+    const messageSource = selectedContactId ? selectedMessages : resolvedSelectedConversation?.messages || [];
+    return messageSource.map((m) => mapRealtimeMessageToMessage(m, selectedContactId || resolvedSelectedConversation?.contact.id));
+  }, [selectedMessages, selectedContactId, resolvedSelectedConversation]);
 
    return {
      ...uiState,

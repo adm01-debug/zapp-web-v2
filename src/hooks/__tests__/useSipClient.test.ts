@@ -5,8 +5,9 @@ import { renderHook, act } from '@testing-library/react';
 const mockBye = vi.fn();
 const mockCancel = vi.fn();
 const mockInvite = vi.fn().mockResolvedValue(undefined);
-const mockStateChangeListeners: Function[] = [];
-const mockRegisterStateListeners: Function[] = [];
+type StateListener = (state: string) => void;
+const mockStateChangeListeners: StateListener[] = [];
+const mockRegisterStateListeners: StateListener[] = [];
 
 const mockSessionDescriptionHandler = {
   peerConnection: {
@@ -36,7 +37,7 @@ vi.mock('sip.js', () => {
     },
     Registerer: class {
       stateChange = {
-        addListener: (fn: Function) => { mockRegisterStateListeners.push(fn); },
+        addListener: (fn: StateListener) => { mockRegisterStateListeners.push(fn); },
       };
       register = vi.fn().mockResolvedValue(undefined);
       unregister = vi.fn().mockResolvedValue(undefined);
@@ -45,7 +46,7 @@ vi.mock('sip.js', () => {
       state = 'Initial';
       sessionDescriptionHandler = mockSessionDescriptionHandler;
       stateChange = {
-        addListener: (fn: Function) => { mockStateChangeListeners.push(fn); },
+        addListener: (fn: StateListener) => { mockStateChangeListeners.push(fn); },
       };
       invite = mockInvite;
       bye = mockBye;
