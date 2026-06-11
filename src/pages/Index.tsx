@@ -32,25 +32,27 @@ const IndexContent = forwardRef<HTMLDivElement>(function IndexContent(_props, _r
   const { startTour } = useTour();
   const { currentView, navigateTo: rawNavigateTo, goBack: rawGoBack, goForward: rawGoForward, canGoBack, canGoForward, breadcrumbTrail } = useNavigationHistory('inbox');
   const navDirectionRef = useRef<'forward' | 'back'>('forward');
-
-  // Only run checklist queries when on dashboard view
-  const { isComplete: checklistComplete, isDismissed: checklistDismissed } = useOnboardingChecklist({
-    enabled: currentView === 'dashboard',
-  });
+  const [isPending, startTransition] = React.useTransition();
 
   const setCurrentView = useCallback((viewId: string) => {
-    navDirectionRef.current = 'forward';
-    rawNavigateTo(viewId);
+    startTransition(() => {
+      navDirectionRef.current = 'forward';
+      rawNavigateTo(viewId);
+    });
   }, [rawNavigateTo]);
 
   const goBack = useCallback(() => {
-    navDirectionRef.current = 'back';
-    rawGoBack();
+    startTransition(() => {
+      navDirectionRef.current = 'back';
+      rawGoBack();
+    });
   }, [rawGoBack]);
 
   const goForward = useCallback(() => {
-    navDirectionRef.current = 'forward';
-    rawGoForward();
+    startTransition(() => {
+      navDirectionRef.current = 'forward';
+      rawGoForward();
+    });
   }, [rawGoForward]);
 
   const [showWelcome, setShowWelcome] = useState(false);
