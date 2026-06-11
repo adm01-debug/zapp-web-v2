@@ -108,6 +108,24 @@ export function useRealtimeMessages() {
     [commitConversations, hydrateConversationForMessage, notifyAboutIncomingMessage]
   );
 
+  const fetchConversations = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const builtConversations = await RealtimeService.fetchInitialConversations();
+      commitConversations(builtConversations);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Falha ao carregar conversas';
+      log.error('Error fetching conversations:', err);
+      setError(errorMessage);
+      import('sonner').then(({ toast }) => {
+        toast.error('Erro de conexão', {
+          description: 'Não foi possível carregar suas conversas. Verifique sua conexão.'
+        });
+      });
+    } finally { setLoading(false); }
+  }, [commitConversations]);
+
   useEffect(() => {
     fetchConversations();
   }, [fetchConversations]);
