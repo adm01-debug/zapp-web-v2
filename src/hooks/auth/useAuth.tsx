@@ -36,6 +36,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
     let mounted = true;
     console.log('[BOOT] AuthProvider initialized, starting session check');
     
+    // Safety timeout to prevent infinite loading if Supabase doesn't respond
+    const safetyTimeout = setTimeout(() => {
+      if (mounted && loading) {
+        console.warn('[BOOT] Auth session check timed out, forcing loading to false');
+        setLoading(false);
+      }
+    }, 10000);
+    
     // Initial fetch
     const initSession = async () => {
       try {
@@ -56,6 +64,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
       } finally {
         if (mounted) {
           setLoading(false);
+          clearTimeout(safetyTimeout);
           console.log('[BOOT] Auth initial load finished');
         }
       }
@@ -85,6 +94,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
     return () => {
       mounted = false;
+      clearTimeout(safetyTimeout);
       subscription.unsubscribe();
     };
   }, [fetchProfile]);

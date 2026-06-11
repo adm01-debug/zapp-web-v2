@@ -29,9 +29,10 @@
       // Safety timeout: stop loading after 8 seconds no matter what
       fetchTimeoutRef.current = setTimeout(() => {
         if (mountedRef.current) {
+          console.warn('[useUserRole] Fetching roles timed out, forcing loading state to false');
           setLoading(false);
         }
-      }, 8000);
+      }, 5000);
 
       try {
         const userRoles = await RoleService.fetchUserRoles(user.id);
