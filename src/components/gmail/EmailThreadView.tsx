@@ -165,8 +165,16 @@ export function EmailThreadView({ thread, onBack }: EmailThreadViewProps) {
         .filter(m => !m.is_read)
         .map(m => m.gmail_message_id);
       if (unreadIds.length > 0) {
+        // Marca antes do disparo para impedir mutações duplicadas em re-renders;
+        // em falha, libera o ref para permitir nova tentativa nesta thread
         markedThreadRef.current = thread.id;
-        markAsRead.mutate(unreadIds);
+        markAsRead.mutate(unreadIds, {
+          onError: () => {
+            if (markedThreadRef.current === thread.id) {
+              markedThreadRef.current = null;
+            }
+          },
+        });
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps -- o ref garante uma marcação por thread; markAsRead é mutation estável

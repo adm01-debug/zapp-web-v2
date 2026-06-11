@@ -15,6 +15,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          # Nenhum step faz git push: não persistir credenciais no workspace
+          persist-credentials: false
 
       - name: Install PostgreSQL client
         run: |

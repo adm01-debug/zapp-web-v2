@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -35,7 +35,12 @@ export function NextBestActionEngine({ contactId, contactName }: NextBestActionP
   const [actions, setActions] = useState<NextAction[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Invalida execuções antigas: trocar de contato no meio de uma análise não
+  // pode deixar a resposta atrasada sobrescrever os dados do contato atual
+  const runIdRef = useRef(0);
+
   const analyzeAndSuggest = useCallback(async () => {
+    const runId = ++runIdRef.current;
     setLoading(true);
     const suggestedActions: NextAction[] = [];
 
@@ -151,12 +156,16 @@ export function NextBestActionEngine({ contactId, contactName }: NextBestActionP
     const priorityOrder = { high: 0, medium: 1, low: 2 };
     suggestedActions.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
 
+    if (runId !== runIdRef.current) return;
     setActions(suggestedActions);
     setLoading(false);
   }, [contactId, contactName]);
 
   useEffect(() => {
     analyzeAndSuggest();
+    return () => {
+      runIdRef.current += 1;
+    };
   }, [analyzeAndSuggest]);
 
   const priorityColors = {

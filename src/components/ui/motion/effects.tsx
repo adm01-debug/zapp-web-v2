@@ -13,8 +13,9 @@ export function AnimatedCounter({ value, duration = 1, className }: AnimatedCoun
 
   useEffect(() => {
     let startTime: number;
-    let frame: number;
+    let frame = 0;
     const start = prevRef.current;
+    let lastAnimatedValue = start;
     const diff = value - start;
     if (diff === 0) return;
 
@@ -22,12 +23,18 @@ export function AnimatedCounter({ value, duration = 1, className }: AnimatedCoun
       if (!startTime) startTime = ts;
       const progress = Math.min((ts - startTime) / (duration * 1000), 1);
       const ease = 1 - Math.pow(1 - progress, 3);
-      setDisplayValue(Math.round(start + diff * ease));
+      lastAnimatedValue = Math.round(start + diff * ease);
+      setDisplayValue(lastAnimatedValue);
       if (progress < 1) frame = requestAnimationFrame(animate);
       else prevRef.current = value;
     };
     frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
+    return () => {
+      // Persiste o progresso parcial: se `value` mudar no meio da animação,
+      // o próximo ciclo parte do último valor exibido em vez de saltar
+      prevRef.current = lastAnimatedValue;
+      cancelAnimationFrame(frame);
+    };
   }, [value, duration]);
 
   return <motion.span key={displayValue} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className={className}>{displayValue.toLocaleString()}</motion.span>;
