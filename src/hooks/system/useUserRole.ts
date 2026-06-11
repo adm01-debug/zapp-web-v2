@@ -28,8 +28,7 @@
       
       // Safety timeout: stop loading after 8 seconds no matter what
       fetchTimeoutRef.current = setTimeout(() => {
-        if (mountedRef.current && loading) {
-          console.warn('[useUserRole] Fetch roles timeout reached, forcing loading false');
+        if (mountedRef.current) {
           setLoading(false);
         }
       }, 8000);
@@ -50,8 +49,8 @@
           }
         }
       }
-    }, [user, loading]);
-  
+    }, [user]);
+
     useEffect(() => {
       if (user) {
         fetchRoles();
