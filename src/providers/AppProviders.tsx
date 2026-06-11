@@ -39,7 +39,6 @@ const queryClient = new QueryClient({
      retryCountRef.current = 0;
    }, []);
 
-  return (
    if (failed) {
      return (
        <div className="min-h-screen flex items-center justify-center bg-background p-4 text-center">
