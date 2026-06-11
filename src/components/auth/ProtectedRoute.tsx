@@ -4,6 +4,7 @@
  import { useAuth } from '@/hooks/auth/useAuth';
  import { useUserRole } from '@/hooks/system/useUserRole';
  import { RoleService } from '@/services/role.service';
+ import { AuthService } from '@/services/auth.service';
  
  interface ProtectedRouteProps {
    children: ReactNode;
@@ -24,21 +25,64 @@
    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
  
    const loading = authLoading || rolesLoading;
- 
+
+   useEffect(() => {
+     console.log('[ProtectedRoute] State:', { 
+       path: location.pathname, 
+       authLoading, 
+       rolesLoading, 
+       userEmail: user?.email,
+       requiredPermission,
+       hasPermission,
+       loading
+     });
+   }, [location.pathname, authLoading, rolesLoading, user, requiredPermission, hasPermission, loading]);
+
    useEffect(() => {
      if (!loading && user && requiredPermission) {
-       RoleService.checkPermission(user.id, requiredPermission).then(setHasPermission);
-     } else if (!requiredPermission) {
+       console.log('[ProtectedRoute] Checking permission:', requiredPermission);
+       RoleService.checkPermission(user.id, requiredPermission)
+         .then(result => {
+           console.log('[ProtectedRoute] Permission result:', requiredPermission, result);
+           setHasPermission(result);
+         })
+         .catch(err => {
+           console.error('[ProtectedRoute] Permission error:', err);
+           setHasPermission(false);
+         });
+     } else if (!loading && !requiredPermission) {
        setHasPermission(true);
      }
    }, [loading, user, requiredPermission]);
- 
+
    if (loading || (requiredPermission && hasPermission === null)) {
      return (
        <div className="min-h-screen flex items-center justify-center bg-background" role="status" aria-busy="true" aria-label="Verificando acesso">
-         <div className="flex flex-col items-center gap-4">
+         <div className="flex flex-col items-center gap-4 max-w-xs text-center px-4">
            <Loader2 className="w-8 h-8 animate-spin text-primary" aria-hidden="true" />
            <p className="text-foreground font-medium">Verificando acesso...</p>
+           
+           {/* Escape hatch for infinite loading */}
+           <div className="mt-8 pt-8 border-t border-border w-full">
+             <p className="text-xs text-muted-foreground mb-4 italic">Se o carregamento demorar muito, tente:</p>
+             <div className="flex flex-col gap-2">
+               <button 
+                 onClick={() => window.location.reload()}
+                 className="text-xs px-4 py-2 bg-muted hover:bg-muted/80 rounded-md transition-colors"
+               >
+                 Recarregar Página
+               </button>
+               <button 
+                 onClick={() => {
+                   void AuthService.signOut();
+                   window.location.href = '/auth';
+                 }}
+                 className="text-xs px-4 py-2 text-destructive hover:bg-destructive/10 rounded-md transition-colors"
+               >
+                 Sair e Entrar Novamente
+               </button>
+             </div>
+           </div>
          </div>
        </div>
      );
