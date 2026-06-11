@@ -27,15 +27,16 @@ const queryClient = new QueryClient({
   },
 });
 
-export function AppProviders({ children }: { children: React.ReactNode }) {
-  const [errorKey, setErrorKey] = useState(0);
-  const retryCountRef = useRef(0);
-  const MAX_RETRIES = 3;
-
-  useEffect(() => {
-    setErrorKey(prev => prev + 1);
-    retryCountRef.current = 0;
-  }, []);
+ export function AppProviders({ children }: { children: React.ReactNode }) {
+   const [errorKey, setErrorKey] = useState(0);
+   const [failed, setFailed] = useState(false);
+   const retryCountRef = useRef(0);
+   const MAX_RETRIES = 3;
+ 
+   useEffect(() => {
+     setErrorKey(prev => prev + 1);
+     retryCountRef.current = 0;
+   }, []);
 
   return (
     <ErrorBoundary
