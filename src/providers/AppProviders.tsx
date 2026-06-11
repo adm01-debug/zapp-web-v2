@@ -45,7 +45,7 @@ const queryClient = new QueryClient({
        <div className="min-h-screen flex items-center justify-center bg-background p-4 text-center">
          <div className="max-w-md space-y-6">
            <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto">
-             <log.AlertTriangle className="w-10 h-10 text-destructive" />
+             <AlertTriangle className="w-10 h-10 text-destructive" />
            </div>
            <h1 className="text-2xl font-bold text-foreground">Falha Crítica na Inicialização</h1>
            <p className="text-muted-foreground">O sistema não conseguiu iniciar após várias tentativas. Isso pode ser causado por um problema de conexão ou cache do navegador.</p>
