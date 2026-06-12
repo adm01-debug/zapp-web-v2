@@ -6,3 +6,5 @@ export * from './role.service';
 export * from './navigation.service';
 export * from './realtime.service';
 export * from './crm/external-crm.service';
+export * from './evolution.service';
+export * from './inbox.service';
