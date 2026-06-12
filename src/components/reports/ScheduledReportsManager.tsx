@@ -1,3 +1,28 @@
+/**
+ * ScheduledReportsManager — reports/ version
+ *
+ * PURPOSE: Full-page manager for the Reports section. Delegates all state
+ * and side-effects to the useScheduledReports() hook and renders a rich
+ * list with animations, chip-based recipient management, edit support and
+ * a "send now" action.
+ *
+ * KEY DIFFERENCES from dashboard/ScheduledReportsManager:
+ *  - Powered by useScheduledReports() hook (from @/hooks/chat/useScheduledReports)
+ *    ↳ imports REPORT_TYPES, FREQUENCIES, FORMATS constants from the hook
+ *  - Actions: create + edit + delete + toggle + send now  ← full CRUD
+ *  - Format field: pdf / csv / etc.  ← NOT present in dashboard version
+ *  - next_send_at displayed with locale date formatting
+ *  - Recipients: chip/badge UI with add-by-Enter + per-chip remove button
+ *    ← NOT a plain-text comma-separated Input like in dashboard version
+ *  - ICON_MAP: per-report-type icon (BarChart3, Users, MessageSquare, Target)
+ *  - Framer-motion AnimatePresence for card enter/exit animations
+ *  - Full-page layout with <h2> header (not a Card widget)
+ *  - Also renders <ScheduledReportConfigs /> at the bottom
+ *
+ * DO NOT merge with dashboard/ScheduledReportsManager — that file is a
+ * self-contained Card widget with inline Supabase mutations, no edit support,
+ * plain-text recipients input and no animations.
+ */
 import { ScheduledReportConfigs } from './ScheduledReportConfigs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
