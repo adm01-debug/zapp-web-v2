@@ -12,7 +12,17 @@ import { AppRoutes } from "@/routes/AppRoutes";
 
 const log = getLogger('App');
 
-// Deferred non-critical providers loaded after first paint
+// ---------------------------------------------------------------------------
+// Deferred non-critical providers — loaded lazily AFTER first paint.
+//
+// These are OVERLAY providers (side-effect only). They render their own
+// UI (notification banners, incoming-call overlay, keyboard easter eggs)
+// WITHOUT needing to be ancestors of <AppRoutes />.
+//
+// If any of them crashes at load time, the app gracefully continues:
+// the ErrorBoundary below recovers silently (returns null) so the main
+// routing tree is never affected.
+// ---------------------------------------------------------------------------
 const RealtimeSentimentAlertProvider = lazy(() =>
   import("@/components/notifications/RealtimeSentimentAlertProvider")
     .then(m => ({ default: m.RealtimeSentimentAlertProvider }))
@@ -30,13 +40,25 @@ const InAppNotificationProvider = lazy(() =>
     .then(m => ({ default: m.InAppNotificationProvider }))
 );
 
-function DeferredProviders({ children }: { children?: React.ReactNode }) {
+/**
+ * Side-effect overlay providers — no children needed here.
+ * They self-render their own portals/overlays independently.
+ *
+ * ARCH-2 FIX: removed the unused `children?` prop that was incorrectly
+ * suggesting these providers wrap the route tree. They don't. If a provider
+ * needs to expose a React context consumed by AppRoutes, it belongs in
+ * AppProviders (src/providers/AppProviders.tsx), not here.
+ */
+function DeferredProviders() {
   return (
+    // ARCH-3 FIX: fallback={null} is intentional for side-effect providers —
+    // the app must remain usable even if a non-critical overlay fails to load.
     <Suspense fallback={null}>
       <RealtimeSentimentAlertProvider />
       <IncomingCallAlert />
       <InAppNotificationProvider>
-        <EasterEggsProvider>{children ?? null}</EasterEggsProvider>
+        {/* EasterEggsProvider is purely a keyboard/shake listener. No children needed. */}
+        <EasterEggsProvider>{null}</EasterEggsProvider>
       </InAppNotificationProvider>
     </Suspense>
   );
@@ -103,6 +125,12 @@ function AppContent() {
       <SkipLinks />
       <LiveRegion />
       <GlobalKeyboardProvider>
+        {/*
+          ARCH-2 FIX: ErrorBoundary wraps only the DeferredProviders (overlays).
+          AppRoutes is OUTSIDE this boundary so overlay crashes never affect routing.
+          fallback={null} is correct: if an overlay provider crashes, we silently
+          remove the overlay — the core app keeps running.
+        */}
         <ErrorBoundary fallback={null}>
           <Suspense fallback={null}>
             <DeferredProviders />
