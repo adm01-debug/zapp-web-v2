@@ -1,3 +1,25 @@
+/**
+ * MetricComparison — canonical, standalone metric comparison suite.
+ *
+ * This is the FULL-FEATURED version. It exports:
+ *   - MetricComparison  ← inline badge (%, ±abs, size variants, format types)
+ *   - ComparisonCard    ← card widget with current/previous values + trend row
+ *   - TeamComparison    ← percentile bar vs team average/best
+ *
+ * Supported format types: 'number' | 'percent' | 'time' | 'currency'
+ *
+ * ─── vs. dashboard/metrics/MetricComparison ────────────────────────────────
+ * The metrics/ version is a lightweight labeled-row component used exclusively
+ * within the metrics/ sub-module. It integrates with `TrendDirection` from
+ * `./types` and the metrics/ TrendIndicator. Do NOT use it outside that module.
+ * ──────────────────────────────────────────────────────────────────────────
+ *
+ * ─── vs. BulkActionsBar ────────────────────────────────────────────────────
+ * BulkActionsBar (root): generic inbox action bar, receives BulkAction<T>[] from hook
+ * BulkActionsBar (contacts/): contacts-specific, calls Supabase directly
+ * Both are intentional — do not merge.
+ * ──────────────────────────────────────────────────────────────────────────
+ */
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, ArrowUp, ArrowDown } from 'lucide-react';
@@ -227,7 +249,6 @@ export function TeamComparison({
         />
       </div>
 
-      {/* Progress bar showing position relative to team */}
       <div className="relative h-2 bg-muted rounded-full overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
@@ -238,7 +259,6 @@ export function TeamComparison({
             isAboveAverage ? "bg-success" : "bg-warning"
           )}
         />
-        {/* Team average marker */}
         <div 
           className="absolute top-1/2 -translate-y-1/2 w-0.5 h-4 bg-muted-foreground/50"
           style={{ left: '50%' }}
