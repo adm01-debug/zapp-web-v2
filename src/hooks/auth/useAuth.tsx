@@ -24,48 +24,58 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const fetchingRef = useRef(false);
 
+  /**
+   * BUG-6 FIX: wrap fetchProfile in try/catch so errors don't leave
+   * fetchingRef.current stuck at `true` (causing all subsequent fetches to
+   * silently no-op, leaving profile as null indefinitely).
+   */
    const fetchProfile = useCallback(async (userId: string) => {
      if (fetchingRef.current) return;
      fetchingRef.current = true;
-     const data = await AuthService.fetchProfile(userId);
-     if (data) setProfile(data);
-     fetchingRef.current = false;
+     try {
+       const data = await AuthService.fetchProfile(userId);
+       if (data) setProfile(data);
+     } catch (err) {
+       log.error('[AuthProvider] Failed to fetch profile:', err);
+     } finally {
+       fetchingRef.current = false;
+     }
    }, []);
 
   useEffect(() => {
     let mounted = true;
-    console.log('[BOOT] AuthProvider initialized, starting session check');
-    
+    log.info('[BOOT] AuthProvider initialized, starting session check');
+
     // Safety timeout to prevent infinite loading if Supabase doesn't respond
     const safetyTimeout = setTimeout(() => {
-      if (mounted && loading) {
-        console.warn('[BOOT] Auth session check timed out, forcing loading to false');
+      if (mounted) {
+        log.warn('[BOOT] Auth session check timed out, forcing loading to false');
         setLoading(false);
       }
     }, 10000);
-    
+
     // Initial fetch
     const initSession = async () => {
       try {
         const session = await AuthService.getSession();
         if (!mounted) return;
-        
-        console.log('[BOOT] Initial session retrieved:', session ? 'User Found' : 'No User');
+
+        log.info('[BOOT] Initial session retrieved:', session ? 'User Found' : 'No User');
         setSession(session);
         setUser(session?.user ?? null);
-        
+
         if (session?.user) {
           void fetchProfile(session.user.id);
         } else {
           setProfile(null);
         }
       } catch (err) {
-        console.error('[BOOT] Error fetching session:', err);
+        log.error('[BOOT] Error fetching session:', err);
       } finally {
         if (mounted) {
           setLoading(false);
           clearTimeout(safetyTimeout);
-          console.log('[BOOT] Auth initial load finished');
+          log.info('[BOOT] Auth initial load finished');
         }
       }
     };
@@ -74,21 +84,26 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
     const subscription = AuthService.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
-      console.log('[BOOT] Auth state change:', event, session ? 'Authenticated' : 'Unauthenticated');
-      
+      log.info('[BOOT] Auth state change:', event, session ? 'Authenticated' : 'Unauthenticated');
+
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
+        /**
+         * BUG-7 FIX: Reset the guard when auth state changes so a new user
+         * session always triggers a fresh profile fetch.
+         */
+        fetchingRef.current = false;
         void fetchProfile(session.user.id);
       } else {
         setProfile(null);
       }
-      
+
       if (event === 'SIGNED_IN') {
-        console.log('[AUTH] User signed in');
+        log.info('[AUTH] User signed in');
       } else if (event === 'SIGNED_OUT') {
-        console.log('[AUTH] User signed out');
+        log.info('[AUTH] User signed out');
       }
     });
 
@@ -110,12 +125,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
      const { error } = await AuthService.signIn(email, password);
      return { error };
    };
- 
+
    const signUp = async (email: string, password: string, name: string) => {
      const { error } = await AuthService.signUp(email, password, name);
      return { error };
    };
- 
+
    const signOut = async () => {
      await AuthService.signOut();
      setProfile(null);
