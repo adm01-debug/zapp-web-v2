@@ -36,9 +36,7 @@ if (!rootElement) {
 // ErrorBoundary wraps the entire app so any unhandled render error
 // shows a friendly UI instead of a blank screen.
 ReactDOM.createRoot(rootElement).render(
-  <ErrorBoundary>
-    <App />
-  </ErrorBoundary>
+  <App />
 );
 
 // Accessibility auditing in development mode, deferred so it never blocks preview boot.
