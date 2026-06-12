@@ -1,19 +1,27 @@
--- Migration: pg_cron cleanup for evolution_webhook_events_* tables
+-- Migration: pg_cron cleanup for evolution_webhook_events partitions
 -- Date: 2026-06-12
--- Context:
---   25 per-instance tables (evolution_webhook_events_<slug>) accumulate
---   processed webhook events indefinitely. No cleanup job existed.
---   Largest tables: wpp2 (134 MB), wpp_pink_test (50 MB).
---   All other purge jobs (webhook_audit_log, realtime_events, etc.) already
---   existed — this was the only gap.
+-- REVISED: 2026-06-12 (bug fix — see BUGFIX section below)
+--
+-- ARCHITECTURE DISCOVERY (via testing):
+--   evolution_webhook_events is a PostgreSQL LIST PARTITIONED TABLE (relkind='p'),
+--   NOT a collection of independent tables as initially assumed.
+--   Partitions: evolution_webhook_events_wpp2, _wpp_pink_test, _default, etc.
+--   Partition key: instance_name (LIST partitioning)
+--
+-- BUGFIX: Initial version used pg_tables without relkind filter, which included
+--   the parent partitioned table (relkind='p'). Deleting from the parent routes
+--   to ALL partitions simultaneously, conflicting with per-partition batch limits
+--   and causing double-counting in the result JSON.
+--   FIX: Added JOIN to pg_class + relkind='r' filter to select only physical
+--   partition tables, not the parent.
 --
 -- Strategy:
 --   - Delete only rows where processed = true (never touch unprocessed events)
 --   - Retention: 30 days (configurable via p_retention_days parameter)
---   - Batch size: 5000 rows per table per run (avoids long locks)
---   - Dynamic loop: covers all current and future _<instance> tables
+--   - Batch size: 5000 rows per partition per run (avoids long locks)
+--   - Dynamic loop: covers all physical partitions (relkind='r') only
 --   - Schedule: daily at 03:30 UTC (off-peak, after other purge jobs at 03:00-04:45)
---   - Returns jsonb with per-table and total deleted counts for observability
+--   - Returns jsonb with per-partition and total deleted counts for observability
 
 CREATE OR REPLACE FUNCTION public.fn_purge_processed_webhook_events(
   p_retention_days integer DEFAULT 30,
@@ -31,12 +39,19 @@ DECLARE
   v_total  bigint := 0;
   v_result jsonb  := '{}'::jsonb;
 BEGIN
+  -- Loop ONLY over physical partition tables (relkind = 'r').
+  -- EXCLUDES the parent partitioned table (relkind = 'p') to prevent
+  -- double-deletion: deleting from the parent routes to all partitions,
+  -- which would conflict with per-partition batch limits.
   FOR v_table IN
-    SELECT tablename
-    FROM   pg_tables
-    WHERE  schemaname = 'public'
-      AND  tablename  LIKE 'evolution_webhook_events%'
-    ORDER  BY tablename
+    SELECT t.tablename
+    FROM   pg_tables t
+    JOIN   pg_class  c ON c.relname = t.tablename
+                      AND c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
+    WHERE  t.schemaname = 'public'
+      AND  t.tablename  LIKE 'evolution_webhook_events%'
+      AND  c.relkind    = 'r'   -- regular tables (partitions) only, NOT 'p' (partitioned parent)
+    ORDER  BY t.tablename
   LOOP
     v_sql := format(
       $q$
