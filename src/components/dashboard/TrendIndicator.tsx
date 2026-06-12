@@ -1,3 +1,20 @@
+/**
+ * TrendIndicator — canonical, standalone trend display.
+ *
+ * This is the FULL-FEATURED version. It exports:
+ *   - calculateTrend(current, previous)  ← pure utility
+ *   - TrendIndicator  ← takes raw `current` + `previous` numbers
+ *   - CompactTrendBadge  ← circular icon-only badge
+ *   - TrendSparkline  ← animated line chart
+ *   - TrendData interface
+ *
+ * ─── vs. dashboard/metrics/TrendIndicator ─────────────────────────────────
+ * The metrics/ version is a lightweight sub-module component that accepts a
+ * pre-computed `direction: TrendDirection` (from `./types`) and is designed
+ * exclusively for use inside the metrics/ folder. Do NOT use it outside that
+ * module — the API is intentionally different.
+ * ──────────────────────────────────────────────────────────────────────────
+ */
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, ArrowUp, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -77,7 +94,6 @@ export function TrendIndicator({
   const { percentage, direction, absoluteChange } = calculateTrend(current, previous);
   const sizes = sizeConfig[size];
 
-  // Determine if this is "good" or "bad" based on direction and invertColors
   const isPositive = invertColors ? direction === 'down' : direction === 'up';
   const isNegative = invertColors ? direction === 'up' : direction === 'down';
 
@@ -109,7 +125,6 @@ export function TrendIndicator({
           sizes.container
         )}
       >
-        {/* Animated Arrow */}
         {ArrowIcon && animated ? (
           <motion.div
             animate={direction === 'up' 
@@ -227,7 +242,6 @@ export function TrendSparkline({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Gradient definition */}
       <defs>
         <linearGradient id={`sparkline-gradient-${isPositive ? 'up' : 'down'}`} x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor={isPositive ? 'hsl(var(--success))' : 'hsl(var(--destructive))'} stopOpacity="0.3" />
@@ -235,7 +249,6 @@ export function TrendSparkline({
         </linearGradient>
       </defs>
 
-      {/* Area fill */}
       <motion.path
         d={`${pathD} L ${width} ${height} L 0 ${height} Z`}
         fill={`url(#sparkline-gradient-${isPositive ? 'up' : 'down'})`}
@@ -244,7 +257,6 @@ export function TrendSparkline({
         transition={{ duration: 0.5, delay: 0.2 }}
       />
 
-      {/* Line */}
       <motion.path
         d={pathD}
         fill="none"
@@ -257,7 +269,6 @@ export function TrendSparkline({
         transition={{ duration: 0.8, ease: 'easeOut' }}
       />
 
-      {/* End dot */}
       {showDots && points.length > 0 && (
         <motion.circle
           cx={points[points.length - 1].x}
