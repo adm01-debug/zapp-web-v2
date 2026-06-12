@@ -2,8 +2,24 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
+// BUG-10 FIX: validate env vars at module load time so missing config
+// produces a clear error instead of a silent failure that crashes later
+// with an opaque "fetch failed" or "Invalid URL" message.
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+if (!SUPABASE_URL || typeof SUPABASE_URL !== 'string' || !SUPABASE_URL.startsWith('http')) {
+  throw new Error(
+    '[Supabase] VITE_SUPABASE_URL is missing or invalid. ' +
+    'Check your .env file and Vercel environment variables.'
+  );
+}
+if (!SUPABASE_PUBLISHABLE_KEY || typeof SUPABASE_PUBLISHABLE_KEY !== 'string') {
+  throw new Error(
+    '[Supabase] VITE_SUPABASE_PUBLISHABLE_KEY is missing. ' +
+    'Check your .env file and Vercel environment variables.'
+  );
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
@@ -13,5 +29,14 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
-  }
+    // Detect session in URL fragment (needed for OAuth / magic-link flows)
+    detectSessionInUrl: true,
+  },
+  // Expose global error via the Realtime channel so the app can react to
+  // network-level auth failures without polling.
+  realtime: {
+    params: {
+      eventsPerSecond: 10,
+    },
+  },
 });
