@@ -86,10 +86,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     <ErrorBoundary resetKey={errorKey} onError={handleError}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <ThemeSync />
           <HighContrastProvider>
             <AccessibleToastProvider>
               <TooltipProvider delayDuration={300}>
+                <ThemeSync />
                 <ThemeInitializer />
                 {children}
               </TooltipProvider>
