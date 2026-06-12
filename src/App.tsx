@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState, forwardRef } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { getLogger } from "@/lib/logger";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -13,10 +13,22 @@ import { AppRoutes } from "@/routes/AppRoutes";
 const log = getLogger('App');
 
 // Deferred non-critical providers loaded after first paint
-const RealtimeSentimentAlertProvider = lazy(() => import("@/components/notifications/RealtimeSentimentAlertProvider").then(m => ({ default: m.RealtimeSentimentAlertProvider })));
-const IncomingCallAlert = lazy(() => import("@/components/calls/IncomingCallAlert").then(m => ({ default: m.IncomingCallAlert })));
-const EasterEggsProvider = lazy(() => import("@/components/effects/EasterEggs").then(m => ({ default: m.EasterEggsProvider })));
-const InAppNotificationProvider = lazy(() => import("@/components/mobile/InAppNotificationProvider").then(m => ({ default: m.InAppNotificationProvider })));
+const RealtimeSentimentAlertProvider = lazy(() =>
+  import("@/components/notifications/RealtimeSentimentAlertProvider")
+    .then(m => ({ default: m.RealtimeSentimentAlertProvider }))
+);
+const IncomingCallAlert = lazy(() =>
+  import("@/components/calls/IncomingCallAlert")
+    .then(m => ({ default: m.IncomingCallAlert }))
+);
+const EasterEggsProvider = lazy(() =>
+  import("@/components/effects/EasterEggs")
+    .then(m => ({ default: m.EasterEggsProvider }))
+);
+const InAppNotificationProvider = lazy(() =>
+  import("@/components/mobile/InAppNotificationProvider")
+    .then(m => ({ default: m.InAppNotificationProvider }))
+);
 
 function DeferredProviders({ children }: { children?: React.ReactNode }) {
   return (
@@ -30,32 +42,37 @@ function DeferredProviders({ children }: { children?: React.ReactNode }) {
   );
 }
 
-/** Deferred hooks component — lazy-loaded so hooks don't run until after first paint */
+/**
+ * Lazy-loads non-critical hooks after the first paint so they don't
+ * block the initial render. Uses a plain functional component —
+ * no forwardRef needed since we never pass a ref to this element.
+ */
 const DeferredHooks = lazy(() =>
-  import('@/hooks/system/useServiceWorker').then(swMod =>
-    import('@/hooks/ui/useScreenProtection').then(spMod => ({
-      default: forwardRef(function DeferredHooksInner(_props: Record<string, never>, _ref: React.ForwardedRef<unknown>) {
-        swMod.useServiceWorker();
-        spMod.useScreenProtection();
-        return null;
-      })
-    }))
-  )
+  Promise.all([
+    import('@/hooks/system/useServiceWorker'),
+    import('@/hooks/ui/useScreenProtection'),
+  ]).then(([swMod, spMod]) => ({
+    default: function DeferredHooksRunner() {
+      swMod.useServiceWorker();
+      spMod.useScreenProtection();
+      return null;
+    },
+  }))
 );
 
 function AppContent() {
   useEffect(() => {
     log.info('AppContent mounted');
-    if (window.performance && window.performance.mark) {
+    if (window.performance?.mark) {
       performance.mark('app-content-mounted');
       const measure = performance.measure('total-load', undefined, 'app-content-mounted');
       log.info(`Total Load Time: ${measure.duration.toFixed(2)}ms`);
     }
   }, []);
 
-  // Global unhandled rejection handler
+  // Global unhandled rejection / error handler
   useEffect(() => {
-    const handler = (event: PromiseRejectionEvent) => {
+    const handleRejection = (event: PromiseRejectionEvent) => {
       const reason = event.reason;
       if (reason && typeof reason === 'object' && 'name' in reason) {
         const name = (reason as { name: string }).name;
@@ -67,14 +84,17 @@ function AppContent() {
       log.error("Unhandled promise rejection:", event.reason);
       event.preventDefault();
     };
-    const errorHandler = (event: ErrorEvent) => {
+
+    const handleError = (event: ErrorEvent) => {
       log.error("Uncaught error:", event.error);
     };
-    window.addEventListener("unhandledrejection", handler);
-    window.addEventListener("error", errorHandler);
+
+    window.addEventListener("unhandledrejection", handleRejection);
+    window.addEventListener("error", handleError);
+
     return () => {
-      window.removeEventListener("unhandledrejection", handler);
-      window.removeEventListener("error", errorHandler);
+      window.removeEventListener("unhandledrejection", handleRejection);
+      window.removeEventListener("error", handleError);
     };
   }, []);
 
