@@ -104,7 +104,7 @@ export async function getConversationById(
   id: string,
 ): Promise<InboxConversation | null> {
   const { data, error } = await supabase
-    .from('conversations')
+    .from('conversations' as any)
     .select('*')
     .eq('id', id)
     .single();
@@ -120,7 +120,7 @@ export async function countConversationsByStatus(): Promise<
   Record<ConversationStatus, number>
 > {
   const { data, error } = await supabase
-    .from('conversations')
+    .from('conversations' as any)
     .select('status');
 
   if (error) throw error;
@@ -133,8 +133,8 @@ export async function countConversationsByStatus(): Promise<
   };
 
   for (const row of data ?? []) {
-    if (row.status && row.status in counts) {
-      counts[row.status]++;
+    if ((row as any).status && (row as any).status in counts) {
+      counts[(row as any).status]++;
     }
   }
 
@@ -151,8 +151,8 @@ export async function updateConversationStatus(
   status: ConversationStatus,
 ): Promise<void> {
   const { error } = await supabase
-    .from('conversations')
-    .update({ status, updated_at: new Date().toISOString() })
+    .from('conversations' as any)
+    .update({ status, updated_at: new Date().toISOString() } as any)
     .eq('id', id);
 
   if (error) throw error;
@@ -167,8 +167,8 @@ export async function assignConversation(
   agentId: string | null,
 ): Promise<void> {
   const { error } = await supabase
-    .from('conversations')
-    .update({ assigned_to: agentId, updated_at: new Date().toISOString() })
+    .from('conversations' as any)
+    .update({ assigned_to: agentId, updated_at: new Date().toISOString() } as any)
     .eq('id', id);
 
   if (error) throw error;
@@ -183,8 +183,8 @@ export async function bulkUpdateConversationStatus(
   status: ConversationStatus,
 ): Promise<void> {
   const { error } = await supabase
-    .from('conversations')
-    .update({ status, updated_at: new Date().toISOString() })
+    .from('conversations' as any)
+    .update({ status, updated_at: new Date().toISOString() } as any)
     .in('id', ids);
 
   if (error) throw error;
@@ -198,8 +198,8 @@ export async function bulkAssignConversations(
   agentId: string | null,
 ): Promise<void> {
   const { error } = await supabase
-    .from('conversations')
-    .update({ assigned_to: agentId, updated_at: new Date().toISOString() })
+    .from('conversations' as any)
+    .update({ assigned_to: agentId, updated_at: new Date().toISOString() } as any)
     .in('id', ids);
 
   if (error) throw error;
@@ -210,8 +210,8 @@ export async function bulkAssignConversations(
  */
 export async function markConversationAsRead(id: string): Promise<void> {
   const { error } = await supabase
-    .from('conversations')
-    .update({ unread_count: 0, updated_at: new Date().toISOString() })
+    .from('conversations' as any)
+    .update({ unread_count: 0, updated_at: new Date().toISOString() } as any)
     .eq('id', id);
 
   if (error) throw error;
@@ -227,7 +227,7 @@ export async function getMessages(
   options: { limit?: number; before?: string } = {},
 ): Promise<InboxMessage[]> {
   let query = supabase
-    .from('evolution_messages_wpp2')
+    .from('evolution_messages_wpp2' as any)
     .select('*')
     .eq('conversation_id', conversationId)
     .order('timestamp', { ascending: false })
@@ -249,23 +249,33 @@ export async function getMessages(
 export async function getLatestMessagesByConversations(
   conversationIds: string[],
 ): Promise<Record<string, InboxMessage>> {
-  if (conversationIds.length === 0) return {};
-
-  const { data, error } = await supabase
-    .from('evolution_messages_wpp2')
-    .select('*')
-    .in('conversation_id', conversationIds)
-    .order('timestamp', { ascending: false });
+  const { data, error } = await supabase.rpc('get_latest_messages', {
+    conversation_ids: conversationIds,
+  });
 
   if (error) throw error;
 
-  const map: Record<string, InboxMessage> = {};
-  for (const msg of data ?? []) {
-    const key = msg.conversation_id as string;
-    if (!map[key]) {
-      map[key] = msg as InboxMessage;
-    }
+  const messages: Record<string, InboxMessage> = {};
+  for (const row of (data as any) ?? []) {
+    messages[row.conversation_id] = row as InboxMessage;
   }
 
-  return map;
+  return messages;
+}
+
+// ─── Message mutations ────────────────────────────────────────────────────────
+
+/**
+ * Mark a message as read or delivered.
+ */
+export async function updateMessageStatus(
+  messageId: string,
+  status: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from('evolution_messages_wpp2' as any)
+    .update({ status } as any)
+    .eq('message_id', messageId);
+
+  if (error) throw error;
 }
