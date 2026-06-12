@@ -29,10 +29,32 @@ export default defineConfig(({ mode }) => {
       force: true,
     },
     esbuild: {
-      // Drop console.log and debugger statements in production builds only.
-      // This reduces bundle size and prevents accidental info leakage.
-      // Dev and preview modes retain all logging for easier debugging.
-      drop: isProd ? ["console", "debugger"] : [],
+      // In production: remove `debugger` statements entirely.
+      // Do NOT drop 'console' globally — console.error and console.warn
+      // must survive for ErrorBoundary, Sentry, and runtime error tracking.
+      drop: isProd ? ["debugger"] : [],
+
+      // Mark informational console methods as pure (no side effects).
+      // esbuild will tree-shake these calls away during minification
+      // since their return value (undefined) is never used.
+      // console.error and console.warn are intentionally EXCLUDED so they
+      // survive in production for error monitoring.
+      pure: isProd
+        ? [
+            "console.log",
+            "console.debug",
+            "console.info",
+            "console.trace",
+            "console.group",
+            "console.groupCollapsed",
+            "console.groupEnd",
+            "console.time",
+            "console.timeEnd",
+            "console.dir",
+            "console.dirxml",
+            "console.table",
+          ]
+        : [],
     },
     build: {
       target: "esnext",
