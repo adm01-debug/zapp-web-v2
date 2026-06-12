@@ -52,12 +52,16 @@ export interface EvolutionMessagePayload {
  */
 export async function getEvolutionInstances(): Promise<EvolutionInstance[]> {
   const { data, error } = await supabase
-    .from('whatsapp_connections')
+    .from('whatsapp_connections_safe' as any)
     .select('*')
-    .order('instance_display_name', { ascending: true });
+    .order('instance_display_name' as any, { ascending: true });
 
   if (error) throw error;
-  return (data ?? []) as EvolutionInstance[];
+  return (data ?? []).map((item: any) => ({
+    ...item,
+    instance_name: item.name,
+    is_connected: item.status === 'open'
+  })) as EvolutionInstance[];
 }
 
 /**
@@ -67,13 +71,18 @@ export async function getEvolutionInstanceById(
   id: string,
 ): Promise<EvolutionInstance | null> {
   const { data, error } = await supabase
-    .from('whatsapp_connections')
+    .from('whatsapp_connections_safe' as any)
     .select('*')
     .eq('id', id)
     .single();
 
   if (error) return null;
-  return data as EvolutionInstance;
+  const item = data as any;
+  return {
+    ...item,
+    instance_name: item.name,
+    is_connected: item.status === 'open'
+  } as EvolutionInstance;
 }
 
 /**
@@ -83,13 +92,18 @@ export async function getEvolutionInstanceByName(
   instanceName: string,
 ): Promise<EvolutionInstance | null> {
   const { data, error } = await supabase
-    .from('whatsapp_connections')
+    .from('whatsapp_connections_safe' as any)
     .select('*')
-    .eq('instance_name', instanceName)
+    .eq('name', instanceName)
     .single();
 
   if (error) return null;
-  return data as EvolutionInstance;
+  const item = data as any;
+  return {
+    ...item,
+    instance_name: item.name,
+    is_connected: item.status === 'open'
+  } as EvolutionInstance;
 }
 
 /**
@@ -97,7 +111,17 @@ export async function getEvolutionInstanceByName(
  */
 export async function getConnectedEvolutionInstances(): Promise<EvolutionInstance[]> {
   const { data, error } = await supabase
-    .from('whatsapp_connections')
+    .from('whatsapp_connections_safe' as any)
+    .select('*')
+    .eq('status', 'open');
+
+  if (error) throw error;
+  return (data ?? []).map((item: any) => ({
+    ...item,
+    instance_name: item.name,
+    is_connected: item.status === 'open'
+  })) as EvolutionInstance[];
+}
     .select('*')
     .eq('is_connected', true)
     .order('instance_display_name', { ascending: true });

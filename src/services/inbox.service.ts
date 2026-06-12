@@ -64,7 +64,7 @@ export async function getConversations(
   filters: ConversationFilters = {},
 ): Promise<InboxConversation[]> {
   let query = supabase
-    .from('conversations')
+    .from('conversations' as any)
     .select('*')
     .order('last_message_at', { ascending: false });
 

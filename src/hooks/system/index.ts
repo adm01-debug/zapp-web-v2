@@ -22,7 +22,7 @@ export * from './usePermissions';
 export * from './usePrefetch';
 export * from './usePushNotifications';
 export * from './useRateLimitLogs';
-export * from './useResourcePrefetch';
+// export * from './useResourcePrefetch'; // Temporarily disabled to avoid conflicts
 export * from './useSearch';
 export * from './useSearchHistory';
 export * from './useSecurityPushNotifications';
