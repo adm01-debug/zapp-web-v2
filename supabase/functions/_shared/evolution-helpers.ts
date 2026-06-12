@@ -131,13 +131,64 @@ export function shouldUpdateStatus(currentStatus: string | null, newStatus: stri
   return newPriority > currentPriority;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CONNECTION CACHE
+//
+// whatsapp_connections has exactly 2 rows but was receiving 37.9M seq scans
+// because getConnectionByInstance() queried it on every single message.
+//
+// Deno isolates are stateful between warm invocations (module-level state
+// persists). A module-level Map acts as an L1 cache: lookup is O(1) vs a
+// network round-trip to Postgres.
+//
+// TTL: 5 minutes. Low enough that connection changes propagate in reasonable
+// time; high enough to absorb thousands of webhook bursts per minute.
+//
+// Invalidation: call invalidateConnectionCache(instance) whenever a
+// connection.update or disconnect event is received (done in
+// evolution-webhook-handlers.ts → handleConnectionUpdate).
+// ─────────────────────────────────────────────────────────────────────────────
+const CONNECTION_CACHE_TTL_MS = 5 * 60 * 1_000; // 5 minutes
+
+interface CachedConnection {
+  data: { id: string } | null;
+  expiresAt: number;
+}
+
+// Shared across warm invocations within the same isolate.
+const connectionCache = new Map<string, CachedConnection>();
+
+export function invalidateConnectionCache(instance?: string): void {
+  if (instance) {
+    connectionCache.delete(instance);
+  } else {
+    connectionCache.clear();
+  }
+}
+
 // deno-lint-ignore no-explicit-any
-export async function getConnectionByInstance(supabase: any, instance: string): Promise<{ id: string } | null> {
+export async function getConnectionByInstance(
+  supabase: any,
+  instance: string,
+): Promise<{ id: string } | null> {
+  const now = Date.now();
+  const cached = connectionCache.get(instance);
+
+  if (cached && cached.expiresAt > now) {
+    return cached.data;
+  }
+
   const { data } = await supabase
     .from('whatsapp_connections')
     .select('id')
     .eq('instance_id', instance)
     .maybeSingle();
+
+  connectionCache.set(instance, {
+    data,
+    expiresAt: now + CONNECTION_CACHE_TTL_MS,
+  });
+
   return data;
 }
 
