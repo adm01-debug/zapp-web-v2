@@ -31,47 +31,56 @@ export function ThemeInitializer() {
   const { resolvedTheme, theme } = useTheme();
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    let presetId = DEFAULT_PRESET_ID;
-    let radius = 8;
-    let storedConfig: StoredThemeConfig = {};
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      let presetId = DEFAULT_PRESET_ID;
+      let radius = 8;
+      let storedConfig: StoredThemeConfig = {};
 
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as StoredThemeConfig;
-        storedConfig = parsed;
-        presetId = normalizeStoredPresetId(parsed.preset);
-        if (parsed.borderRadius != null) radius = parsed.borderRadius;
-      } catch {
-        storedConfig = {};
-      }
-    }
-
-    const preset = PRESETS.find((p) => p.id === presetId) || PRESETS.find((p) => p.id === DEFAULT_PRESET_ID);
-    if (preset) {
-      const colors: ThemeModeColors = resolvedTheme === 'dark' ? preset.dark : preset.light;
-      const root = document.documentElement;
-      const cssVarsCache: Record<string, string> = {};
-
-      for (const key of CSS_VARS_TO_APPLY) {
-        const value = colors[key];
-        root.style.setProperty(`--${key}`, value);
-        cssVarsCache[key] = value;
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved) as StoredThemeConfig;
+          storedConfig = parsed;
+          presetId = normalizeStoredPresetId(parsed.preset);
+          if (parsed.borderRadius != null) radius = parsed.borderRadius;
+        } catch (e) {
+          log.warn('Failed to parse saved theme config:', e);
+          storedConfig = {};
+        }
       }
 
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({
-          ...storedConfig,
-          borderRadius: radius,
-          cacheMode: resolvedTheme,
-          cachePreset: presetId,
-          cssVarsCache,
-          preset: presetId,
-        }));
-      } catch (err) { log.error('Unexpected error in ThemeInitializer:', err); }
-    }
+      const preset = PRESETS.find((p) => p.id === presetId) || PRESETS.find((p) => p.id === DEFAULT_PRESET_ID);
+      if (preset) {
+        const colors: ThemeModeColors = resolvedTheme === 'dark' ? preset.dark : preset.light;
+        const root = document.documentElement;
+        const cssVarsCache: Record<string, string> = {};
 
-    document.documentElement.style.setProperty('--radius', `${radius / 16}rem`);
+        for (const key of CSS_VARS_TO_APPLY) {
+          const value = colors[key];
+          if (value) {
+            root.style.setProperty(`--${key}`, value);
+            cssVarsCache[key] = value;
+          }
+        }
+
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            ...storedConfig,
+            borderRadius: radius,
+            cacheMode: resolvedTheme,
+            cachePreset: presetId,
+            cssVarsCache,
+            preset: presetId,
+          }));
+        } catch (err) { 
+          log.error('LocalStorage write failed in ThemeInitializer:', err); 
+        }
+      }
+
+      document.documentElement.style.setProperty('--radius', `${radius / 16}rem`);
+    } catch (criticalError) {
+      log.error('Critical error in ThemeInitializer:', criticalError);
+    }
   }, [resolvedTheme, theme]);
 
   return null;

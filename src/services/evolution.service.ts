@@ -52,12 +52,16 @@ export interface EvolutionMessagePayload {
  */
 export async function getEvolutionInstances(): Promise<EvolutionInstance[]> {
   const { data, error } = await supabase
-    .from('whatsapp_connections')
+    .from('whatsapp_connections_safe' as any)
     .select('*')
-    .order('instance_display_name', { ascending: true });
+    .order('instance_display_name' as any, { ascending: true });
 
   if (error) throw error;
-  return (data ?? []) as EvolutionInstance[];
+  return (data ?? []).map((item: any) => ({
+    ...item,
+    instance_name: item.name,
+    is_connected: item.status === 'open'
+  })) as EvolutionInstance[];
 }
 
 /**
@@ -67,13 +71,18 @@ export async function getEvolutionInstanceById(
   id: string,
 ): Promise<EvolutionInstance | null> {
   const { data, error } = await supabase
-    .from('whatsapp_connections')
+    .from('whatsapp_connections_safe' as any)
     .select('*')
     .eq('id', id)
     .single();
 
   if (error) return null;
-  return data as EvolutionInstance;
+  const item = data as any;
+  return {
+    ...item,
+    instance_name: item.name,
+    is_connected: item.status === 'open'
+  } as EvolutionInstance;
 }
 
 /**
@@ -83,13 +92,18 @@ export async function getEvolutionInstanceByName(
   instanceName: string,
 ): Promise<EvolutionInstance | null> {
   const { data, error } = await supabase
-    .from('whatsapp_connections')
+    .from('whatsapp_connections_safe' as any)
     .select('*')
-    .eq('instance_name', instanceName)
+    .eq('name', instanceName)
     .single();
 
   if (error) return null;
-  return data as EvolutionInstance;
+  const item = data as any;
+  return {
+    ...item,
+    instance_name: item.name,
+    is_connected: item.status === 'open'
+  } as EvolutionInstance;
 }
 
 /**
@@ -97,13 +111,16 @@ export async function getEvolutionInstanceByName(
  */
 export async function getConnectedEvolutionInstances(): Promise<EvolutionInstance[]> {
   const { data, error } = await supabase
-    .from('whatsapp_connections')
+    .from('whatsapp_connections_safe' as any)
     .select('*')
-    .eq('is_connected', true)
-    .order('instance_display_name', { ascending: true });
+    .eq('status', 'open');
 
   if (error) throw error;
-  return (data ?? []) as EvolutionInstance[];
+  return (data ?? []).map((item: any) => ({
+    ...item,
+    instance_name: item.name,
+    is_connected: item.status === 'open'
+  })) as EvolutionInstance[];
 }
 
 // ─── Instance mutations ───────────────────────────────────────────────────────
@@ -122,73 +139,92 @@ export async function updateEvolutionInstanceStatus(
   },
 ): Promise<void> {
   const { error } = await supabase
-    .from('whatsapp_connections')
-    .update({ ...update, updated_at: new Date().toISOString() })
+    .from('whatsapp_connections' as any)
+    .update({ ...update, updated_at: new Date().toISOString() } as any)
     .eq('instance_name', instanceName);
 
   if (error) throw error;
 }
 
-/**
- * Upsert an Evolution instance. Creates if not found, updates if exists.
- * Used during instance provisioning flows.
- */
-export async function upsertEvolutionInstance(
-  payload: Partial<EvolutionInstance> & { instance_name: string },
-): Promise<EvolutionInstance> {
-  const { data, error } = await supabase
-    .from('whatsapp_connections')
-    .upsert({ ...payload, updated_at: new Date().toISOString() }, {
-      onConflict: 'instance_name',
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data as EvolutionInstance;
-}
+// ─── Messaging ──────────────────────────────────────────────────────────────
 
 /**
- * Soft-delete an Evolution instance by marking it inactive.
- * Does NOT call the Evolution API — call disconnect first if needed.
- */
-export async function deactivateEvolutionInstance(id: string): Promise<void> {
-  const { error } = await supabase
-    .from('whatsapp_connections')
-    .update({ is_connected: false, status: 'close', updated_at: new Date().toISOString() })
-    .eq('id', id);
-
-  if (error) throw error;
-}
-
-// ─── Evolution API proxy calls (via Supabase Edge Functions) ─────────────────
-
-/**
- * Send a text or media message through an Evolution instance.
- * Delegates to the `evolution-send-message` Edge Function.
+ * Send a text message via Evolution API.
  */
 export async function sendEvolutionMessage(
   payload: EvolutionMessagePayload,
-): Promise<{ messageId?: string; status: string }> {
-  const { data, error } = await supabase.functions.invoke('evolution-send-message', {
-    body: payload,
-  });
+): Promise<void> {
+  const { data } = await supabase
+    .from('whatsapp_connections_safe' as any)
+    .select('evolution_api_url, evolution_api_key')
+    .eq('name', payload.instanceName)
+    .single();
 
-  if (error) throw error;
-  return data;
+  const config = data as any;
+
+  if (!config?.evolution_api_url) {
+    throw new Error(`Instance ${payload.instanceName} not configured or not found.`);
+  }
+
+  const response = await fetch(
+    `${config.evolution_api_url}/message/sendText/${payload.instanceName}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: config.evolution_api_key as string,
+      },
+      body: JSON.stringify({
+        number: payload.number,
+        text: payload.text,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to send message via Evolution API');
+  }
 }
 
 /**
- * Fetch the current connection status for an instance directly from the
- * Evolution API via the `evolution-instance-status` Edge Function.
+ * Send media (image/video/audio/document) via Evolution API.
  */
-export async function fetchEvolutionConnectionStatus(
-  instanceName: string,
-): Promise<EvolutionConnectionStatus> {
-  const { data, error } = await supabase.functions.invoke('evolution-instance-status', {
-    body: { instanceName },
-  });
+export async function sendEvolutionMedia(
+  payload: EvolutionMessagePayload,
+): Promise<void> {
+  const { data } = await supabase
+    .from('whatsapp_connections_safe' as any)
+    .select('evolution_api_url, evolution_api_key')
+    .eq('name', payload.instanceName)
+    .single();
 
-  if (error) throw error;
-  return data as EvolutionConnectionStatus;
+  const config = data as any;
+
+  if (!config?.evolution_api_url) {
+    throw new Error(`Instance ${payload.instanceName} not configured or not found.`);
+  }
+
+  const response = await fetch(
+    `${config.evolution_api_url}/message/sendMedia/${payload.instanceName}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: config.evolution_api_key as string,
+      },
+      body: JSON.stringify({
+        number: payload.number,
+        mediaUrl: payload.mediaUrl,
+        mediaType: payload.mediaType,
+        caption: payload.caption,
+        fileName: payload.fileName,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to send media via Evolution API');
+  }
 }
