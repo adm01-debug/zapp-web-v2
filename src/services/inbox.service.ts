@@ -94,7 +94,7 @@ export async function getConversations(
 
   const { data, error } = await query;
   if (error) throw error;
-  return (data ?? []) as InboxConversation[];
+  return (data as any ?? []) as InboxConversation[];
 }
 
 /**
@@ -110,7 +110,7 @@ export async function getConversationById(
     .single();
 
   if (error) return null;
-  return data as InboxConversation;
+  return data as any as InboxConversation;
 }
 
 /**
@@ -239,7 +239,7 @@ export async function getMessages(
 
   const { data, error } = await query;
   if (error) throw error;
-  return (data ?? []) as InboxMessage[];
+  return (data as any ?? []) as InboxMessage[];
 }
 
 /**
@@ -249,7 +249,7 @@ export async function getMessages(
 export async function getLatestMessagesByConversations(
   conversationIds: string[],
 ): Promise<Record<string, InboxMessage>> {
-  const { data, error } = await supabase.rpc('get_latest_messages', {
+  const { data, error } = await supabase.rpc('get_latest_messages' as any, {
     conversation_ids: conversationIds,
   });
 

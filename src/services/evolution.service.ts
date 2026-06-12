@@ -154,11 +154,13 @@ export async function updateEvolutionInstanceStatus(
 export async function sendEvolutionMessage(
   payload: EvolutionMessagePayload,
 ): Promise<void> {
-  const { data: config } = await supabase
+  const { data } = await supabase
     .from('whatsapp_connections_safe' as any)
     .select('evolution_api_url, evolution_api_key')
     .eq('name', payload.instanceName)
     .single();
+
+  const config = data as any;
 
   if (!config?.evolution_api_url) {
     throw new Error(`Instance ${payload.instanceName} not configured or not found.`);
@@ -191,11 +193,13 @@ export async function sendEvolutionMessage(
 export async function sendEvolutionMedia(
   payload: EvolutionMessagePayload,
 ): Promise<void> {
-  const { data: config } = await supabase
+  const { data } = await supabase
     .from('whatsapp_connections_safe' as any)
     .select('evolution_api_url, evolution_api_key')
     .eq('name', payload.instanceName)
     .single();
+
+  const config = data as any;
 
   if (!config?.evolution_api_url) {
     throw new Error(`Instance ${payload.instanceName} not configured or not found.`);
