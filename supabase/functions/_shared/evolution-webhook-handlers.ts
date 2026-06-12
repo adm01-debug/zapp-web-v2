@@ -4,6 +4,7 @@
 import {
   isRecord, normalizePhone, toEventRecords,
   getConnectionByInstance, getContactByPhone, persistProfilePicture,
+  invalidateConnectionCache,
 } from "./evolution-helpers.ts";
 
 // Re-export message handlers for backward compatibility
@@ -23,6 +24,10 @@ export async function handleConnectionUpdate(supabase: any, instance: string, ba
   await supabase.from('whatsapp_connections')
     .update({ status, qr_code: null, updated_at: new Date().toISOString() })
     .eq('instance_id', instance);
+
+  // Invalidate cache so next message processing fetches fresh connection data.
+  // This is the correct invalidation point: after every status change.
+  invalidateConnectionCache(instance);
 
   console.log(`Connection ${instance} status: ${status}`);
 
@@ -272,6 +277,8 @@ export async function handleChatsDelete(supabase: any, instance: string, data: u
 // deno-lint-ignore no-explicit-any
 export async function handleApplicationStartup(supabase: any, instance: string) {
   console.log(`Application startup event from instance: ${instance}`);
+  // Also invalidate cache on startup so stale connection data is refreshed.
+  invalidateConnectionCache(instance);
   const { data: conn } = await supabase.from('whatsapp_connections')
     .select('id, status').eq('instance_id', instance).maybeSingle();
   if (conn && conn.status === 'disconnected') {
