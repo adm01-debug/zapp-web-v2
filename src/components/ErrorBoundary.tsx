@@ -23,21 +23,21 @@
  * SENTRY INTEGRATION:
  *   Uncomment the Sentry.captureException call in componentDidCatch when
  *   VITE_SENTRY_DSN is set. The error is already forwarded to console.error
- *   in all environments.
+ *   in all environments (console.error is intentionally NOT dropped in prod
+ *   — see vite.config.ts esbuild.pure[] for details).
  *
  * RECOVERY:
- *   The "Tentar novamente" button calls window.location.reload() which
- *   fully resets the React tree. For a softer reset, replace with
- *   this.setState({ hasError: false, error: null }).
+ *   The "Tentar novamente" button calls this.setState({ hasError: false })
+ *   for a soft reset without page reload. "Recarregar página" does a full reload.
  */
 
-import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Component, type ComponentType, type ErrorInfo, type ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Props {
   children: ReactNode;
-  /** Optional custom fallback UI. Receives the caught error. */
+  /** Optional custom fallback UI. Receives the caught error and a reset callback. */
   fallback?: (error: Error, reset: () => void) => ReactNode;
 }
 
@@ -60,10 +60,12 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ errorInfo });
 
-    // Log to console for all environments
+    // console.error is intentionally NOT in esbuild.pure[] so this fires in all envs.
+    // In production this forwards to browser devtools and any monitoring attached
+    // to window.onerror / window.addEventListener('error', ...) in main.tsx.
     console.error('[ErrorBoundary] Uncaught error:', error, errorInfo);
 
-    // Forward to Sentry when configured
+    // Forward to Sentry when configured:
     // if (import.meta.env.VITE_SENTRY_DSN) {
     //   import('@sentry/react').then(Sentry => {
     //     Sentry.captureException(error, { extra: { errorInfo } });
@@ -145,7 +147,7 @@ export class ErrorBoundary extends Component<Props, State> {
  *   const SafeWidget = withErrorBoundary(HeavyWidget);
  */
 export function withErrorBoundary<P extends object>(
-  WrappedComponent: React.ComponentType<P>,
+  WrappedComponent: ComponentType<P>,
   fallback?: Props['fallback']
 ) {
   const displayName =
