@@ -3,12 +3,12 @@ import type { Database } from './types';
 
 // Self-hosted Supabase — resolução por env com fallback final.
 // ANON KEY é pública por design — seguro no bundle.
-const SUPABASE_URL =
+export const SUPABASE_URL =
   import.meta.env.VITE_SUPABASE_URL ||
   import.meta.env.VITE_EXTERNAL_SUPABASE_URL ||
   'https://supabase.atomicabr.com.br';
 
-const SUPABASE_ANON_KEY =
+export const SUPABASE_ANON_KEY =
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   import.meta.env.VITE_SUPABASE_ANON_KEY ||
   import.meta.env.VITE_EXTERNAL_SUPABASE_ANON_KEY ||
