@@ -1,3 +1,4 @@
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/integrations/supabase/client';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { log } from '@/lib/logger';
@@ -99,13 +100,13 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}) {
         ? 'elevenlabs-tts-stream'
         : 'elevenlabs-tts';
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${endpoint}`,
+        `${SUPABASE_URL}/functions/v1/${endpoint}`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
           },
           body: JSON.stringify({ 
             text: cleanText,
