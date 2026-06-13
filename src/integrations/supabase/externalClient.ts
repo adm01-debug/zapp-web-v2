@@ -1,41 +1,33 @@
-/**
- * External Supabase Client — bancodadosclientes (pgxfvjmuubtbowutlide)
- * 
- * Connects to the CRM database that holds the full 360° contact data:
- * companies, customers, interactions, RFM scores, DISC profiles, etc.
- * 
- * Uses environment variables:
- *   VITE_EXTERNAL_SUPABASE_URL
- *   VITE_EXTERNAL_SUPABASE_ANON_KEY
- */
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const EXTERNAL_SUPABASE_URL = import.meta.env.VITE_EXTERNAL_SUPABASE_URL || '';
-const EXTERNAL_SUPABASE_ANON_KEY = import.meta.env.VITE_EXTERNAL_SUPABASE_ANON_KEY || '';
+const SELF_HOSTED_URL = 'https://supabase.atomicabr.com.br';
+const SELF_HOSTED_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJyb2xlIjogImFub24iLAogICJpc3MiOiAic3VwYWJhc2UiLAogICJpYXQiOiAxNzE1MDUwODAwLAogICJleHAiOiAxODcyODE3MjAwCn0.rvamc0XHuSCYB1glBwOCCxgfd9yxWVYLnhFzg5-7TRk';
 
-export const isExternalConfigured = Boolean(EXTERNAL_SUPABASE_URL && EXTERNAL_SUPABASE_ANON_KEY);
+const EXTERNAL_URL =
+  import.meta.env.VITE_EXTERNAL_SUPABASE_URL ||
+  import.meta.env.VITE_SUPABASE_URL ||
+  SELF_HOSTED_URL;
 
-export const externalSupabase: SupabaseClient | null = isExternalConfigured
-  ? createClient(EXTERNAL_SUPABASE_URL, EXTERNAL_SUPABASE_ANON_KEY, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-      },
-      global: {
-        headers: {
-          'x-client-info': 'zapp-web-external-360',
-        },
-      },
-    })
-  : null;
+const EXTERNAL_KEY =
+  import.meta.env.VITE_EXTERNAL_SUPABASE_ANON_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  SELF_HOSTED_ANON_KEY;
 
-/**
- * Returns the external client, throwing if not configured.
- * Use only after checking `isExternalConfigured`.
- */
+export const isExternalConfigured = true;
+
+export const externalSupabase: SupabaseClient = createClient(EXTERNAL_URL, EXTERNAL_KEY, {
+  auth: {
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    autoRefreshToken: true,
+    persistSession: false,
+  },
+  global: {
+    headers: {
+      'x-client-info': 'zapp-web-external-360',
+    },
+  },
+});
+
 export function getExternalSupabase(): SupabaseClient {
-  if (!externalSupabase) {
-    throw new Error('External Supabase is not configured. Set VITE_EXTERNAL_SUPABASE_URL and VITE_EXTERNAL_SUPABASE_ANON_KEY.');
-  }
   return externalSupabase;
 }
