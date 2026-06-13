@@ -1,13 +1,21 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Self-hosted Supabase — fonte única de verdade (migração concluída)
+// Self-hosted Supabase — resolução por env com fallback final.
 // ANON KEY é pública por design — seguro no bundle.
-const SUPABASE_URL = 'https://supabase.atomicabr.com.br';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJyb2xlIjogImFub24iLAogICJpc3MiOiAic3VwYWJhc2UiLAogICJpYXQiOiAxNzE1MDUwODAwLAogICJleHAiOiAxODcyODE3MjAwCn0.rvamc0XHuSCYB1glBwOCCxgfd9yxWVYLnhFzg5-7TRk';
+const SUPABASE_URL =
+  import.meta.env.VITE_SUPABASE_URL ||
+  import.meta.env.VITE_EXTERNAL_SUPABASE_URL ||
+  'https://supabase.atomicabr.com.br';
 
-if (!SUPABASE_URL || !SUPABASE_URL.startsWith('http')) {
-  console.error('[Supabase] URL inválida:', SUPABASE_URL);
+const SUPABASE_ANON_KEY =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  import.meta.env.VITE_EXTERNAL_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJyb2xlIjogImFub24iLAogICJpc3MiOiAic3VwYWJhc2UiLAogICJpYXQiOiAxNzE1MDUwODAwLAogICJleHAiOiAxODcyODE3MjAwCn0.rvamc0XHuSCYB1glBwOCCxgfd9yxWVYLnhFzg5-7TRk';
+
+if (!SUPABASE_URL) {
+  console.warn('[Supabase] usando fallback self-hosted');
 }
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
