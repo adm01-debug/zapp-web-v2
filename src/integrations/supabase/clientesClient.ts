@@ -3,17 +3,11 @@ import { createClient } from '@supabase/supabase-js';
 /**
  * GESTÃO DE CLIENTES — CRM Promobrindes
  * Supabase Cloud: pgxfvjmuubtbowutlide
+ * 57.728 empresas | 48.623 clientes | 4.747 contatos | 10.460 interações
  *
- * Tabelas principais:
- * - companies    (57.728 empresas, 71 colunas)
- * - customers    (48.623 clientes, 37 colunas)
- * - contacts     (4.747 contatos, 49 colunas)
- * - interactions (10.460 interações, 42 colunas)
- * - deals        (negócios/oportunidades)
- * - whatsapp_messages, whatsapp_instances
- * - profiles, users, salespeople
- * - rfm_analysis, company_rfm_scores
- * - interactions, activities, tasks
+ * IMPORTANT: auth.persistSession=false, realtime desabilitado
+ * para evitar Multiple GoTrueClient e conflito de WebSocket
+ * com o cliente principal (supabase.atomicabr.com.br)
  */
 
 const CLIENTES_URL =
@@ -26,9 +20,18 @@ const CLIENTES_ANON_KEY =
 
 export const clientesSupabase = createClient(CLIENTES_URL, CLIENTES_ANON_KEY, {
   auth: {
+    // Chave de storage separada — evita conflito com o cliente principal
+    storageKey: 'clientes-sb-auth-token',
     persistSession: false,
     autoRefreshToken: false,
     detectSessionInUrl: false,
+  },
+  // Desabilitar Realtime — este cliente é só para consultas REST ao CRM
+  // Evita uma segunda conexão WebSocket e o aviso "Multiple GoTrueClient"
+  realtime: {
+    params: {
+      eventsPerSecond: -1,
+    },
   },
   global: {
     headers: {
@@ -38,20 +41,20 @@ export const clientesSupabase = createClient(CLIENTES_URL, CLIENTES_ANON_KEY, {
   },
 });
 
-// Helpers tipados para as tabelas mais usadas no ZAPP
+// Helpers tipados para as tabelas principais do CRM
 export const clientesDB = {
-  companies: () => clientesSupabase.from('companies'),
-  customers: () => clientesSupabase.from('customers'),
-  contacts: () => clientesSupabase.from('contacts'),
-  interactions: () => clientesSupabase.from('interactions'),
-  deals: () => clientesSupabase.from('deals'),
-  profiles: () => clientesSupabase.from('profiles'),
+  companies:        () => clientesSupabase.from('companies'),
+  customers:        () => clientesSupabase.from('customers'),
+  contacts:         () => clientesSupabase.from('contacts'),
+  interactions:     () => clientesSupabase.from('interactions'),
+  deals:            () => clientesSupabase.from('deals'),
+  profiles:         () => clientesSupabase.from('profiles'),
   whatsappMessages: () => clientesSupabase.from('whatsapp_messages'),
-  rfmScores: () => clientesSupabase.from('company_rfm_scores'),
-  activities: () => clientesSupabase.from('activities'),
-  tasks: () => clientesSupabase.from('tasks'),
-  alerts: () => clientesSupabase.from('alerts'),
-  proposals: () => clientesSupabase.from('proposals'),
+  rfmScores:        () => clientesSupabase.from('company_rfm_scores'),
+  activities:       () => clientesSupabase.from('activities'),
+  tasks:            () => clientesSupabase.from('tasks'),
+  alerts:           () => clientesSupabase.from('alerts'),
+  proposals:        () => clientesSupabase.from('proposals'),
 };
 
 export type ClientesSupabase = typeof clientesSupabase;
