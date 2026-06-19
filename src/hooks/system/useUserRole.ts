@@ -1,6 +1,7 @@
  import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
  import { useAuth } from '@/hooks/auth/useAuth';
  import { RoleService, type AppRole } from '@/services/role.service';
+import { logger } from '@/lib/logger';
  export type { AppRole };
  
  export function useUserRole() {
@@ -29,7 +30,7 @@
       // Safety timeout: stop loading after 8 seconds no matter what
       fetchTimeoutRef.current = setTimeout(() => {
         if (mountedRef.current) {
-          console.warn('[useUserRole] Fetching roles timed out, forcing loading state to false');
+          logger.warn('[useUserRole] Fetching roles timed out, forcing loading state to false');
           setLoading(false);
         }
       }, 5000);
@@ -40,7 +41,7 @@
           setRoles(userRoles);
         }
       } catch (err) {
-        console.error('[useUserRole] Error fetching roles:', err);
+        logger.error('[useUserRole] Error fetching roles:', err);
       } finally {
         if (mountedRef.current) {
           setLoading(false);
