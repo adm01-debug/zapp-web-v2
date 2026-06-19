@@ -195,6 +195,9 @@ export async function handleIncomingMessage(
     return;
   }
   if (messageType === 'audio' && mediaUrl && insertedMessage) await handleAudioTranscription(supabase, contact.id, insertedMessage.id, mediaUrl, supabaseUrl, supabaseServiceKey);
+  if (messageType === 'text' && insertedMessage?.id && content) {
+    void enrichIncomingLinkPreview(supabase, insertedMessage.id, content, supabaseUrl, supabaseServiceKey);
+  }
 }
 
 // deno-lint-ignore no-explicit-any
