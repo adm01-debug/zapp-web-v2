@@ -57,9 +57,20 @@ export function useAuthForm() {
   }, [user, navigate]);
 
   useEffect(() => {
-    if (isSupported()) {
-      isPlatformAuthenticatorAvailable().then(setPasskeyAvailable);
-    }
+    // BUG-F3 FIX: guard against setState after unmount when the
+    // platform-authenticator probe resolves slowly.
+    if (!isSupported()) return;
+    let cancelled = false;
+    isPlatformAuthenticatorAvailable()
+      .then((available) => {
+        if (!cancelled) setPasskeyAvailable(available);
+      })
+      .catch(() => {
+        if (!cancelled) setPasskeyAvailable(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [isSupported, isPlatformAuthenticatorAvailable]);
 
   useEffect(() => {
@@ -114,6 +125,10 @@ export function useAuthForm() {
     if (error) {
       const lockResult = await recordFailedLogin(formData.email);
       setLockStatus(lockResult);
+      // BUG-F4 FIX: never keep the rejected password in memory after a
+      // failed attempt — forces the user to retype and avoids leaking it
+      // through React DevTools or accidental form-state serialization.
+      setFormData((prev) => ({ ...prev, password: '' }));
       if (lockResult.isLocked) {
         toast({ title: 'Conta bloqueada temporariamente', description: `Após ${lockResult.attempts} tentativas, sua conta foi bloqueada por ${formatLockTime(lockResult.remainingTime)}.`, variant: 'destructive' });
       } else {
@@ -129,7 +144,9 @@ export function useAuthForm() {
     } else {
       await clearLoginAttempts(formData.email);
       toast({ title: 'Bem-vindo!', description: 'Login realizado com sucesso.' });
-      navigate('/');
+      // BUG-F2 FIX: rely on the single useEffect above that watches `user`
+      // to redirect, avoiding a double navigate (race between sync
+      // navigate + async onAuthStateChange → user → effect → navigate).
     }
   };
 
