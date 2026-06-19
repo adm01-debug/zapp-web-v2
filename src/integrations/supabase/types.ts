@@ -3439,6 +3439,33 @@ export type Database = {
         }
         Relationships: []
       }
+      link_preview_cache_metrics: {
+        Row: {
+          deleted_count: number
+          duration_ms: number
+          id: string
+          ran_at: string
+          remaining_count: number
+          table_size_bytes: number
+        }
+        Insert: {
+          deleted_count?: number
+          duration_ms?: number
+          id?: string
+          ran_at?: string
+          remaining_count?: number
+          table_size_bytes?: number
+        }
+        Update: {
+          deleted_count?: number
+          duration_ms?: number
+          id?: string
+          ran_at?: string
+          remaining_count?: number
+          table_size_bytes?: number
+        }
+        Relationships: []
+      }
       login_attempts: {
         Row: {
           attempt_count: number
@@ -7184,6 +7211,15 @@ export type Database = {
     Functions: {
       calculate_level: { Args: { xp_amount: number }; Returns: number }
       cleanup_expired_challenges: { Args: never; Returns: undefined }
+      cleanup_link_preview_cache: {
+        Args: never
+        Returns: {
+          deleted_count: number
+          duration_ms: number
+          remaining_count: number
+          table_size_bytes: number
+        }[]
+      }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
       contacts_count_by_type: {
         Args: never
