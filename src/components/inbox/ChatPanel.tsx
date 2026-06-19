@@ -93,11 +93,6 @@ export function ChatPanel({ conversation, messages, onSendMessage, onSendAudio, 
     setActiveTool(prev => prev === tool ? null : tool);
   }, []);
 
-  useEffect(() => {
-    dispatch({ type: activeTool === 'chatSearch' ? 'OPEN' : 'CLOSE', key: 'chatSearch' });
-    dispatch({ type: activeTool === 'aiAssistant' ? 'OPEN' : 'CLOSE', key: 'aiAssistant' });
-  }, [activeTool]);
-
   const [callDirection, setCallDirection] = useState<'inbound' | 'outbound'>('outbound');
   const [highlightedMessageIds, setHighlightedMessageIds] = useState<Set<string>>(new Set());
   const [activeHighlightId, setActiveHighlightId] = useState<string | null>(null);
