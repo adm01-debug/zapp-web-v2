@@ -22,6 +22,7 @@ import { formatMessageTime, MessageStatusIcon } from './messageUtils';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/ui/use-toast';
 import { QuarantineBadge } from '@/components/security/QuarantineBadge';
+import { LinkPreviewCard } from './LinkPreviewCard';
 
 import { getLogger } from '@/lib/logger';
 const log = getLogger('MessageBubble');
@@ -224,9 +225,14 @@ export const MessageBubble = memo(function MessageBubble({
                 )}
 
                 {message.content && message.type !== 'audio' && message.type !== 'location' && message.type !== 'video' && message.type !== 'document' && message.type !== 'sticker' && (
+                  <>
+                  {message.link_preview && (
+                    <LinkPreviewCard preview={message.link_preview} isSent={isSent} />
+                  )}
                   <p className="text-[13.5px] whitespace-pre-wrap leading-[1.45]">
                     {searchQuery && highlightedMessageIds?.has(message.id) ? <HighlightedText text={message.content} query={searchQuery} /> : message.content}
                   </p>
+                  </>
                 )}
 
                 <div className={cn(
