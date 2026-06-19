@@ -126,3 +126,5 @@ function ChatPanelHeaderBase({
     </div>
   );
 }
+
+export const ChatPanelHeader = memo(ChatPanelHeaderBase);
