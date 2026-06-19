@@ -77,7 +77,7 @@ export function HeroBenefits() {
                 <p.icon className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1 pt-0.5">
-                <h3 className="text-base font-semibold text-foreground">{p.title}</h3>
+                <h2 className="text-base font-semibold text-foreground">{p.title}</h2>
                 <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{p.description}</p>
               </div>
             </div>
