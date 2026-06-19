@@ -132,8 +132,19 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
    };
 
    const signOut = async () => {
-     await AuthService.signOut();
-     setProfile(null);
+     try {
+       await AuthService.signOut();
+     } catch (err) {
+       // BUG-F1 FIX: log but do not rethrow — ensure local state is always
+       // cleared so the UI never shows a stale profile after a sign-out
+       // attempt (e.g. network failure). The next onAuthStateChange will
+       // reconcile if the server-side sign-out actually succeeded.
+       log.error('[AuthProvider] signOut failed, clearing local state anyway:', err);
+     } finally {
+       setProfile(null);
+       setSession(null);
+       setUser(null);
+     }
    };
 
   return (
