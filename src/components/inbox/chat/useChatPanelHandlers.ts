@@ -50,6 +50,9 @@ export function useChatPanelHandlers(opts: UseChatPanelHandlersOptions) {
   const replyToMessageRef = useRef(replyToMessage);
   replyToMessageRef.current = replyToMessage;
 
+  const forwardMessageRef = useRef(forwardMessage);
+  forwardMessageRef.current = forwardMessage;
+
   const EDIT_WINDOW_MINUTES = 15;
 
   const handleEditStart = useCallback((message: Message) => {
@@ -114,7 +117,7 @@ export function useChatPanelHandlers(opts: UseChatPanelHandlersOptions) {
   const handleReplyToMessage = useCallback((message: Message) => { setReplyToMessage(message); inputRef.current?.focus(); }, []);
   const handleCopyMessage = useCallback((content: string) => { navigator.clipboard.writeText(content); toast({ title: 'Copiado!', description: 'Mensagem copiada para a área de transferência.' }); }, []);
   const handleForwardMessage = useCallback((message: Message) => { setForwardMessage(message); openDialog('forwardDialog'); }, [openDialog]);
-  const handleForwardToTargets = useCallback((targetIds: string[], targetType: 'contact' | 'group') => { log.debug('Forwarding to:', { targetIds, targetType, message: forwardMessage }); }, [forwardMessage]);
+  const handleForwardToTargets = useCallback((targetIds: string[], targetType: 'contact' | 'group') => { log.debug('Forwarding to:', { targetIds, targetType, message: forwardMessageRef.current }); }, []);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
