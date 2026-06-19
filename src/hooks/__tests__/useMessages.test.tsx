@@ -72,7 +72,10 @@ describe('useMessages', () => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(result.current.messages).toEqual(mockMessages.map(m => ({ ...m, isEdited: false })));
+    // Hook enriches each message with derived fields (timestamp, mediaUrl, type, etc.)
+    expect(result.current.messages).toHaveLength(mockMessages.length);
+    expect(result.current.messages[0]).toMatchObject({ id: 'msg-1', content: 'Hello', sender: 'contact', isEdited: false });
+    expect(result.current.messages[1]).toMatchObject({ id: 'msg-2', content: 'Hi!', sender: 'agent', isEdited: false });
   });
 
   it('sets error when fetch fails', async () => {
