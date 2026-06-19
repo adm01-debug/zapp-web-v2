@@ -11,6 +11,44 @@ interface PreviewData {
 const MAX_BYTES = 512 * 1024; // 512KB cap
 const FETCH_TIMEOUT_MS = 6000;
 
+// In-memory LRU-ish cache by URL hash. Persists while the isolate is warm.
+const CACHE_TTL_MS = 1000 * 60 * 60 * 6; // 6h for hits
+const NEG_CACHE_TTL_MS = 1000 * 60 * 15; // 15min for misses/errors
+const CACHE_MAX = 500;
+const previewCache = new Map<string, { expiresAt: number; preview: PreviewData | null }>();
+
+async function hashUrl(raw: string): Promise<string> {
+  const buf = new TextEncoder().encode(raw);
+  const digest = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+function cacheGet(key: string): { hit: boolean; preview: PreviewData | null } {
+  const entry = previewCache.get(key);
+  if (!entry) return { hit: false, preview: null };
+  if (entry.expiresAt < Date.now()) {
+    previewCache.delete(key);
+    return { hit: false, preview: null };
+  }
+  // refresh LRU position
+  previewCache.delete(key);
+  previewCache.set(key, entry);
+  return { hit: true, preview: entry.preview };
+}
+
+function cacheSet(key: string, preview: PreviewData | null): void {
+  if (previewCache.size >= CACHE_MAX) {
+    const oldest = previewCache.keys().next().value;
+    if (oldest) previewCache.delete(oldest);
+  }
+  previewCache.set(key, {
+    expiresAt: Date.now() + (preview ? CACHE_TTL_MS : NEG_CACHE_TTL_MS),
+    preview,
+  });
+}
+
 function isPublicHttpUrl(raw: string): URL | null {
   try {
     const u = new URL(raw);
@@ -160,8 +198,18 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    const key = await hashUrl(url);
+    const cached = cacheGet(key);
+    if (cached.hit) {
+      return new Response(JSON.stringify({ preview: cached.preview, cached: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const preview = await fetchPreview(url);
-    return new Response(JSON.stringify({ preview }), {
+    cacheSet(key, preview);
+    return new Response(JSON.stringify({ preview, cached: false }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
