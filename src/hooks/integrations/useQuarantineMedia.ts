@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { queryExternalProxy } from '@/lib/externalProxy';
 import { log } from '@/lib/logger';
+import { quarantineStore } from '@/lib/quarantineStore';
 
 /**
  * Representa um registro da tabela `media_quarantine` (VPS externa Zap Webb)
@@ -100,7 +101,10 @@ export function useQuarantineMedia(): UseQuarantineMediaResult {
         return;
       }
       setNotConfigured(false);
-      setRecords(Array.isArray(main.data) ? main.data : []);
+      const list = Array.isArray(main.data) ? main.data : [];
+      setRecords(list);
+      // Sync global store so inline message badges reflect admin actions.
+      quarantineStore.upsertMany(list);
       setTotal(main.count ?? main.data?.length ?? 0);
       setPendingCount(pending.count ?? 0);
     } catch (err) {
