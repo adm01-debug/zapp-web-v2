@@ -9,6 +9,7 @@ import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
 import { getLogger } from "@/lib/logger";
 import { useRef, useState } from "react";
 import { AlertTriangle } from "lucide-react";
+import { QuarantineMonitorProvider } from "@/providers/QuarantineMonitorProvider";
 
 const log = getLogger('AppProviders');
 
@@ -91,7 +92,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
               <TooltipProvider delayDuration={300}>
                 <ThemeSync />
                 <ThemeInitializer />
-                {children}
+                <QuarantineMonitorProvider>
+                  {children}
+                </QuarantineMonitorProvider>
               </TooltipProvider>
             </AccessibleToastProvider>
           </HighContrastProvider>
