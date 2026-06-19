@@ -181,3 +181,5 @@ function ConversationItemBase({ conversation, isSelected, onSelect, compact = fa
     </QuickPeek>
   );
 }
+
+export const ConversationItem = memo(ConversationItemBase);
