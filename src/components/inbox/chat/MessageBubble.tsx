@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatMessageTime, MessageStatusIcon } from './messageUtils';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/ui/use-toast';
+import { QuarantineBadge } from '@/components/security/QuarantineBadge';
 
 import { getLogger } from '@/lib/logger';
 const log = getLogger('MessageBubble');
