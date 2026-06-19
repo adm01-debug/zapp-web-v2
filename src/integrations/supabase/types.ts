@@ -3412,6 +3412,33 @@ export type Database = {
           },
         ]
       }
+      link_preview_cache: {
+        Row: {
+          created_at: string
+          expires_at: string
+          preview: Json | null
+          updated_at: string
+          url: string
+          url_hash: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          preview?: Json | null
+          updated_at?: string
+          url: string
+          url_hash: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          preview?: Json | null
+          updated_at?: string
+          url?: string
+          url_hash?: string
+        }
+        Relationships: []
+      }
       login_attempts: {
         Row: {
           attempt_count: number
