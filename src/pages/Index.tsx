@@ -176,14 +176,6 @@ const Index = memo(forwardRef<HTMLDivElement>(function Index(_props, _ref) {
   const { user } = useAuth();
   const { completeOnboarding } = useOnboarding();
 
-  // O ProtectedRoute já garante que o usuário esteja autenticado,
-  // mas mantemos um log para depuração se necessário.
-  useEffect(() => {
-    if (user) {
-      console.log('[Index] Usuário autenticado:', user.email);
-    }
-  }, [user]);
-
   if (!user) {
     return <LoadingSplash />;
   }
