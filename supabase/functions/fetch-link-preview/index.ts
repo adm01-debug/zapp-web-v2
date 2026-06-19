@@ -1,4 +1,5 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 interface PreviewData {
   url: string;
@@ -16,6 +17,41 @@ const CACHE_TTL_MS = 1000 * 60 * 60 * 6; // 6h for hits
 const NEG_CACHE_TTL_MS = 1000 * 60 * 15; // 15min for misses/errors
 const CACHE_MAX = 500;
 const previewCache = new Map<string, { expiresAt: number; preview: PreviewData | null }>();
+
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+const db =
+  SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
+    ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+        auth: { persistSession: false },
+      })
+    : null;
+
+async function dbCacheGet(key: string): Promise<{ hit: boolean; preview: PreviewData | null }> {
+  if (!db) return { hit: false, preview: null };
+  const { data, error } = await db
+    .from('link_preview_cache')
+    .select('preview, expires_at')
+    .eq('url_hash', key)
+    .maybeSingle();
+  if (error || !data) return { hit: false, preview: null };
+  if (new Date(data.expires_at as string).getTime() < Date.now()) {
+    return { hit: false, preview: null };
+  }
+  return { hit: true, preview: (data.preview as PreviewData | null) ?? null };
+}
+
+async function dbCacheSet(key: string, url: string, preview: PreviewData | null): Promise<void> {
+  if (!db) return;
+  const ttl = preview ? CACHE_TTL_MS : NEG_CACHE_TTL_MS;
+  const expiresAt = new Date(Date.now() + ttl).toISOString();
+  await db
+    .from('link_preview_cache')
+    .upsert(
+      { url_hash: key, url, preview, expires_at: expiresAt },
+      { onConflict: 'url_hash' },
+    );
+}
 
 async function hashUrl(raw: string): Promise<string> {
   const buf = new TextEncoder().encode(raw);
@@ -207,8 +243,18 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    const dbCached = await dbCacheGet(key);
+    if (dbCached.hit) {
+      cacheSet(key, dbCached.preview);
+      return new Response(
+        JSON.stringify({ preview: dbCached.preview, cached: true, source: 'db' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
     const preview = await fetchPreview(url);
     cacheSet(key, preview);
+    await dbCacheSet(key, url, preview);
     return new Response(JSON.stringify({ preview, cached: false }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
