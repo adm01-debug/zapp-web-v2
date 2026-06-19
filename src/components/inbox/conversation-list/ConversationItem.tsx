@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { memo } from 'react';
 import { Conversation } from '@/types/chat';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -50,7 +51,7 @@ interface ConversationItemProps {
   compact?: boolean;
 }
 
-export function ConversationItem({ conversation, isSelected, onSelect, compact = false }: ConversationItemProps) {
+function ConversationItemBase({ conversation, isSelected, onSelect, compact = false }: ConversationItemProps) {
   const StatusIcon = statusIcons[conversation.status];
   const sentiment: SentimentLevel | null = (conversation.sentiment as SentimentLevel | null) || 
     (conversation.sentimentScore !== undefined && conversation.sentimentScore !== null ? getSentimentFromScore(conversation.sentimentScore) : null);
