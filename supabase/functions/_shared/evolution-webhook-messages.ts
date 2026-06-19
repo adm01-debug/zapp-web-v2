@@ -7,6 +7,37 @@ import {
 } from "./evolution-helpers.ts";
 import { persistMediaToStorage, persistMediaViaApi, parseMessageContent } from "./evolution-media.ts";
 
+const URL_REGEX = /https?:\/\/[^\s<>"'`]+/i;
+
+// Fire-and-forget OG enrichment for received messages.
+// deno-lint-ignore no-explicit-any
+async function enrichIncomingLinkPreview(
+  supabase: any, messageId: string, content: string | null | undefined,
+  supabaseUrl: string, supabaseServiceKey: string,
+): Promise<void> {
+  try {
+    if (!content) return;
+    const match = content.match(URL_REGEX);
+    if (!match) return;
+    const url = match[0].replace(/[).,;!?]+$/, '');
+    const resp = await fetch(`${supabaseUrl}/functions/v1/fetch-link-preview`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${supabaseServiceKey}`,
+        apikey: supabaseServiceKey,
+      },
+      body: JSON.stringify({ url }),
+    });
+    if (!resp.ok) { await resp.text().catch(() => ''); return; }
+    const json = await resp.json().catch(() => null) as { preview?: unknown } | null;
+    if (!json?.preview) return;
+    await supabase.from('messages').update({ link_preview: json.preview }).eq('id', messageId);
+  } catch (err) {
+    console.error('[INCOMING] link_preview enrichment failed:', err);
+  }
+}
+
 // deno-lint-ignore no-explicit-any
 export async function handleOutgoingWhatsAppMessage(
   supabase: any, instance: string, data: Record<string, unknown>,
