@@ -47,32 +47,33 @@ describe('useServiceWorker', () => {
     vi.useRealTimers();
   });
 
-  it('registers service worker on mount', async () => {
-    const { useServiceWorker } = await import('@/hooks/system/useServiceWorker');
-    renderHook(() => useServiceWorker());
-    
-    // Allow async registration
-    await vi.advanceTimersByTimeAsync(0);
-    
-    expect(navigator.serviceWorker.register).toHaveBeenCalledWith('/sw.js', {
-      scope: '/',
-      updateViaCache: 'none',
-    });
-  });
-
-  it('cleans legacy caches before registering the current worker', async () => {
+  it('unregisters existing service workers on mount', async () => {
     mockCaches.keys.mockResolvedValueOnce(['whatsapp-crm-v2']);
-    sessionStorage.setItem('legacy-sw-reset-done', '1');
 
     const { useServiceWorker } = await import('@/hooks/system/useServiceWorker');
     renderHook(() => useServiceWorker());
 
+    // Allow async unregister/cleanup to flush
     await vi.advanceTimersByTimeAsync(0);
+    await Promise.resolve();
+    await Promise.resolve();
 
     expect(navigator.serviceWorker.getRegistrations).toHaveBeenCalled();
     expect(mockUnregister).toHaveBeenCalled();
-    expect(caches.delete).toHaveBeenCalledWith('whatsapp-crm-v2');
-    expect(navigator.serviceWorker.register).toHaveBeenCalled();
+  });
+
+  it('clears all caches on mount', async () => {
+    mockCaches.keys.mockResolvedValueOnce(['whatsapp-crm-v2', 'other-cache']);
+
+    const { useServiceWorker } = await import('@/hooks/system/useServiceWorker');
+    renderHook(() => useServiceWorker());
+
+    await vi.advanceTimersByTimeAsync(0);
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockCaches.delete).toHaveBeenCalledWith('whatsapp-crm-v2');
+    expect(mockCaches.delete).toHaveBeenCalledWith('other-cache');
   });
 
   it('does not crash when serviceWorker is unavailable', async () => {
