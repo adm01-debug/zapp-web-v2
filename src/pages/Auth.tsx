@@ -21,7 +21,12 @@ export default function Auth() {
   } = useAuthForm();
 
   return (
-    <div className="relative flex min-h-screen overflow-x-hidden overflow-y-auto bg-background">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      aria-label="Acesso à plataforma"
+      className="relative flex min-h-dvh overflow-x-hidden overflow-y-auto bg-background focus:outline-none"
+    >
       {/* Ambient background — subtle, never competes with content */}
       <div className="pointer-events-none absolute inset-0">
         <motion.div
