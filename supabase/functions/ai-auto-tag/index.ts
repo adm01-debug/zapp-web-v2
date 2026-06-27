@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   handleCors, errorResponse, jsonResponse,
-  sanitizeString, isValidUUID, checkRateLimit, getClientIP, requireEnv, Logger,
+  sanitizeString, isValidUUID, checkRateLimit, getClientIP, requireEnv, Logger, requireAuth,
 } from "../_shared/validation.ts";
 import { AiAutoTagSchema, parseBody } from "../_shared/schemas.ts";
 import { callAiWithTracking, extractUserIdFromRequest } from "../_shared/ai-usage.ts";
@@ -9,6 +9,9 @@ import { callAiWithTracking, extractUserIdFromRequest } from "../_shared/ai-usag
 Deno.serve(async (req) => {
   const cors = handleCors(req);
   if (cors) return cors;
+  const authCheck = await requireAuth(req);
+  if (authCheck instanceof Response) return authCheck;
+
 
   const log = new Logger("ai-auto-tag");
   const userId = extractUserIdFromRequest(req);

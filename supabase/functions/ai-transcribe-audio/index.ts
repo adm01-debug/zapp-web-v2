@@ -1,4 +1,4 @@
-import { handleCors, errorResponse, jsonResponse, checkRateLimit, getClientIP, requireEnv, Logger } from "../_shared/validation.ts";
+import { handleCors, errorResponse, jsonResponse, checkRateLimit, getClientIP, requireEnv, Logger, requireAuth } from "../_shared/validation.ts";
 import { TranscribeAudioSchema, parseBody } from "../_shared/schemas.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
@@ -63,6 +63,9 @@ async function downloadAudio(
 Deno.serve(async (req) => {
   const cors = handleCors(req);
   if (cors) return cors;
+  const authCheck = await requireAuth(req);
+  if (authCheck instanceof Response) return authCheck;
+
 
   const log = new Logger("ai-transcribe-audio");
 

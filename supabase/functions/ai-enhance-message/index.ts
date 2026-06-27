@@ -1,6 +1,6 @@
 import {
   handleCors, errorResponse, jsonResponse,
-  sanitizeString, isValidUUID, checkRateLimit, getClientIP, requireEnv, Logger,
+  sanitizeString, isValidUUID, checkRateLimit, getClientIP, requireEnv, Logger, requireAuth,
 } from "../_shared/validation.ts";
 import { AiEnhanceMessageSchema, parseBody } from "../_shared/schemas.ts";
 import { callAiWithTracking, extractUserIdFromRequest } from "../_shared/ai-usage.ts";
@@ -17,6 +17,9 @@ const tonePrompts: Record<string, string> = {
 Deno.serve(async (req) => {
   const cors = handleCors(req);
   if (cors) return cors;
+  const authCheck = await requireAuth(req);
+  if (authCheck instanceof Response) return authCheck;
+
 
   const log = new Logger("ai-enhance-message");
   const userId = extractUserIdFromRequest(req);

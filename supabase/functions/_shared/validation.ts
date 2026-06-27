@@ -196,3 +196,30 @@ export function requireEnv(name: string): string {
   }
   return value;
 }
+
+/**
+ * Require a valid Supabase JWT in the Authorization header.
+ * Returns the authenticated user id, or a Response (401) to short-circuit.
+ */
+export async function requireAuth(req: Request): Promise<{ userId: string } | Response> {
+  const authHeader = req.headers.get("Authorization") || req.headers.get("authorization");
+  if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {
+    return errorResponse("Missing Authorization bearer token", 401, req);
+  }
+  try {
+    const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2.87.1");
+    const supabaseUrl = requireEnv("SUPABASE_URL");
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("SUPABASE_PUBLISHABLE_KEY") || "";
+    const client = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { persistSession: false },
+    });
+    const { data, error } = await client.auth.getUser();
+    if (error || !data?.user) {
+      return errorResponse("Invalid or expired token", 401, req);
+    }
+    return { userId: data.user.id };
+  } catch (_err) {
+    return errorResponse("Authentication failed", 401, req);
+  }
+}
