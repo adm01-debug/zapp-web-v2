@@ -106,7 +106,7 @@ export const ProductManagement: React.FC = () => {
                       <TableCell>
                         <div className="w-12 h-12 rounded bg-muted overflow-hidden">
                           {product.image_url ? (
-                            <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                            <img src={product.image_url} alt={product.name} className="w-full h-full object-cover"  loading="lazy" decoding="async"/>
                           ) : (
                             <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-5 h-5 text-muted-foreground" /></div>
                           )}
