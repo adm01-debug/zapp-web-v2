@@ -28,9 +28,17 @@ const queryClient = new QueryClient({
       retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10_000),
       refetchOnWindowFocus: false,
       refetchOnReconnect: 'always',
+      // Evita refetch automático ao remontar componentes — o staleTime de 5min
+      // já garante dados frescos e elimina rajadas de requisição em navegação
+      // entre rotas SPA.
+      refetchOnMount: false,
+      // 'online' faz queries pausarem sem rede em vez de falharem com retry,
+      // economizando bateria/CPU em conexões instáveis.
+      networkMode: 'online',
     },
     mutations: {
       retry: 1,
+      networkMode: 'online',
     },
   },
 });
