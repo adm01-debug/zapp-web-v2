@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   handleCors, errorResponse, jsonResponse,
-  sanitizeString, isValidUUID, checkRateLimit, getClientIP, requireEnv, Logger,
+  sanitizeString, isValidUUID, checkRateLimit, getClientIP, requireEnv, Logger, requireAuth,
 } from "../_shared/validation.ts";
 import { AiAutoTagSchema, parseBody } from "../_shared/schemas.ts";
 import { callAiWithTracking, extractUserIdFromRequest } from "../_shared/ai-usage.ts";
