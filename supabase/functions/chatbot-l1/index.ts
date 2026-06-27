@@ -6,6 +6,9 @@ import { callAiWithTracking, extractUserIdFromRequest } from "../_shared/ai-usag
 Deno.serve(async (req) => {
   const cors = handleCors(req);
   if (cors) return cors;
+  const authCheck = await requireAuth(req);
+  if (authCheck instanceof Response) return authCheck;
+
 
   const log = new Logger("chatbot-l1");
   const userId = extractUserIdFromRequest(req);

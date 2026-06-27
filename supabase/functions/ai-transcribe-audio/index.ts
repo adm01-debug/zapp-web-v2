@@ -63,6 +63,9 @@ async function downloadAudio(
 Deno.serve(async (req) => {
   const cors = handleCors(req);
   if (cors) return cors;
+  const authCheck = await requireAuth(req);
+  if (authCheck instanceof Response) return authCheck;
+
 
   const log = new Logger("ai-transcribe-audio");
 
