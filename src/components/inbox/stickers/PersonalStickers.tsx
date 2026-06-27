@@ -93,7 +93,7 @@ export function PersonalStickers({ onSend }: PersonalStickersProps) {
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader><AlertDialogTitle>Excluir figurinha pessoal?</AlertDialogTitle>
-            <AlertDialogDescription>{deleteTarget && <span className="flex items-center gap-3 mt-2"><img src={deleteTarget.image_url} alt="" className="w-12 h-12 object-cover rounded-lg bg-muted" /><span>&ldquo;{deleteTarget.name || 'Figurinha'}&rdquo; será removida permanentemente.</span></span>}</AlertDialogDescription>
+            <AlertDialogDescription>{deleteTarget && <span className="flex items-center gap-3 mt-2"><img src={deleteTarget.image_url} alt="" className="w-12 h-12 object-cover rounded-lg bg-muted"  loading="lazy" decoding="async"/><span>&ldquo;{deleteTarget.name || 'Figurinha'}&rdquo; será removida permanentemente.</span></span>}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction onClick={() => deleteTarget && deleteSticker.mutate(deleteTarget)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Excluir</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>

@@ -31,7 +31,7 @@ const MediaContent = memo(function MediaContent({ msg }: { msg: TeamMessage }) {
   if (!msg.media_url) return null;
   switch (msg.media_type) {
     case 'image': case 'sticker': case 'emoji':
-      return <img src={msg.media_url} alt="media" className={cn("rounded-lg max-h-48 object-contain cursor-pointer", msg.media_type === 'sticker' || msg.media_type === 'emoji' ? 'w-24 h-24' : 'max-w-full')} onClick={() => window.open(msg.media_url!, '_blank')} />;
+      return <img src={msg.media_url} alt="media" className={cn("rounded-lg max-h-48 object-contain cursor-pointer", msg.media_type === 'sticker' || msg.media_type === 'emoji' ? 'w-24 h-24' : 'max-w-full')} onClick={() = loading="lazy" decoding="async"> window.open(msg.media_url!, '_blank')} />;
     case 'video': return <video src={msg.media_url} controls className="rounded-lg max-h-48 max-w-full" />;
     case 'audio': case 'audio_meme': {
       const isWebm = msg.media_url?.endsWith('.webm');

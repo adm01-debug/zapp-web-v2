@@ -111,7 +111,7 @@ export const TalkXContactSelector: React.FC<Props> = ({
                   <label key={contact.id} className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all ${isSelected ? 'bg-primary/10 border border-primary/20' : 'hover:bg-muted/50 border border-transparent'}`}>
                     <Checkbox checked={isSelected} onCheckedChange={() => toggleContact(contact.id)} />
                     <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground shrink-0">
-                      {contact.avatar_url ? <img src={contact.avatar_url} alt="" className="w-full h-full rounded-full object-cover" /> : (contact.name || '?')[0].toUpperCase()}
+                      {contact.avatar_url ? <img src={contact.avatar_url} alt="" className="w-full h-full rounded-full object-cover"  loading="lazy" decoding="async"/> : (contact.name || '?')[0].toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">

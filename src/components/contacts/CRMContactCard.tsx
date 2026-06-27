@@ -60,7 +60,7 @@ export function CRMContactCard({ contact, onSelect }: CRMContactCardProps) {
 
       {contact.company_name && (
         <div className="flex items-center gap-2 mb-1.5">
-          {contact.company_logo ? <img src={contact.company_logo} alt="" className="w-5 h-5 rounded object-contain bg-background border border-border/20" /> : <Building className="w-4 h-4 text-muted-foreground shrink-0" />}
+          {contact.company_logo ? <img src={contact.company_logo} alt="" className="w-5 h-5 rounded object-contain bg-background border border-border/20"  loading="lazy" decoding="async"/> : <Building className="w-4 h-4 text-muted-foreground shrink-0" />}
           <span className="text-xs truncate">{contact.company_name}</span>
           {contact.company_estado && <Badge variant="outline" className="text-[9px] py-0 px-1 ml-auto shrink-0">{contact.company_estado}</Badge>}
         </div>

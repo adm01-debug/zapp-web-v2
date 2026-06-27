@@ -45,7 +45,7 @@ export const MediaCard = memo(function MediaCard({ item, isSelected, onSelect, o
           <>
             {isLoading && <div className="absolute inset-0 flex items-center justify-center"><Skeleton className="w-full h-full" /></div>}
             {!hasError ? (
-              <img src={item.url} alt={item.filename} className={cn('w-full h-full object-cover', isLoading && 'opacity-0')} onLoad={() => setIsLoading(false)} onError={() => { setIsLoading(false); setHasError(true); }} />
+              <img src={item.url} alt={item.filename} className={cn('w-full h-full object-cover', isLoading && 'opacity-0')} onLoad={() = loading="lazy" decoding="async"> setIsLoading(false)} onError={() => { setIsLoading(false); setHasError(true); }} />
             ) : (
               <div className="w-full h-full flex items-center justify-center"><Image className="w-8 h-8 text-muted-foreground" /></div>
             )}

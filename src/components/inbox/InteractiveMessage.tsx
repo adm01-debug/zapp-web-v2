@@ -79,7 +79,7 @@ export function InteractiveMessageDisplay({
                 src={interactive.header.mediaUrl} 
                 alt="Header" 
                 className="rounded-lg max-w-full h-auto mb-2"
-              />
+               loading="lazy" decoding="async"/>
             )}
           </div>
         )}

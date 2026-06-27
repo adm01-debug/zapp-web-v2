@@ -123,7 +123,7 @@ export function MFAEnroll({ onSuccess, onCancel }: MFAEnrollProps) {
                   src={enrollmentData.totp.qr_code} 
                   alt="QR Code para MFA"
                   className="w-48 h-48"
-                />
+                 loading="lazy" decoding="async"/>
               </div>
             </div>
 

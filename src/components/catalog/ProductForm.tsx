@@ -107,7 +107,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCan
           {errors.image_url && <p className="text-xs text-destructive mt-1">{errors.image_url}</p>}
           {formData.image_url && (
             <div className="mt-2 w-24 h-24 rounded-lg overflow-hidden bg-muted">
-              <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" onError={(e) = loading="lazy" decoding="async"> { (e.target as HTMLImageElement).style.display = 'none'; }} />
             </div>
           )}
         </div>

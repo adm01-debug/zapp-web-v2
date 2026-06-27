@@ -29,7 +29,7 @@ export function MediaPreviewDialog({ item, open, onOpenChange }: MediaPreviewDia
           </DialogTitle>
         </DialogHeader>
         <div className="flex items-center justify-center p-4 bg-background/90 min-h-[400px]">
-          {item.type === 'image' && <img src={item.url} alt={item.filename} className="max-w-full max-h-[70vh] object-contain" />}
+          {item.type === 'image' && <img src={item.url} alt={item.filename} className="max-w-full max-h-[70vh] object-contain"  loading="lazy" decoding="async"/>}
           {item.type === 'video' && <video src={item.url} controls controlsList="nodownload" onContextMenu={(e) => e.preventDefault()} className="max-w-full max-h-[70vh]" />}
           {item.type === 'audio' && <div className="p-8"><audio src={item.url} controls className="w-full" /></div>}
           {item.type === 'document' && (
