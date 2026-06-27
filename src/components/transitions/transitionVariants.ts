@@ -1,4 +1,4 @@
-import type { Variants } from 'framer-motion';
+import type { Variants, Variant } from 'framer-motion';
 
 export type TransitionVariantName =
   | 'none'
@@ -48,9 +48,9 @@ export function buildVariants(config: TransitionConfig): Variants {
       const axis = dir === 'left' || dir === 'right' ? 'x' : 'y';
       const sign = dir === 'left' || dir === 'up' ? -1 : 1;
       return {
-        initial: { opacity: 0, [axis]: sign * distance },
-        animate: { opacity: 1, [axis]: 0, transition: { duration, ease } },
-        exit: { opacity: 0, [axis]: sign * -distance, transition: { duration, ease } },
+        initial: { opacity: 0, [axis]: sign * distance } as Variant,
+        animate: { opacity: 1, [axis]: 0, transition: { duration, ease } } as Variant,
+        exit: { opacity: 0, [axis]: sign * -distance, transition: { duration, ease } } as Variant,
       };
     }
 
@@ -67,9 +67,9 @@ export function buildVariants(config: TransitionConfig): Variants {
       const axis = config.axis ?? 'y';
       const rotateKey = axis === 'y' ? 'rotateY' : 'rotateX';
       return {
-        initial: { opacity: 0, [rotateKey]: 90 },
-        animate: { opacity: 1, [rotateKey]: 0, transition: { duration, ease } },
-        exit: { opacity: 0, [rotateKey]: -90, transition: { duration, ease } },
+        initial: { opacity: 0, [rotateKey]: 90 } as Variant,
+        animate: { opacity: 1, [rotateKey]: 0, transition: { duration, ease } } as Variant,
+        exit: { opacity: 0, [rotateKey]: -90, transition: { duration, ease } } as Variant,
       };
     }
 
