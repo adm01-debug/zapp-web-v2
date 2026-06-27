@@ -119,7 +119,7 @@ export function ContactHeaderSection({ contact, enrichedData, conversation, onQu
             {channelEmoji && <span className="absolute -bottom-1 -right-1 text-lg bg-card rounded-full p-0.5 ring-2 ring-background">{channelEmoji}</span>}
             {crmCompany?.logo_url && (
               <img src={crmCompany.logo_url} alt={crmCompany.nome_fantasia || ''}
-                className="absolute -top-1 -left-1 w-8 h-8 rounded-md object-contain bg-background border border-border/30 ring-2 ring-background"  loading="lazy" decoding="async"/>
+                className="absolute -top-1 -left-1 w-8 h-8 rounded-md object-contain bg-background border border-border/30 ring-2 ring-background" />
             )}
           </div>
         </div>

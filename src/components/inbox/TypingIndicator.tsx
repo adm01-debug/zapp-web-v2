@@ -62,7 +62,7 @@ export function TypingIndicator({
                   src={avatarUrl} 
                   alt={userName}
                   className="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20"
-                 loading="lazy" decoding="async"/>
+                />
                 <motion.div
                   className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-success rounded-full border-2 border-background"
                   animate={{ scale: [1, 1.2, 1] }}

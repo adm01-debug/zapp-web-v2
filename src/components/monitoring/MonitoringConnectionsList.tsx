@@ -111,7 +111,7 @@ export function MonitoringConnectionsList({ connections, webhookTest, onCheckWeb
                 {qrCodes[conn.instance_id] && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="mt-4 flex justify-center">
                     <div className="p-4 bg-white rounded-xl border shadow-sm">
-                      <img src={qrCodes[conn.instance_id]} alt={`QR ${conn.instance_id}`} className="w-48 h-48 object-contain"  loading="lazy" decoding="async"/>
+                      <img src={qrCodes[conn.instance_id]} alt={`QR ${conn.instance_id}`} className="w-48 h-48 object-contain" />
                       <p className="text-[10px] text-center text-muted-foreground mt-2">Escaneie com WhatsApp</p>
                     </div>
                   </motion.div>
