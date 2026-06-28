@@ -1,46 +1,48 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// ---- Supabase client mock ----------------------------------------------------
-const channelMock = {
-  on: vi.fn().mockReturnThis(),
-  subscribe: vi.fn((cb?: (s: string) => void) => {
-    cb?.('SUBSCRIBED');
-    return { unsubscribe: vi.fn() };
-  }),
-  unsubscribe: vi.fn(),
-};
-
-const authMock = {
-  signInWithPassword: vi.fn(),
-  signOut: vi.fn().mockResolvedValue({ error: null }),
-  getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
-  getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'u1' } } }),
-  onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
-};
-
-const insertSingle = vi.fn().mockResolvedValue({
-  data: { id: 'msg-1', contact_id: 'c1', content: 'hi' },
-  error: null,
+// ---- Supabase client mock (hoisted) -----------------------------------------
+const { channelMock, authMock, insertSingle, fromMock, invokeMock, removeChannelMock } = vi.hoisted(() => {
+  const channelMock = {
+    on: vi.fn().mockReturnThis(),
+    subscribe: vi.fn((cb?: (s: string) => void) => {
+      cb?.('SUBSCRIBED');
+      return { unsubscribe: vi.fn() };
+    }),
+    unsubscribe: vi.fn(),
+  };
+  const authMock = {
+    signInWithPassword: vi.fn(),
+    signOut: vi.fn().mockResolvedValue({ error: null }),
+    getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
+    getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'u1' } } }),
+    onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+  };
+  const insertSingle = vi.fn().mockResolvedValue({
+    data: { id: 'msg-1', contact_id: 'c1', content: 'hi' },
+    error: null,
+  });
+  const fromMock = vi.fn((_table?: string) => ({
+    select: vi.fn().mockReturnThis(),
+    insert: vi.fn(() => ({ select: () => ({ single: insertSingle }) })),
+    update: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    single: vi.fn().mockResolvedValue({ data: { id: 'p1' }, error: null }),
+    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+    order: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockReturnThis(),
+  }));
+  const invokeMock = vi.fn().mockResolvedValue({ data: { key: { id: 'ext-1' } }, error: null });
+  const removeChannelMock = vi.fn();
+  return { channelMock, authMock, insertSingle, fromMock, invokeMock, removeChannelMock };
 });
-
-const fromMock: ReturnType<typeof vi.fn> = vi.fn((_table?: string) => ({
-  select: vi.fn().mockReturnThis(),
-  insert: vi.fn(() => ({ select: () => ({ single: insertSingle }) })),
-  update: vi.fn().mockReturnThis(),
-  eq: vi.fn().mockReturnThis(),
-  single: vi.fn().mockResolvedValue({ data: { id: 'p1' }, error: null }),
-  maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
-  order: vi.fn().mockReturnThis(),
-  limit: vi.fn().mockReturnThis(),
-}));
 
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     auth: authMock,
-    from: (table: string) => (fromMock as (t: string) => unknown)(table),
+    from: (table: string) => (fromMock as unknown as (t: string) => unknown)(table),
     channel: vi.fn(() => channelMock),
-    removeChannel: vi.fn(),
-    functions: { invoke: vi.fn().mockResolvedValue({ data: { key: { id: 'ext-1' } }, error: null }) },
+    removeChannel: removeChannelMock,
+    functions: { invoke: invokeMock },
   },
 }));
 
