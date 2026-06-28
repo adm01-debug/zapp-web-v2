@@ -37,7 +37,7 @@ const fromMock: ReturnType<typeof vi.fn> = vi.fn((_table?: string) => ({
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     auth: authMock,
-    from: (...args: unknown[]) => fromMock(...(args as [string])),
+    from: (table: string) => (fromMock as (t: string) => unknown)(table),
     channel: vi.fn(() => channelMock),
     removeChannel: vi.fn(),
     functions: { invoke: vi.fn().mockResolvedValue({ data: { key: { id: 'ext-1' } }, error: null }) },
