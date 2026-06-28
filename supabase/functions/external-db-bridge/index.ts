@@ -2,6 +2,31 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { handleCors, errorResponse, jsonResponse, requireEnv, Logger } from "../_shared/validation.ts";
 import { ExternalDbBridgeSchema, parseBody } from "../_shared/schemas.ts";
 
+// ─── Allowlist of tables and operations ───────────────────────────────────
+// Service-role bypasses RLS, so we MUST whitelist what this bridge can touch.
+// Format: table -> set of allowed actions. Use "*" to allow all listed ops.
+const TABLE_ALLOWLIST: Record<string, ReadonlyArray<"select" | "insert" | "update" | "delete">> = {
+  evolution_contacts: ["select"],
+  evolution_messages: ["select"],
+  evolution_chats: ["select"],
+  clientes: ["select"],
+  promogifts_catalog: ["select"],
+};
+
+// Allowlist of RPCs callable through this bridge.
+const RPC_ALLOWLIST: ReadonlySet<string> = new Set<string>([
+  "search_external_contacts",
+  "get_external_message_count",
+]);
+
+function isOperationAllowed(action: string, table?: string | null, rpc?: string | null): boolean {
+  if (action === "rpc") return !!rpc && RPC_ALLOWLIST.has(rpc);
+  if (!table) return false;
+  const ops = TABLE_ALLOWLIST[table];
+  if (!ops) return false;
+  return (ops as ReadonlyArray<string>).includes(action);
+}
+
 // ─── Telemetry helper ─────────────────────────────────────────
 interface TelemetryPayload {
   operation: string;
@@ -80,6 +105,15 @@ Deno.serve(async (req) => {
     if (!parsed.success) return errorResponse(parsed.error, 400, req);
 
     const { action, table, rpc, params, limit, offset, countMode } = parsed.data;
+
+    // Enforce allowlist BEFORE running anything with service role
+    if (!isOperationAllowed(action, table, rpc)) {
+      return errorResponse(
+        `Operation '${action}' on ${rpc ? `rpc:${rpc}` : `table:${table}`} is not permitted by allowlist`,
+        403,
+        req,
+      );
+    }
 
     const startTime = performance.now();
     let result: unknown = null;

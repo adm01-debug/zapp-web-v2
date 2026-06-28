@@ -1,3 +1,4 @@
+import { enforceAiGuards } from "../_shared/ai-guards.ts";
 import { handleCors, errorResponse, jsonResponse, checkRateLimit, getClientIP, requireEnv, Logger, requireAuth } from "../_shared/validation.ts";
 import { TranscribeAudioSchema, parseBody } from "../_shared/schemas.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
@@ -65,6 +66,9 @@ Deno.serve(async (req) => {
   if (cors) return cors;
   const authCheck = await requireAuth(req);
   if (authCheck instanceof Response) return authCheck;
+  const __uid = (authCheck as { userId: string }).userId;
+  const __guard = await enforceAiGuards({ functionName: "ai-transcribe-audio", userId: __uid, req });
+  if (__guard) return __guard;
 
 
   const log = new Logger("ai-transcribe-audio");

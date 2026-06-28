@@ -5,6 +5,7 @@
 import { handleCors, errorResponse, jsonResponse, Logger, requireEnv, requireAuth, checkRateLimit, getClientIP } from "../_shared/validation.ts";
 import { z, parseBody } from "../_shared/schemas.ts";
 import { logAiUsage, extractTokenUsage, extractUserIdFromRequest } from "../_shared/ai-usage.ts";
+import { enforceAiGuards } from "../_shared/ai-guards.ts";
 import { callLovableAI, callOpenAICompatible, callCustomWebhook, withRetry } from "../_shared/ai-providers.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.87.1";
 
@@ -101,6 +102,9 @@ Deno.serve(async (req) => {
   if (cors) return cors;
   const authCheck = await requireAuth(req);
   if (authCheck instanceof Response) return authCheck;
+  const __uid = (authCheck as { userId: string }).userId;
+  const __guard = await enforceAiGuards({ functionName: "ai-proxy", userId: __uid, req });
+  if (__guard) return __guard;
 
 
   const log = new Logger("ai-proxy");
