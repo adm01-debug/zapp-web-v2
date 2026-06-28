@@ -216,6 +216,29 @@
     --shadow-glow-purple: 0 4px 14px hsl(221 83% 53% / 0.3);
     --shadow-header: 0 1px 3px hsl(221 20% 12% / 0.06);
 
+    /* ===== GLOW SCALE — auras coloridas semânticas (sm/md/lg) ===== */
+    --glow-primary-sm: 0 0 15px hsl(var(--primary) / 0.3);
+    --glow-primary-md: 0 0 20px hsl(var(--primary) / 0.4);
+    --glow-primary-lg: 0 0 30px hsl(var(--primary) / 0.5);
+    --glow-secondary-sm: 0 0 15px hsl(var(--secondary) / 0.3);
+    --glow-secondary-md: 0 0 20px hsl(var(--secondary) / 0.4);
+    --glow-secondary-lg: 0 0 30px hsl(var(--secondary) / 0.5);
+    --glow-accent-sm: 0 0 10px hsl(var(--accent) / 0.3);
+    --glow-accent-md: 0 0 20px hsl(var(--accent) / 0.4);
+    --glow-destructive-md: 0 0 20px hsl(var(--destructive) / 0.5);
+    --glow-success-md: 0 0 20px hsl(var(--success) / 0.5);
+    --glow-whatsapp-md: 0 0 25px hsl(var(--whatsapp) / 0.6);
+    --glow-whatsapp-lg: 0 0 30px hsl(var(--whatsapp) / 0.5);
+    --glow-xp-md: 0 0 20px hsl(var(--xp) / 0.4);
+    --glow-coins-md: 0 0 20px hsl(var(--coins) / 0.4);
+    --glow-streak-md: 0 0 20px hsl(var(--streak) / 0.4);
+    --glow-rank-gold-md: 0 0 20px hsl(var(--rank-gold) / 0.4);
+    /* compostos (multi-layer) */
+    --glow-aura-secondary: 0 0 30px hsl(var(--secondary) / 0.6), 0 0 60px hsl(var(--secondary) / 0.3);
+    --glow-aura-gradient: 0 0 30px hsl(var(--secondary) / 0.5), 0 0 60px hsl(var(--primary) / 0.3);
+    --glow-aura-neon: 0 0 25px hsl(var(--secondary) / 0.5), 0 0 50px hsl(var(--secondary) / 0.2);
+    --glow-neon-inset: 0 0 20px hsl(var(--secondary) / 0.5), inset 0 0 20px hsl(var(--secondary) / 0.1);
+
     /* ===== GLASS ===== */
     --glass-bg: 0 0% 100% / 1;
     --glass-border: 221 15% 88% / 1;
