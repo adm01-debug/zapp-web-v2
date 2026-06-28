@@ -53,7 +53,11 @@
               event: '*',
               schema,
               table,
-              filter,
+              // Omit filter entirely when undefined — passing filter:undefined
+              // causes a "mismatch between server and client bindings" error in
+              // Supabase Realtime because the server hashes the binding config
+              // including the filter key.
+              ...(filter !== undefined ? { filter } : {}),
             },
             handlePayload
           )

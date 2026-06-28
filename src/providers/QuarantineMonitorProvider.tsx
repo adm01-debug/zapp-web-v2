@@ -91,7 +91,10 @@ export function QuarantineMonitorProvider({ children }: { children: React.ReactN
         knownIdsRef.current = new Set(records.map((r) => r.id).filter(Boolean) as string[]);
         firstRunRef.current = false;
       } catch (err) {
-        log.warn('Quarantine poll falhou', err);
+        // Unexpected error (externalProxy already handles 403/404 as notConfigured).
+        // Log at debug level and stop polling — external proxy is optional.
+        log.debug('Quarantine poll error (external proxy unavailable)', err);
+        disabledRef.current = true;
       } finally {
         if (!cancelled && !disabledRef.current) {
           timer = setTimeout(tick, POLL_INTERVAL_MS);
