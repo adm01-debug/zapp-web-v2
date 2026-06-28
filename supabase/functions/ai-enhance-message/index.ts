@@ -4,6 +4,7 @@ import {
 } from "../_shared/validation.ts";
 import { AiEnhanceMessageSchema, parseBody } from "../_shared/schemas.ts";
 import { callAiWithTracking, extractUserIdFromRequest } from "../_shared/ai-usage.ts";
+import { enforceAiGuards } from "../_shared/ai-guards.ts";
 
 const tonePrompts: Record<string, string> = {
   professional: "Reescreva a mensagem abaixo de forma mais profissional, clara e educada. Mantenha o mesmo significado mas use linguagem corporativa e polida.",
@@ -19,6 +20,9 @@ Deno.serve(async (req) => {
   if (cors) return cors;
   const authCheck = await requireAuth(req);
   if (authCheck instanceof Response) return authCheck;
+  const __uid = (authCheck as { userId: string }).userId;
+  const __guard = await enforceAiGuards({ functionName: "ai-enhance-message", userId: __uid, req });
+  if (__guard) return __guard;
 
 
   const log = new Logger("ai-enhance-message");
