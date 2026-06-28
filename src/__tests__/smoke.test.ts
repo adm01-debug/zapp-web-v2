@@ -23,7 +23,7 @@ const insertSingle = vi.fn().mockResolvedValue({
   error: null,
 });
 
-const fromMock = vi.fn(() => ({
+const fromMock: ReturnType<typeof vi.fn> = vi.fn((_table?: string) => ({
   select: vi.fn().mockReturnThis(),
   insert: vi.fn(() => ({ select: () => ({ single: insertSingle }) })),
   update: vi.fn().mockReturnThis(),
@@ -83,7 +83,7 @@ describe('smoke: conversation creation (send message)', () => {
   it('inserts a message row for the contact', async () => {
     // Patch from('contacts').single to return a connected contact
     const calls: Record<string, unknown> = {};
-    fromMock.mockImplementation((table: string) => {
+    fromMock.mockImplementation(((table: string) => {
       calls[table] = true;
       if (table === 'contacts') {
         return {
@@ -118,7 +118,7 @@ describe('smoke: conversation creation (send message)', () => {
         eq: vi.fn().mockReturnThis(),
         single: vi.fn().mockResolvedValue({ data: { id: 'p1' }, error: null }),
       } as never;
-    });
+    }) as never);
 
     const { sendMessageToContact } = await import('@/hooks/realtime/messageSender');
     const res = await sendMessageToContact('c1', 'hi');
