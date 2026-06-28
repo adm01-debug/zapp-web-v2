@@ -17,9 +17,9 @@ interface FABProps {
 }
 
 const fabVariants = {
-  primary: 'bg-primary text-primary-foreground hover:shadow-[0_0_30px_hsl(var(--primary)/0.5)]',
-  secondary: 'bg-secondary text-secondary-foreground hover:shadow-[0_0_30px_hsl(var(--secondary)/0.5)]',
-  whatsapp: 'bg-whatsapp text-primary-foreground hover:shadow-[0_0_30px_hsl(var(--whatsapp)/0.5)]',
+  primary: 'bg-primary text-primary-foreground hover:shadow-glow-primary-lg',
+  secondary: 'bg-secondary text-secondary-foreground hover:shadow-glow-secondary-lg',
+  whatsapp: 'bg-whatsapp text-primary-foreground hover:shadow-glow-whatsapp-lg',
 };
 
 const fabSizes = { sm: 'w-12 h-12', md: 'w-14 h-14', lg: 'w-16 h-16' };
