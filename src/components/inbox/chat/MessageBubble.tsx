@@ -147,7 +147,7 @@ export const MessageBubble = memo(function MessageBubble({
                         isFirstInGroup && !isLastInGroup && 'rounded-2xl rounded-br-sm',
                         !isFirstInGroup && isLastInGroup && 'rounded-2xl rounded-tr-sm rounded-br-md',
                         !isFirstInGroup && !isLastInGroup && 'rounded-xl rounded-tr-sm rounded-br-sm')
-                    : cn('bg-card border border-border/30 text-foreground shadow-[var(--shadow-sm)]',
+                    : cn('bg-card border border-border/30 text-foreground shadow-sm',
                         isFirstInGroup && isLastInGroup && 'rounded-2xl rounded-bl-md',
                         isFirstInGroup && !isLastInGroup && 'rounded-2xl rounded-bl-sm',
                         !isFirstInGroup && isLastInGroup && 'rounded-2xl rounded-tl-sm rounded-bl-md',
