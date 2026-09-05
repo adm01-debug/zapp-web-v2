@@ -1789,7 +1789,7 @@ export type Database = {
           company: string | null
           consent_status: string | null
           contact_type: string | null
-          conversation_status: 'open' | 'waiting' | 'resolved' | 'archived'
+          conversation_status: string
           conversation_status_changed_at: string | null
           created_at: string
           email: string | null
@@ -1820,7 +1820,7 @@ export type Database = {
           company?: string | null
           consent_status?: string | null
           contact_type?: string | null
-          conversation_status?: 'open' | 'waiting' | 'resolved' | 'archived'
+          conversation_status?: string
           conversation_status_changed_at?: string | null
           created_at?: string
           email?: string | null
@@ -1851,7 +1851,7 @@ export type Database = {
           company?: string | null
           consent_status?: string | null
           contact_type?: string | null
-          conversation_status?: 'open' | 'waiting' | 'resolved' | 'archived'
+          conversation_status?: string
           conversation_status_changed_at?: string | null
           created_at?: string
           email?: string | null
@@ -7841,6 +7841,10 @@ export type Database = {
           tags: string[]
           title: string
         }[]
+      }
+      set_conversation_status: {
+        Args: { p_contact_id: string; p_next: string; p_reason?: string }
+        Returns: undefined
       }
       skill_based_assign: { Args: { p_queue_id: string }; Returns: string }
       store_gmail_tokens: {
