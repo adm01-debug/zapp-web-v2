@@ -7,7 +7,8 @@ import DOMPurify from 'dompurify';
  * Política:
  * - Imagens permitidas (lazy, no-referrer); data: URL > 32KB vira placeholder.
  * - Links sempre externos e seguros (target=_blank + rel=noopener noreferrer).
- * - Larguras fixas px do remetente neutralizadas; comentários CSS removidos
+ * - Dimensões fixas do remetente neutralizadas (somente '%' e 'auto' permitidos;
+ *   px, em, rem, vh, vw, cm, calc etc. são todos removidos); comentários CSS removidos
  *   antes do parse (F1) e QUALQUER declaração com url() descartada (F2) —
  *   cobre cursor/mask-image/list-style-image/content/filter/etc.
  * - Instância DOMPurify ISOLADA via factory (F3): removeAllHooks() chamado por
@@ -44,7 +45,7 @@ type PurifyInstance = typeof DOMPurify;
 function cssUnescape(s: string): string {
   return s
     // continuação de linha: backslash + newline/CRLF/form-feed desaparece (CSS spec)
-    .replace(/\\(\r\n|\r|\n|\f|\u2028|\u2029)/g, '')
+    .replace(/(\r\n|\r|\n|\f| | )/g, '')
     .replace(/\\([0-9a-fA-F]{1,6})(\r\n|[ \t\r\n\f])?/g, (_m, hex: string) => {
       const cp = parseInt(hex, 16);
       try { return cp > 0x10ffff || cp < 0 ? '' : String.fromCodePoint(cp); } catch { return ''; }

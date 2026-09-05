@@ -85,6 +85,19 @@ describe('EmailThreadView — HTML como fonte visual padrão (Fase D, etapa 6/24
     expect(document.querySelector('.email-html-body')).not.toBeNull();
   });
 
+  it('thread com 2 mensagens: colapsada com body_html exibe snippet, não string vazia', () => {
+    renderWith([
+      makeMessage({ id: 'm1', body_html: '<p>HTML do primeiro</p>', snippet: 'Preview visível do primeiro', body_text: 'Texto do primeiro' }),
+      makeMessage({ id: 'm2', body_html: '', body_text: 'Segundo email texto puro.' }),
+    ]);
+    // Primeiro (não-último) começa colapsado — snippet visível no cabeçalho
+    expect(screen.getByText('Preview visível do primeiro')).toBeInTheDocument();
+    // Nenhum container HTML visível (primeiro colapsado, segundo sem body_html)
+    expect(document.querySelector('.email-html-body')).toBeNull();
+    // Segundo (último) começa expandido — texto puro visível
+    expect(screen.getByText('Segundo email texto puro.')).toBeInTheDocument();
+  });
+
   it('usa o pipeline único de sanitização (script removido, link endurecido)', () => {
     renderWith([makeMessage({
       body_html: '<p>ok</p><script>alert(1)</script><a href="https://x.com">link</a>',
