@@ -114,9 +114,9 @@ function EmailMessageCard({ message, isLast }: { message: EmailMessage; isLast: 
 
                 {/* Body */}
                 {message.body_html && showHtml ? (
-                  <div className="email-html-scroll rounded border p-3 bg-background">
+                  <div className="max-h-[400px] overflow-y-auto email-html-scroll rounded border p-3 bg-background">
                     <div
-                      className="email-html-body email-html-collapsed text-sm"
+                      className="email-html-body text-sm"
                       dangerouslySetInnerHTML={{ __html: sanitizedHtml || '' }}
                     />
                   </div>
