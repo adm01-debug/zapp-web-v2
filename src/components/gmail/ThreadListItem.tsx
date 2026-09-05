@@ -70,7 +70,7 @@ export function ThreadListItem({ thread, isSelected, onClick }: ThreadListItemPr
         </div>
         {thread.tags.length > 0 && (
           <div className="flex items-center gap-1 mt-1">
-            {thread.tags.slice(0, 3).map(tag => <Badge key={tag} variant="secondary" className="text-[9px] px-1 py-0">{tag}</Badge>)}
+            {thread.tags.slice(0, 3).map(tag => <Badge key={tag} title={tag} variant="secondary" className="text-[9px] px-1 py-0">{tag}</Badge>)}
           </div>
         )}
       </div>

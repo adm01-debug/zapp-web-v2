@@ -22,11 +22,10 @@ interface EmailThreadViewProps {
   onBack: () => void;
 }
 
-function getInitials(name: string | null, email: string): string {
-  if (name) {
-    return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
-  }
-  return email[0]?.toUpperCase() || '?';
+function getInitials(name: string | null | undefined, email?: string): string {
+  if (name) return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  if (email) return email[0]?.toUpperCase() || '?';
+  return '?';
 }
 
 function formatDate(dateStr: string): string {
