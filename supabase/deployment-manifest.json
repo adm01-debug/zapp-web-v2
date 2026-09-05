@@ -299,8 +299,8 @@
     },
     {
       "path": "supabase/functions/get-sip-password/index.ts",
-      "bytes": 1814,
-      "sha256": "c2c514dbfb4d29350bd0fe0c108b18e824337ce7b3ac4720cb2571234e6f6424"
+      "bytes": 2184,
+      "sha256": "64689523f8f5e83f57a67ede1c7990a4488a2643317566e2022041685b314397"
     },
     {
       "path": "supabase/functions/gmail-cron-sync/index.ts",
@@ -912,7 +912,7 @@
       "name": "get-sip-password",
       "entrypoint": "supabase/functions/get-sip-password/index.ts",
       "verify_jwt": true,
-      "source_sha256": "65ef7a1b3fa24137e7e026ef61bb14f423385101acc85686d2dbe5a77ce4c9a4",
+      "source_sha256": "a8d828d9b62549582ce8e5f0ec509acfd80e2c82324b90c20ab21fe19d0aae79",
       "source_files": [
         "supabase/functions/_shared/hmac-validation.ts",
         "supabase/functions/_shared/validation.ts",
@@ -1195,5 +1195,5 @@
       ]
     }
   ],
-  "manifest_sha256": "98301666a297a10ec6a355a0267bd03ad54acf79c6d9237af0cf23ab61ca6a3e"
+  "manifest_sha256": "759f77e999055adc774c1ff0d1500db8694bad43956a634424c4d5ee3df89581"
 }
