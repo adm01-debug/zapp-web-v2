@@ -133,8 +133,10 @@ export function initWebVitals() {
       flushAccumulated();
     } else {
       // BFCache restore — reset accumulators so the next hide cycle reports fresh data.
-      clsValue = 0; clsReported = false;
-      inpMax = 0; inpReported = false;
+      clsValue = 0;
+      clsReported = false;
+      inpMax = 0;
+      inpReported = false;
     }
   });
   addEventListener('pagehide', flushAccumulated, { once: true });
