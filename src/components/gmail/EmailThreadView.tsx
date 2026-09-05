@@ -47,6 +47,10 @@ function EmailMessageCard({ message, isLast }: { message: EmailMessage; isLast: 
   // HTML sanitizado é a fonte visual da verdade quando existe (mesma regra do
   // EmailChatBubble): o legado abria em texto puro e perdia toda a formatação.
   const [showHtml, setShowHtml] = useState(Boolean(message.body_html));
+  const sanitizedHtml = useMemo(
+    () => message.body_html ? sanitizeEmailHtml(message.body_html) : null,
+    [message.body_html]
+  );
 
   const isInbound = message.direction === 'inbound';
 
@@ -110,10 +114,10 @@ function EmailMessageCard({ message, isLast }: { message: EmailMessage; isLast: 
 
                 {/* Body */}
                 {message.body_html && showHtml ? (
-                  <div className="email-html-scroll max-h-[400px] overflow-y-auto rounded border p-3 bg-background">
+                  <div className="email-html-scroll rounded border p-3 bg-background">
                     <div
-                      className="email-html-body text-sm"
-                      dangerouslySetInnerHTML={{ __html: sanitizeEmailHtml(message.body_html) }}
+                      className="email-html-body email-html-collapsed text-sm"
+                      dangerouslySetInnerHTML={{ __html: sanitizedHtml || '' }}
                     />
                   </div>
                 ) : (
