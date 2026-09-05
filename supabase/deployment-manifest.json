@@ -154,8 +154,8 @@
     },
     {
       "path": "supabase/functions/auth-login/index.ts",
-      "bytes": 4893,
-      "sha256": "03f4833387ccc438f073c73db89fe4a17ef0a379b1bc6f99e25d8e38cb261762"
+      "bytes": 4869,
+      "sha256": "d4bade2f5ad9aba1b5d6d62f8b063c3f80b654e76d33f56385c5505514e7cae1"
     },
     {
       "path": "supabase/functions/auto-close-conversations/index.ts",
@@ -304,8 +304,8 @@
     },
     {
       "path": "supabase/functions/gmail-cron-sync/index.ts",
-      "bytes": 4174,
-      "sha256": "4ade6ab863585b37566bd5877c66f25cdf41c52b8342a515f9b5a9893c5daca2"
+      "bytes": 4544,
+      "sha256": "7471d0a32274d655ddbbd92479acfd6daf220e5492fd856d85cbf9329c69211a"
     },
     {
       "path": "supabase/functions/gmail-oauth/index.ts",
@@ -559,7 +559,7 @@
       "name": "auth-login",
       "entrypoint": "supabase/functions/auth-login/index.ts",
       "verify_jwt": false,
-      "source_sha256": "c506876cf9601fc95b29fa1586f6cbca9d74d2c8367a074c2ac38df590360114",
+      "source_sha256": "fcc73eeeb7dd84e98d3c77ccf0e8828ba4fe816f8077228e07f5d8fb0ead3baf",
       "source_files": [
         "supabase/functions/_shared/hmac-validation.ts",
         "supabase/functions/_shared/validation.ts",
@@ -923,7 +923,7 @@
       "name": "gmail-cron-sync",
       "entrypoint": "supabase/functions/gmail-cron-sync/index.ts",
       "verify_jwt": false,
-      "source_sha256": "5a73a7eb7baadc5ff4a79bf2d26852414a10a97075b87cb6f6cd5c5b2c96e90e",
+      "source_sha256": "af6d395ff1138ef8f4f144beed9bd2d0af12b98ac1015ba721dd33d93af82507",
       "source_files": [
         "supabase/functions/_shared/gmail-helpers.ts",
         "supabase/functions/_shared/hmac-validation.ts",
@@ -1195,5 +1195,5 @@
       ]
     }
   ],
-  "manifest_sha256": "8d4253e71b523190ee2b813e7fc2a2c40dc1e04427867d38af82c79ad0035fca"
+  "manifest_sha256": "98301666a297a10ec6a355a0267bd03ad54acf79c6d9237af0cf23ab61ca6a3e"
 }
