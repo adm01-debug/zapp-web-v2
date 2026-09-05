@@ -1,14 +1,21 @@
 import { describe, it, expect, vi } from 'vitest';
+import { createElement } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { EmailThreadView } from '../EmailThreadView';
 import type { EmailThread, EmailMessage } from '@/hooks/integrations/useGmail';
 
+const ANIMATION_PROPS = new Set(['initial', 'animate', 'exit', 'whileHover', 'whileTap', 'variants', 'transition', 'layout']);
+function makeMotionEl(tag: string) {
+  return function MotionEl({ children, ...props }: Record<string, unknown>) {
+    const safeProps = Object.fromEntries(Object.entries(props).filter(([k]) => !ANIMATION_PROPS.has(k)));
+    return createElement(tag, safeProps, children as React.ReactNode);
+  };
+}
+const MotionDiv = makeMotionEl('div');
 vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   motion: new Proxy({}, {
-    get: () => ({ children, ...props }: Record<string, unknown>) => (
-      <div {...props}>{children as React.ReactNode}</div>
-    ),
+    get: (_t: unknown, prop: string) => prop === 'div' ? MotionDiv : makeMotionEl('div'),
   }),
 }));
 

@@ -48,8 +48,8 @@ function EmailMessageCard({ message, isLast }: { message: EmailMessage; isLast: 
   // EmailChatBubble): o legado abria em texto puro e perdia toda a formatação.
   const [showHtml, setShowHtml] = useState(Boolean(message.body_html));
   const sanitizedHtml = useMemo(
-    () => message.body_html ? sanitizeEmailHtml(message.body_html) : null,
-    [message.body_html]
+    () => message.body_html && showHtml && expanded ? sanitizeEmailHtml(message.body_html) : null,
+    [message.body_html, showHtml, expanded]
   );
 
   const isInbound = message.direction === 'inbound';

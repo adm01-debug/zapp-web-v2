@@ -205,6 +205,12 @@ describe('sanitizeEmailHtml — F2 (url() em qualquer prop)', () => {
     const out = sanitizeEmailHtml('<div style="background-image:url(tracker.gif)">x</div>');
     expect(styleOf(out, 'div')).not.toContain('url(');
   });
+
+  it('remove url() em prop permitida (background-color) — path exclusivo do filtro F2', () => {
+    // background-color NÃO está em STYLE_BLOCKED_PROPS; só o filtro url() a descarta.
+    const out = sanitizeEmailHtml('<div style="background-color:url(tracker.gif)">x</div>');
+    expect(styleOf(out, 'div')).not.toContain('url(');
+  });
 });
 
 // ─── CSS — A2: escapes CSS (bypass) ───────────────────────────────────────
