@@ -96,7 +96,7 @@ function installHooks(p: PurifyInstance): void {
         if (prop === 'width' || prop === 'min-width' || prop === 'max-width' ||
             prop === 'height' || prop === 'min-height' || prop === 'max-height') {
           const v = val.trim().toLowerCase();
-          // Mantém proporcionais (%, auto); remove px/vh/vw/cm fixos.
+          // Permite somente '%' e 'auto'; qualquer outro valor (px, vh, vw, cm, …) é removido.
           return v.endsWith('%') || v === 'auto';
         }
         return true;
@@ -120,8 +120,8 @@ function getPurifier(): PurifyInstance {
     if (typeof purifier?.sanitize !== 'function') {
       throw new Error('emailHtml: instância DOMPurify isolada inválida (sem sanitize)');
     }
-    // A4-fix: guard fail-closed — se a instância não aceitar hooks (SSR/edge),
-    // não usar: sanitizar sem hooks é mais seguro do que crashar ou rodar sem política.
+    // A4-fix: guard fail-closed — se a instância não aceitar hooks (SSR/edge), aborta:
+    // rodar sem a política de hooks é mais perigoso do que não sanitizar.
     if (typeof purifier.addHook !== 'function') {
       throw new Error('emailHtml: ambiente sem suporte a hooks DOMPurify — sanitização indisponível');
     }

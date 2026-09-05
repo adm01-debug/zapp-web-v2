@@ -51,7 +51,7 @@ export function ThreadListItem({ thread, isSelected, onClick }: ThreadListItemPr
     >
       <Avatar className="h-9 w-9 shrink-0 mt-0.5">
         <AvatarFallback className={`text-xs ${thread.is_unread ? 'bg-primary/10 text-primary font-bold' : 'bg-secondary/20'}`}>
-          {getInitials(initialsSource, undefined)}
+          {getInitials(initialsSource)}
         </AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
